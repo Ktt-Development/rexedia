@@ -1,1 +1,3 @@
-# mediaworks
+# mediaworks [![Build Status](https://travis-ci.com/Ktt-Development/mediaworks.svg?branch=master)](https://travis-ci.com/Ktt-Development/mediaworks) [![version](https://img.shields.io/github/v/release/Ktt-Development/mediaworksl&include_prereleases)](https://github.com/Ktt-Development/mediaworksl/releases) [![license](https://img.shields.io/github/license/Ktt-Development/mediaworksl)](https://github.com/Ktt-Development/mediaworks/blob/master/LICENSE)
+
+🎬 MediaWorks :: Metadata editing (including cover art) for bulk files using regular expressions (regex)
