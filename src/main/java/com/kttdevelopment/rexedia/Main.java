@@ -1,8 +1,9 @@
 package com.kttdevelopment.rexedia;
 
-import com.kttdevelopment.rexedia.config.DefaultOptions;
+import com.kttdevelopment.rexedia.preset.Preset;
 import org.apache.commons.cli.*;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 public abstract class Main {
@@ -16,15 +17,17 @@ public abstract class Main {
         }
 
         // config
-        try{
-            CommandLine cmd = new DefaultParser().parse(DefaultOptions.get(), args);
-        }catch(ParseException e){
-            e.printStackTrace();
-        } // todo: set logger if debug
+
 
         // parse meta
+        final Preset preset = null;
 
         // format
+        final File[] files = null;
+
+        for(final File file : files){
+
+        }
 
     }
 
