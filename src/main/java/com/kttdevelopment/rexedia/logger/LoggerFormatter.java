@@ -1,7 +1,6 @@
-package com.kttdevelopment.mediaworks.logger;
+package com.kttdevelopment.rexedia.logger;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
-import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.logging.Formatter;

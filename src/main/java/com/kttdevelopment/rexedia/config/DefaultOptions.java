@@ -1,4 +1,4 @@
-package com.kttdevelopment.mediaworks.config;
+package com.kttdevelopment.rexedia.config;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -57,7 +57,7 @@ public abstract class DefaultOptions {
                 .build(),
             Option.builder("m")
                 .longOpt("meta")
-                .numberOfArgs(1)
+                .hasArgs()
                 .desc("Metadata format")
                 .build()
         };

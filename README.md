@@ -1,3 +1,3 @@
-# mediaworks [![Build Status](https://travis-ci.com/Ktt-Development/mediaworks.svg?branch=master)](https://travis-ci.com/Ktt-Development/mediaworks) [![version](https://img.shields.io/github/v/release/Ktt-Development/mediaworksl&include_prereleases)](https://github.com/Ktt-Development/mediaworksl/releases) [![license](https://img.shields.io/github/license/Ktt-Development/mediaworksl)](https://github.com/Ktt-Development/mediaworks/blob/master/LICENSE)
+# rexedia [![Build Status](https://travis-ci.com/Ktt-Development/rexedia.svg?branch=master)](https://travis-ci.com/Ktt-Development/rexedia) [![version](https://img.shields.io/github/v/release/Ktt-Development/rexedial&include_prereleases)](https://github.com/Ktt-Development/rexedial/releases) [![license](https://img.shields.io/github/license/Ktt-Development/rexedial)](https://github.com/Ktt-Development/rexedia/blob/master/LICENSE)
 
-🎬 MediaWorks :: Metadata editing (including cover art) for bulk files using regular expressions (regex)
+🎬 Rexedia :: Metadata editing (including cover art) for bulk files using regular expressions (regex) and string format

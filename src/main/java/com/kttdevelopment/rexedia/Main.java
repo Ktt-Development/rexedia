@@ -1,12 +1,19 @@
-package com.kttdevelopment.mediaworks;
+package com.kttdevelopment.rexedia;
 
-import com.kttdevelopment.mediaworks.config.DefaultOptions;
+import com.kttdevelopment.rexedia.config.DefaultOptions;
 import org.apache.commons.cli.*;
+
+import java.util.logging.Logger;
 
 public abstract class Main {
 
     public static void main(String[] args){
         // logger
+        final Logger logger;
+        {
+            logger = Logger.getGlobal();
+
+        }
 
         // config
         try{
@@ -14,6 +21,11 @@ public abstract class Main {
         }catch(ParseException e){
             e.printStackTrace();
         } // todo: set logger if debug
+
+        // parse meta
+
+        // format
+
     }
 
 }
