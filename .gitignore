@@ -5,3 +5,9 @@
 # Lock
 *.lock
 *.lck
+
+# Maven
+/target
+
+# Tests
+/src/test/resources
