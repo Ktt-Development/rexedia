@@ -11,3 +11,7 @@
 
 # Tests
 /src/test/resources
+
+# rexedia
+*.log
+*crash-log-*.txt

@@ -20,12 +20,11 @@ public final class LoggerFormatter extends Formatter {
     }
 
     @Override
-    public String format(final LogRecord record){
+    public final String format(final LogRecord record){
         return
             (hasTimestamp ? '[' + sdf.format(record.getMillis()) + ']' + ' ' : "") +
             '[' + record.getLevel().getName() + ']' + ' ' +
             (hasTrace ? '[' + String.format(trace,record.getThreadID(),record.getSourceClassName(),record.getSourceMethodName()) + ']' + ' ' : "") +
-            String.format(name,record.getLoggerName()) + ' ' +
             record.getMessage() + '\n';
     }
 

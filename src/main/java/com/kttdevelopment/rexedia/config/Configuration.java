@@ -10,18 +10,17 @@ import java.util.function.Function;
 
 public final class Configuration {
 
-    @SuppressWarnings("SpellCheckingInspection")
+    @SuppressWarnings({"SpellCheckingInspection", "RedundantSuppression"})
     public static final String
         INPUT   = "i",
         WALK    = "w",
-        PRESET  = "p",
         BACKUP  = "b",
+        DEBUG   = "d",
+        LOGGING = "l",
         THREADS = "t",
         PRECOV  = "pc",
         PREMETA = "pm",
-        COVER   = "c",
-        META    = "m",
-        DEBUG   = "d";
+        PRESET  = "p";
 
     private final Function<String[],File> fileSupplier       = (arg) -> new File(arg[0]);
     private final Function<String[],Boolean> booleanSupplier = (arg) -> arg.length == 0 || Boolean.parseBoolean(arg[0]);
@@ -41,15 +40,23 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(PRESET, fileSupplier)
-            .setLongFlag("preset")
-            .setDesc("The preset file to use")
-            .setExpectedArgs(1)
-            .argsRequired()
-            .build(),
         new Option.Builder<>(BACKUP, booleanSupplier)
             .setLongFlag("backup")
             .setDesc("Should a backup file be kept of the original")
+            .setExpectedArgs(1)
+            .argsOptional()
+            .setDefaultValue(false)
+            .build(),
+        new Option.Builder<>(LOGGING, booleanSupplier)
+            .setLongFlag("log")
+            .setDesc("Log process to a file")
+            .setExpectedArgs(1)
+            .argsOptional()
+            .setDefaultValue(false)
+            .build(),
+        new Option.Builder<>(DEBUG, booleanSupplier)
+            .setLongFlag("debug")
+            .setDesc("Run logging in debug mode and create a debug file")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
@@ -75,28 +82,15 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<MetadataPreset>(COVER, null) // todo
-            .setLongFlag("cover")
-            .setDesc("The cover string.format regex equation")
-            .unlimitedArgs()
-            .argsRequired()
-            .build(),
-        new Option.Builder<MetadataPreset>(META, null) // todo
-            .setLongFlag("cover")
-            .setDesc("The metadata string.format regex equation (can be used multiple times)")
-            .unlimitedArgs()
-            .argsRequired()
-            .build(),
-        new Option.Builder<>(DEBUG, booleanSupplier)
-            .setLongFlag("debug")
-            .setDesc("Should the program run in debug mode")
+        new Option.Builder<>(PRESET, fileSupplier)
+            .setLongFlag("preset")
+            .setDesc("The preset file to use")
             .setExpectedArgs(1)
-            .argsOptional()
-            .setDefaultValue(false)
-            .build()
+            .argsRequired()
+            .build(),
     };
 
-    private final Map<String,Object> options = new HashMap<>();
+    private final Map<String,Object> configuration = new HashMap<>();
 
     public final Preset preset  = new Preset.Builder().build();
 
@@ -104,7 +98,7 @@ public final class Configuration {
         final Options options = new Options();
         for(final Option<?> option : defaultOptions){
             options.addOption(option.getOption());
-            this.options.put(option.getOption().getArgName(),option.getDefault());
+            configuration.put(option.getOption().getArgName(), option.getDefault());
         }
 
 
@@ -112,9 +106,30 @@ public final class Configuration {
 
         if(cmd.hasOption(INPUT)){
             final String[] sargs = cmd.getOptionValues(INPUT);
-
+            final List<File> files = new ArrayList<>();
+            for(final String arg : sargs)
+                files.add(new File(arg));
+            configuration.put(INPUT, files.toArray());
         }
+        if(cmd.hasOption(WALK))
+            configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));
+        if(cmd.hasOption(BACKUP))
+            configuration.put(BACKUP, cmd.getOptionValue(BACKUP) == null || Boolean.parseBoolean(cmd.getOptionValue(BACKUP)));
+        if(cmd.hasOption(LOGGING))
+            configuration.put(LOGGING, cmd.getOptionValue(LOGGING) == null || Boolean.parseBoolean(cmd.getOptionValue(LOGGING)));
+        if(cmd.hasOption(DEBUG))
+            configuration.put(DEBUG, cmd.getOptionValue(DEBUG) == null || Boolean.parseBoolean(cmd.getOptionValue(DEBUG)));
+        if(cmd.hasOption(THREADS))
+            configuration.put(THREADS, Integer.parseInt(cmd.getOptionValue(THREADS)));
+        if(cmd.hasOption(PRECOV))
+            configuration.put(PRECOV, cmd.getOptionValue(PRECOV) == null || Boolean.parseBoolean(cmd.getOptionValue(PRECOV)));
+        if(cmd.hasOption(PREMETA))
+            configuration.put(PREMETA, cmd.getOptionValue(PREMETA) == null || Boolean.parseBoolean(cmd.getOptionValue(PREMETA)));
+        // todo: preset
+    }
 
+    public final Map<String,Object> getConfiguration(){
+        return Collections.unmodifiableMap(configuration);
     }
 
 }

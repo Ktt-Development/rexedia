@@ -1,0 +1,32 @@
+name: Update Binaries
+on:
+  release:
+    types: [published]
+#  schedule:
+#    # Run once a week on sundays
+#    - cron:  '0 4 * * SUN'
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Prepate Git Repo
+        uses: actions/checkout@v2
+
+      - name: ☕ Install OpenJDK
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
+
+      - name: 📦 Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: 📦 Compile to exe
+        run: compile
+
+      - name: 💾 Save to Releases
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

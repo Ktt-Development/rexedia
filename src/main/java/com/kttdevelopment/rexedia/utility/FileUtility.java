@@ -16,7 +16,7 @@ public abstract class FileUtility {
             : "";
     }
 
-    public static File getUnblockedFile(final File file){
+    public static File getFreeFile(final File file){
         if(!file.exists())
             return file;
 
