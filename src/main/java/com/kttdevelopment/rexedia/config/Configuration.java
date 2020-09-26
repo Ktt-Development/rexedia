@@ -32,7 +32,7 @@ public final class Configuration {
         new Option.Builder<>(INPUT, fileSupplier)
             .setLongFlag("input")
             .setDesc("The file or directory to format")
-            .setExpectedArgs(1)
+            .unlimitedArgs()
             .argsRequired()
             .required()
             .build(),
@@ -94,13 +94,13 @@ public final class Configuration {
         new Option.Builder<>(COVER, fileSupplier)
             .setLongFlag("cover")
             .setDesc("The cover format to use")
-            .setExpectedArgs(3)
+            .setExpectedArgs(2)
             .argsRequired()
             .build(),
         new Option.Builder<>(META, fileSupplier)
             .setLongFlag("metadata")
             .setDesc("The metadata format to use")
-            .setExpectedArgs(3)
+            .unlimitedArgs()
             .argsRequired()
             .build()
     };
@@ -112,17 +112,19 @@ public final class Configuration {
         final Options options = new Options();
         for(final Option<?> option : defaultOptions){
             options.addOption(option.getOption());
-            configuration.put(option.getOption().getArgName(), option.getDefault());
+            configuration.put(option.getOption().getOpt(), option.getDefault());
         }
 
         final CommandLine cmd = new DefaultParser().parse(options, args);
 
         if(cmd.hasOption(INPUT)){
             final String[] sargs = cmd.getOptionValues(INPUT);
+            if(sargs.length < 1)
+                throw new MissingArgumentException(INPUT);
             final List<File> files = new ArrayList<>();
             for(final String arg : sargs)
                 files.add(new File(arg));
-            configuration.put(INPUT, files.toArray());
+            configuration.put(INPUT, files.toArray(new File[0]));
         }
         if(cmd.hasOption(PRESET)){
             preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));
@@ -130,12 +132,18 @@ public final class Configuration {
             final Preset.Builder p = new Preset.Builder();
             if(cmd.hasOption(COVER)){
                 final String[] v = cmd.getOptionValues(COVER);
-                p.setCoverPreset(new MetadataPreset(v[0],v[1],v[2]));
+                p.setCoverPreset(new MetadataPreset(null,v[0],v[1]));
             }
             if(cmd.hasOption(META)){
                 final List<List<String>> v = CollectionsUtility.partitionList(cmd.getOptionValues(META),3);
+                if(v.isEmpty())
+                    throw new MissingArgumentException(META);
                 for(final List<String> strings : v)
-                    p.addPreset(new MetadataPreset(strings.get(0), strings.get(1),strings.get(2)));
+                    try{
+                        p.addPreset(new MetadataPreset(strings.get(0), strings.get(1), strings.get(2)));
+                    }catch(final IndexOutOfBoundsException ignored){
+                        throw new MissingArgumentException(META);
+                    }
             }
             preset = p.build();
         }else{
@@ -150,7 +158,7 @@ public final class Configuration {
         if(cmd.hasOption(DEBUG))
             configuration.put(DEBUG, cmd.getOptionValue(DEBUG) == null || Boolean.parseBoolean(cmd.getOptionValue(DEBUG)));
         if(cmd.hasOption(THREADS))
-            configuration.put(THREADS, Integer.parseInt(cmd.getOptionValue(THREADS)));
+            configuration.put(THREADS, Math.max(1,Integer.parseInt(cmd.getOptionValue(THREADS))));
         if(cmd.hasOption(PRECOV))
             configuration.put(PRECOV, cmd.getOptionValue(PRECOV) == null || Boolean.parseBoolean(cmd.getOptionValue(PRECOV)));
         if(cmd.hasOption(PREMETA))

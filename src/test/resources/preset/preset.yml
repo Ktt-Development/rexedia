@@ -1,0 +1,7 @@
+cover:
+  format: "$1"
+  regex: "(.*)"
+metadata:
+  - meta: "name"
+    format: "$1"
+    regex: "(.*)"

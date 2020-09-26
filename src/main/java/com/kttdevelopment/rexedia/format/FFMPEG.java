@@ -26,11 +26,10 @@ public final class FFMPEG {
     }
 
     public final boolean verifyFileIntegrity(final File file){
-        ffmpeg.builder()
+        final FFmpegBuilder args = ffmpeg.builder()
             .addInput(file.getAbsolutePath())
             .setVerbosity(FFmpegBuilder.Verbosity.ERROR)
-            .addExtraArgs("-f",null)
-            .build();
+            .addExtraArgs("-f",null);
         return false;
     }
 
