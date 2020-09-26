@@ -2,8 +2,7 @@ package com.kttdevelopment.rexedia.preset;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class Preset {
 
@@ -21,6 +20,15 @@ public abstract class Preset {
     public abstract MetadataPreset[] getPresets();
 
     Preset(){ }
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        final Preset that = (Preset) o;
+        return Objects.equals(getCoverPreset(),that.getCoverPreset()) &&
+               Arrays.equals(getPresets(), that.getPresets());
+    }
 
     @Override
     public String toString(){

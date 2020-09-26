@@ -3,19 +3,30 @@ package com.kttdevelopment.rexedia.preset;
 import com.amihaiemil.eoyaml.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Objects;
 
 public final class PresetParser {
 
     public PresetParser(){ }
 
-    public final Preset parse(final File file) throws IOException, NullPointerException{
-        final Preset.Builder preset = new Preset.Builder();
-        final YamlMapping yaml = Yaml.createYamlInput(file).readYamlMapping();
+    public final Preset parse(final File file) throws IOException{
+        return parse(Files.readString(file.toPath()));
+    }
 
-        preset.setCoverPreset(parseMetadataPreset(yaml.yamlMapping(Preset.COVER)));
-        for(final YamlNode node : yaml.yamlSequence(Preset.METADATA))
-            preset.addPreset(parseMetadataPreset(node.asMapping()));
+    public final Preset parse(final String yaml) throws NullPointerException, IOException{
+        final Preset.Builder preset = new Preset.Builder();
+        final YamlMapping map = Yaml.createYamlInput(yaml).readYamlMapping();
+
+        // cover
+        final YamlMapping cover = map.yamlMapping(Preset.COVER);
+        if(cover != null)
+            preset.setCoverPreset(new MetadataPreset(null,Objects.requireNonNull(cover.string(Preset.FORMAT)),Objects.requireNonNull(cover.string(Preset.REGEX))));
+        // meta
+        final YamlSequence meta = map.yamlSequence(Preset.METADATA);
+        if(meta != null)
+            for(final YamlNode node : meta)
+                preset.addPreset(parseMetadataPreset(node.asMapping()));
 
         return preset.build();
     }

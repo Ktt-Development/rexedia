@@ -2,6 +2,7 @@ package com.kttdevelopment.rexedia.preset;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public final class MetadataPreset {
@@ -15,8 +16,30 @@ public final class MetadataPreset {
         this.regex        = Pattern.compile(regex);
     }
 
+    public final String getKey(){
+        return metadata_key;
+    }
+
+    public final String getFormat(){
+        return format;
+    }
+
+    public final Pattern getRegex(){
+        return regex;
+    }
+
     public final String format(final String string){
         return regex.matcher(string).replaceAll(format);
+    }
+
+    @Override
+    public boolean equals(final Object o){
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        final MetadataPreset that = (MetadataPreset) o;
+        return Objects.equals(metadata_key, that.metadata_key) &&
+               Objects.equals(format, that.format) &&
+               Objects.equals(regex.pattern(), that.regex.pattern());
     }
 
     @Override

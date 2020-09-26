@@ -1,8 +1,11 @@
 package com.kttdevelopment.rexedia.config;
 
+import com.kttdevelopment.rexedia.preset.*;
+import com.kttdevelopment.rexedia.utility.CollectionsUtility;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -102,15 +105,15 @@ public final class Configuration {
             .build()
     };
 
+    private final Preset preset;
     private final Map<String,Object> configuration = new HashMap<>();
 
-    public Configuration(final String... args) throws ParseException{
+    public Configuration(final String... args) throws ParseException, IOException{
         final Options options = new Options();
         for(final Option<?> option : defaultOptions){
             options.addOption(option.getOption());
             configuration.put(option.getOption().getArgName(), option.getDefault());
         }
-
 
         final CommandLine cmd = new DefaultParser().parse(options, args);
 
@@ -122,14 +125,21 @@ public final class Configuration {
             configuration.put(INPUT, files.toArray());
         }
         if(cmd.hasOption(PRESET)){
-            // todo
-        }else{
+            preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));
+        }else if(cmd.hasOption(COVER) || cmd.hasOption(META)){
+            final Preset.Builder p = new Preset.Builder();
             if(cmd.hasOption(COVER)){
-                // todo
+                final String[] v = cmd.getOptionValues(COVER);
+                p.setCoverPreset(new MetadataPreset(v[0],v[1],v[2]));
             }
             if(cmd.hasOption(META)){
-                // todo
+                final List<List<String>> v = CollectionsUtility.partitionList(cmd.getOptionValues(META),3);
+                for(final List<String> strings : v)
+                    p.addPreset(new MetadataPreset(strings.get(0), strings.get(1),strings.get(2)));
             }
+            preset = p.build();
+        }else{
+            throw new MissingOptionException(META);
         }
         if(cmd.hasOption(WALK))
             configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));
@@ -145,6 +155,10 @@ public final class Configuration {
             configuration.put(PRECOV, cmd.getOptionValue(PRECOV) == null || Boolean.parseBoolean(cmd.getOptionValue(PRECOV)));
         if(cmd.hasOption(PREMETA))
             configuration.put(PREMETA, cmd.getOptionValue(PREMETA) == null || Boolean.parseBoolean(cmd.getOptionValue(PREMETA)));
+    }
+
+    public final Preset getPreset(){
+        return preset;
     }
 
     public final Map<String,Object> getConfiguration(){
