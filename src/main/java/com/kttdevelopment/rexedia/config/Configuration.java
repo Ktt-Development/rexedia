@@ -1,7 +1,5 @@
 package com.kttdevelopment.rexedia.config;
 
-import com.kttdevelopment.rexedia.preset.MetadataPreset;
-import com.kttdevelopment.rexedia.preset.Preset;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -20,7 +18,9 @@ public final class Configuration {
         THREADS = "t",
         PRECOV  = "pc",
         PREMETA = "pm",
-        PRESET  = "p";
+        PRESET  = "p",
+        COVER   = "c",
+        META    = "m";
 
     private final Function<String[],File> fileSupplier       = (arg) -> new File(arg[0]);
     private final Function<String[],Boolean> booleanSupplier = (arg) -> arg.length == 0 || Boolean.parseBoolean(arg[0]);
@@ -28,7 +28,7 @@ public final class Configuration {
     private final Option<?>[] defaultOptions = {
         new Option.Builder<>(INPUT, fileSupplier)
             .setLongFlag("input")
-            .setDesc("The file or directory to format (can be used multiple times)")
+            .setDesc("The file or directory to format")
             .setExpectedArgs(1)
             .argsRequired()
             .required()
@@ -88,11 +88,21 @@ public final class Configuration {
             .setExpectedArgs(1)
             .argsRequired()
             .build(),
+        new Option.Builder<>(COVER, fileSupplier)
+            .setLongFlag("cover")
+            .setDesc("The cover format to use")
+            .setExpectedArgs(3)
+            .argsRequired()
+            .build(),
+        new Option.Builder<>(META, fileSupplier)
+            .setLongFlag("metadata")
+            .setDesc("The metadata format to use")
+            .setExpectedArgs(3)
+            .argsRequired()
+            .build()
     };
 
     private final Map<String,Object> configuration = new HashMap<>();
-
-    public final Preset preset  = new Preset.Builder().build();
 
     public Configuration(final String... args) throws ParseException{
         final Options options = new Options();
@@ -111,6 +121,16 @@ public final class Configuration {
                 files.add(new File(arg));
             configuration.put(INPUT, files.toArray());
         }
+        if(cmd.hasOption(PRESET)){
+            // todo
+        }else{
+            if(cmd.hasOption(COVER)){
+                // todo
+            }
+            if(cmd.hasOption(META)){
+                // todo
+            }
+        }
         if(cmd.hasOption(WALK))
             configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));
         if(cmd.hasOption(BACKUP))
@@ -125,7 +145,6 @@ public final class Configuration {
             configuration.put(PRECOV, cmd.getOptionValue(PRECOV) == null || Boolean.parseBoolean(cmd.getOptionValue(PRECOV)));
         if(cmd.hasOption(PREMETA))
             configuration.put(PREMETA, cmd.getOptionValue(PREMETA) == null || Boolean.parseBoolean(cmd.getOptionValue(PREMETA)));
-        // todo: preset
     }
 
     public final Map<String,Object> getConfiguration(){
