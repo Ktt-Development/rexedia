@@ -5,7 +5,7 @@ import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import java.util.Collections;
 import java.util.List;
 
-final class ForcedFFMPEGBuilder extends FFmpegBuilder {
+public final class ForcedFFMPEGBuilder extends FFmpegBuilder {
 
     private final List<String> args;
 

@@ -17,6 +17,11 @@ public final class FFMPEG {
     public final FFmpeg ffmpeg;
     public final FFprobe ffprobe;
 
+    public FFMPEG() throws IOException{
+        this.ffmpeg = new FFmpeg();
+        this.ffprobe = new FFprobe();
+    }
+
     public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE) throws IOException{
         ffmpeg  = new FFmpeg(pathToFFMPEG);
         ffprobe = new FFprobe(pathToFFPROBE);
@@ -66,7 +71,6 @@ public final class FFMPEG {
         final File OUT,
         final ProgressListener listener) throws IOException{
 
-
         if(INPUT == null)
             throw new FileNotFoundException();
         else if(!INPUT.exists())
@@ -78,7 +82,7 @@ public final class FFMPEG {
         else if(cover != null && cover.exists() && cover.length() > 1e+7)
             throw new OutOfMemoryError("Cover art files exceeding 10MB will corrupt video");
 
-        if((cover == null || !cover.exists()) && (metadata == null || metadata.isEmpty())){ // skip if no changes
+        if(((cover == null || !cover.exists()) && preserveCover) && ((metadata == null || metadata.isEmpty())) && preserveMeta){ // skip if no changes and preserve
             Files.copy(INPUT.toPath(), OUT.toPath(), StandardCopyOption.REPLACE_EXISTING);
             return true;
         }
@@ -86,39 +90,39 @@ public final class FFMPEG {
         final List<String> args = new ArrayList<>();
         args.add("-i");
             args.add('"' + INPUT.getAbsolutePath().replace('\\','/') + '"');
-        args.add("-y"); // override ? "-y" : "-n"
 
         if(cover != null && cover.exists()){
             args.add("-i");
                 args.add('"' + cover.getAbsolutePath().replace('\\','/') + '"');
-            args.add("-c");
-                args.add("copy");
-            args.add("-map");
-                args.add("0");
             args.add("-map");
                 args.add("1");
-        }else if((cover == null || !cover.exists()) && !preserveCover){
-            args.add("-c");
-                args.add("copy");
+            args.add("-map");
+                args.add("0");
+            args.add("-disposition:0");
+                args.add("attached_pic");
+        }else if((cover == null || !cover.exists()) && !preserveCover){ // fixme
             args.add("-map");
                 args.add("0");
             args.add("-map");
                 args.add("-0:v");
         }
 
+        args.add("-y"); // override ? "-y" : "-n"
+
         args.add("-acodec");
             args.add("copy");
         args.add("-vcodec");
             args.add("copy");
 
-        if(!preserveMeta)
+        if(!preserveMeta) // fixme
             args.add("-map_metadata");
-                args.add("-1");
+                args.add("'-1'");
         if(metadata != null && !metadata.isEmpty())
             metadata.forEach((k,v) -> {
                 args.add("-metadata");
                     args.add(String.format("\"%s\"=\"%s\"",k,v));
             });
+
 
         args.add('"' + OUT.getAbsolutePath().replace('\\','/') + '"');
 

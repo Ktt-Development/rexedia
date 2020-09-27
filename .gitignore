@@ -9,6 +9,12 @@
 # Maven
 /target
 
+
 # rexedia
+/src/test/resources/format/apply/*.mp4
+/src/test/resources/format/apply/*.png
+!/src/test/resources/format/apply/cover.png
+!/src/test/resources/format/apply/oversized.png
+
 *.log
 *crash-log-*.txt

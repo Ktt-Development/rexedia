@@ -1,1 +1,3 @@
 import: Ktt-Development/.github:.travis/java-LTS.yml@master
+before_script:
+  - sudo apt install ffmpeg
