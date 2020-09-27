@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class FFMPEGtests {
+public class ffmpegTests {
 
     private static FFMPEG ffmpeg;
 
@@ -17,11 +17,8 @@ public class FFMPEGtests {
     public static void initFFMPEG() throws IOException{
         ffmpeg = new FFMPEG("bin/ffmpeg.exe","bin/ffprobe.exe");
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
-    }
-
-    @AfterClass
-    public static void deleteTest() throws IOException{
-        Files.delete(input.toPath());
+        input.deleteOnExit();
+        new File(cover.getParentFile(),"cover2.png").deleteOnExit();
     }
 
     @Test
@@ -35,10 +32,8 @@ public class FFMPEGtests {
         Assert.assertFalse(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/corrupt.mp4")));
     }
 
-    // todo
-
     private static final File input = new File("src/test/resources/format/apply/clean.mp4");
-    private final File cover = new File("src/test/resources/format/apply/cover.png");
+    private static final File cover = new File("src/test/resources/format/apply/cover.png");
 
     @Test
     public void missingArgs(){
@@ -124,6 +119,5 @@ public class FFMPEGtests {
         ffmpeg.ffmpeg.run(builder);
         return output;
     }
-
 
 }
