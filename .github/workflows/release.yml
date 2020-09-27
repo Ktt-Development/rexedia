@@ -2,9 +2,6 @@ name: Update Binaries
 on:
   release:
     types: [published]
-#  schedule:
-#    # Run once a week on sundays
-#    - cron:  '0 4 * * SUN'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest

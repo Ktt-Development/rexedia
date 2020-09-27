@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class PresetParserTests {
 
@@ -13,8 +14,8 @@ public class PresetParserTests {
     public void testFile() throws IOException{
         final Preset preset = new PresetParser().parse(new File("src/test/resources/preset/preset.yml"));
 
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.*)"),preset.getCoverPreset());
-        Assert.assertEquals(new MetadataPreset("name","$1","(.*)"),preset.getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),preset.getCoverPreset());
+        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),preset.getPresets()[0]);
     }
 
     @Test
@@ -23,9 +24,9 @@ public class PresetParserTests {
             "metadata:\n" +
             "  - meta: 'name'\n" +
             "    format: '$1'\n" +
-            "    regex: '(.*)'";
+            "    regex: '(.+)'";
 
-        Assert.assertEquals(new MetadataPreset("name","$1","(.*)"),new PresetParser().parse(yaml).getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),new PresetParser().parse(yaml).getPresets()[0]);
     }
 
     @Test
@@ -33,9 +34,9 @@ public class PresetParserTests {
         final String yaml =
             "cover:\n" +
             "  format: '$1'\n" +
-            "  regex: '(.*)'";
+            "  regex: '(.+)'";
 
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.*)"),new PresetParser().parse(yaml).getCoverPreset());
+        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),new PresetParser().parse(yaml).getCoverPreset());
     }
 
     @Test
@@ -49,7 +50,7 @@ public class PresetParserTests {
     public void testMissingCoverFormat() throws IOException{
         final String yaml =
             "cover:\n" +
-            "  regex: '(.*)'";
+            "  regex: '(.+)'";
 
         new PresetParser().parse(yaml).getCoverPreset();
     }
@@ -68,7 +69,7 @@ public class PresetParserTests {
         final String yaml =
             "metadata:\n" +
             "  - format: '$1'\n" +
-            "    regex: '(.*)'";
+            "    regex: '(.+)'";
         new PresetParser().parse(yaml);
     }
 
@@ -77,7 +78,7 @@ public class PresetParserTests {
         final String yaml =
             "metadata:\n" +
             "  - meta: 'name'\n" +
-            "    regex: '(.*)'";
+            "    regex: '(.+)'";
         new PresetParser().parse(yaml);
     }
 
@@ -88,6 +89,17 @@ public class PresetParserTests {
             "  - meta: 'name'\n" +
             "    format: '$1'";
         new PresetParser().parse(yaml);
+    }
+
+    @Test
+    public void testFormat() throws IOException{
+        final String yaml =
+            "metadata:\n" +
+            "  - meta: 'name'\n" +
+            "    format: '[$1]'\n" +
+            "    regex: '(.+)'";
+
+        Assert.assertEquals("[format]",new PresetParser().parse(yaml).getPresets()[0].format("format"));
     }
 
 }

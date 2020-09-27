@@ -3,6 +3,7 @@ package com.kttdevelopment.rexedia.format;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import net.bramp.ffmpeg.builder.FFmpegOutputBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 
 import java.io.File;
@@ -25,11 +26,13 @@ public final class FFMPEG {
         return (int) (!result.hasError() ? result.getFormat().duration : -1f);
     }
 
-    public final boolean verifyFileIntegrity(final File file){
+    public final boolean verifyFileIntegrity(final File file) throws IOException{
         final FFmpegBuilder args = ffmpeg.builder()
-            .addInput(file.getAbsolutePath())
             .setVerbosity(FFmpegBuilder.Verbosity.ERROR)
-            .addExtraArgs("-f",null);
+            .addInput(file.getAbsolutePath())
+            .addExtraArgs("-f","null","-",">error.log","2>&1")
+            .addOutput(file.getAbsolutePath()).done();
+        ffmpeg.run(args);
         return false;
     }
 

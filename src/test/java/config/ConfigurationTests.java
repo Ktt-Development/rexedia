@@ -61,27 +61,27 @@ public class ConfigurationTests {
 
     @Test
     public void testCoverArgs() throws IOException, ParseException{
-        final Configuration config = new Configuration("-input","file.mp4","-c","$1","(.*)");
+        final Configuration config = new Configuration("-input","file.mp4","-c","$1","(.+)");
 
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.*)"),config.getPreset().getCoverPreset());
+        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),config.getPreset().getCoverPreset());
     }
 
     @Test
     public void testMetaArgs() throws IOException, ParseException{
-        final Configuration config = new Configuration("-input","file.mp4","-m","name","$1","(.*)");
+        final Configuration config = new Configuration("-input","file.mp4","-m","name","$1","(.+)");
 
-        Assert.assertEquals(new MetadataPreset("name","$1","(.*)"),config.getPreset().getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),config.getPreset().getPresets()[0]);
     }
 
     @Test
     public void testMultipleMeta() throws IOException, ParseException{
-        Configuration config = new Configuration("-input","file.mp4","-m","name","$1","(.*)","name2","$1","(.*)");
-        Assert.assertEquals(new MetadataPreset("name","$1","(.*)"),config.getPreset().getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset("name2","$1","(.*)"),config.getPreset().getPresets()[1]);
+        Configuration config = new Configuration("-input","file.mp4","-m","name","$1","(.+)","name2","$1","(.+)");
+        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),config.getPreset().getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset("name2","$1","(.+)"),config.getPreset().getPresets()[1]);
 
-        config = new Configuration("-input","file.mp4","-m","name","$1","(.*)","-meta","name2","$1","(.*)");
-        Assert.assertEquals(new MetadataPreset("name","$1","(.*)"),config.getPreset().getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset("name2","$1","(.*)"),config.getPreset().getPresets()[1]);
+        config = new Configuration("-input","file.mp4","-m","name","$1","(.+)","-meta","name2","$1","(.+)");
+        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),config.getPreset().getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset("name2","$1","(.+)"),config.getPreset().getPresets()[1]);
     }
 
     // remaining flags
