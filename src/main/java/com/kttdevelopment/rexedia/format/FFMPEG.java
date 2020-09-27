@@ -2,8 +2,6 @@ package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
 import net.bramp.ffmpeg.*;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import net.bramp.ffmpeg.builder.FFmpegOutputBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import net.bramp.ffmpeg.progress.ProgressListener;
@@ -11,7 +9,7 @@ import net.bramp.ffmpeg.progress.ProgressListener;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 public final class FFMPEG {
@@ -75,6 +73,8 @@ public final class FFMPEG {
             throw new FileNotFoundException(INPUT.getAbsolutePath());
         else if(OUT == null)
             throw new FileNotFoundException();
+        else if(!OUT.getParentFile().exists() && !OUT.getParentFile().mkdirs())
+            throw new FileNotFoundException(OUT.getParentFile().getAbsolutePath());
         else if(cover != null && cover.exists() && cover.length() > 1e+7)
             throw new OutOfMemoryError("Cover art files exceeding 10MB will corrupt video");
 
@@ -83,37 +83,49 @@ public final class FFMPEG {
             return true;
         }
 
-        final FFmpegBuilder builder = new FFmpegBuilder()
-            .addInput(INPUT.getAbsolutePath())
-            .overrideOutputFiles(true)
-            .addOutput(INPUT.getAbsolutePath()).done();
+        final List<String> args = new ArrayList<>();
+        args.add("-i");
+            args.add('"' + INPUT.getAbsolutePath().replace('\\','/') + '"');
+        args.add("-y"); // override ? "-y" : "-n"
 
+        if(cover != null && cover.exists()){
+            args.add("-i");
+                args.add('"' + cover.getAbsolutePath().replace('\\','/') + '"');
+            args.add("-c");
+                args.add("copy");
+            args.add("-map");
+                args.add("0");
+            args.add("-map");
+                args.add("1");
+        }else if((cover == null || !cover.exists()) && !preserveCover){
+            args.add("-c");
+                args.add("copy");
+            args.add("-map");
+                args.add("0");
+            args.add("-map");
+                args.add("-0:v");
+        }
 
-        if(cover != null && cover.exists())
-            builder
-                .addInput(cover.getAbsolutePath())
-                .addExtraArgs("-c","copy")
-                .addExtraArgs("-map","0")
-                .addExtraArgs("-map","1");
-        else if((cover == null || !cover.exists()) && !preserveCover)
-            builder
-                .addExtraArgs("-c","copy")
-                .addExtraArgs("-map","0")
-                .addExtraArgs("-map")
-                .addExtraArgs("-0:v");
-
-        final FFmpegOutputBuilder output =
-            builder
-                .addOutput(OUT.toURI())
-                .setAudioCodec("copy")
-                .setVideoCodec("copy");
+        args.add("-acodec");
+            args.add("copy");
+        args.add("-vcodec");
+            args.add("copy");
 
         if(!preserveMeta)
-            builder.addExtraArgs("-map_metadata","-1");
+            args.add("-map_metadata");
+                args.add("-1");
         if(metadata != null && !metadata.isEmpty())
-            metadata.forEach(output::addMetaTag);
+            metadata.forEach((k,v) -> {
+                args.add("-metadata");
+                    args.add(String.format("\"%s\"=\"%s\"",k,v));
+            });
 
-        final FFmpegJob job = new FFmpegExecutor(ffmpeg,ffprobe).createJob(builder,listener);
+        args.add('"' + OUT.getAbsolutePath().replace('\\','/') + '"');
+
+        System.out.println(String.join(" ",args));
+
+        // ffmpeg wrapper does not add extra arguments in correct order
+        final FFmpegJob job = new FFmpegExecutor(ffmpeg,ffprobe).createJob(new ForcedFFMPEGBuilder(args), listener);
         job.run();
 
         switch(job.getState()){
