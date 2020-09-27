@@ -28,6 +28,7 @@ public final class Configuration {
     private final Function<String[],File> fileSupplier       = (arg) -> new File(arg[0]);
     private final Function<String[],Boolean> booleanSupplier = (arg) -> arg.length == 0 || Boolean.parseBoolean(arg[0]);
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final Option<?>[] defaultOptions = {
         new Option.Builder<>(INPUT, fileSupplier)
             .setLongFlag("input")
