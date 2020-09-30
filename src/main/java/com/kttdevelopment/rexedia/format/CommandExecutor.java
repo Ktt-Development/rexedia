@@ -1,0 +1,62 @@
+package com.kttdevelopment.rexedia.format;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+public final class CommandExecutor {
+
+    private final String[] args;
+    private final Consumer<String> consumer;
+
+    public CommandExecutor(){
+        this(new String[0],null);
+    }
+
+    public CommandExecutor(final Consumer<String> consumer){
+        this(new String[0],consumer);
+    }
+
+    public CommandExecutor(final String arg){
+        this(new String[]{arg},null);
+    }
+
+    public CommandExecutor(final String... args){
+        this(args,null);
+    }
+
+    public CommandExecutor(final String arg, final Consumer<String> consumer){
+        this(new String[]{arg},consumer);
+    }
+
+    public CommandExecutor(final String[] args, final Consumer<String> consumer){
+        this.args     = args;
+        this.consumer = consumer;
+    }
+
+    //
+
+    public final String execute() throws IOException{
+        return execute(new String[0]);
+    }
+
+    public final String execute(final String... args) throws IOException{
+        final List<String> a = Arrays.asList(this.args);
+        a.addAll(Arrays.asList(args));
+
+        final Process process = Runtime.getRuntime().exec(String.join(" ",a));
+
+        final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        final StringBuilder OUT = new StringBuilder();
+
+        String ln;
+        while((ln = IN.readLine()) != null || process.isAlive()){
+            OUT.append(ln).append('\n');
+            if(consumer != null) consumer.accept(ln);
+        }
+
+        return OUT.toString().trim();
+    }
+
+}

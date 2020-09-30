@@ -1,57 +1,111 @@
 package com.kttdevelopment.rexedia.format;
 
-import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
-import net.bramp.ffmpeg.*;
-import net.bramp.ffmpeg.job.FFmpegJob;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
-import net.bramp.ffmpeg.progress.ProgressListener;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("SpellCheckingInspection")
 public final class FFMPEG {
 
-    public final FFmpeg ffmpeg;
-    public final FFprobe ffprobe;
+    private final FFMPEGExecutor executor;
 
-    public FFMPEG() throws IOException{
-        this.ffmpeg = new FFmpeg();
-        this.ffprobe = new FFprobe();
-    }
-
-    public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE) throws IOException{
-        ffmpeg  = new FFmpeg(pathToFFMPEG);
-        ffprobe = new FFprobe(pathToFFPROBE);
+    public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE){
+        executor = new FFMPEGExecutor(pathToFFMPEG,pathToFFPROBE);
     }
 
 // ffprobe
 
+    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\n\\Qduration=\\E(\\d+\\.\\d+)\\n\\Q[/FORMAT]\\E");
     // duration in seconds
-    public final double getDuration(final File input) throws IOException{
+    public final float getDuration(final File input) throws IOException{
         if(!input.exists()) throw new FileNotFoundException(input.getAbsolutePath());
 
-        final FFmpegProbeResult result = ffprobe.probe(input.getAbsolutePath());
-        if(result.hasError())
-            throw new IOException(String.format("[%s] %s", result.error.code, result.error.string));
-        return !result.hasError() ? result.getFormat().duration : -1;
+        final String[] args = new String[]{
+            "-i", '"' + input.getAbsolutePath() + '"',
+            "-v", "0",
+            "-show_entries", "format=duration"
+        };
+
+        final String result   = executor.executeFFPROBE(args);
+        final Matcher matcher = duration.matcher(result);
+        return result.isBlank() || matcher.matches() ? Float.parseFloat(matcher.group(1)) : -1f;
     }
 
+    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)|(\\d*)");
     public final boolean verifyFileIntegrity(final File input){
-        /* the ffprobe wrapper was not made correctly, so this verified method can't be used
-        final List<String> args = Arrays.asList(
-            "-show_entries", "stream=r_frame_rate,nb_read_frames,duration",
+        if(!input.exists()) return false;
+
+        final String[] args = new String[]{
+            "-i", '"' + input.getAbsolutePath() + '"',
             "-select_streams", "v",
-            "-count_frames",
-            "-of", "compact=p=1:nk=1",
-            "-threads","3",
             "-v", "0",
-            file.getAbsolutePath());
-        ffprobe.run(args);
-        */
-        return ExceptionUtil.requireNonExceptionElse(() -> getDuration(input) != -1,false);
+            "-show_entries", "stream=r_frame_rate,nb_readframes,duration",
+            "-count_frames",
+            "-of","compact=p=1:nk=1",
+        };
+
+        try{
+            final String result   = executor.executeFFPROBE(args);
+            final Matcher matcher = frames.matcher(result);
+
+            if(!matcher.matches())
+                return false;
+
+            final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));
+            final float duration    = Float.parseFloat(matcher.group(3));
+            final int frames        = Integer.parseInt(matcher.group(4));
+
+            // return framerate * duration (calculated frame rate)
+            return framerate * duration == frames;
+        }catch(final IOException | NumberFormatException ignored){
+            return false;
+        }
+    }
+
+    final Pattern metadata = Pattern.compile("^\\QTAG:\\E(.+)=(.+)$");
+    public final Map<String,String> getMetadata(final File input){
+        if(!input.exists()) return Collections.emptyMap();
+
+        final String[] args = new String[]{
+            "-i", '"' + input.getAbsolutePath() + '"',
+            "-v", "0",
+            "-show_entries", "format_tags",
+        };
+
+        try{
+            final String result = executor.executeFFPROBE(args);
+            final Matcher matcher = metadata.matcher(result);
+
+            if(!matcher.matches())
+                return Collections.emptyMap();
+
+            final Map<String,String> metadata = new HashMap<>();
+            while(matcher.find())
+                metadata.put(matcher.group(1), matcher.group(2));
+            return metadata;
+        }catch(final IOException ignored){ }
+        return Collections.emptyMap();
+    }
+
+    // (technically ffmpeg but we are getting a file)
+    public final File getCoverArt(final File input, final File output){
+        final String[] args = {
+            "-i", '"' + input.getAbsolutePath() + '"',
+            "-map", "0:v",
+            "-map", "0:v",
+            "-c","copy",
+            '"' + output.getAbsolutePath() + '"'
+        };
+
+        try{
+            executor.executeFFMPEG(args);
+            return output;
+        }catch(final IOException e){
+            return null;
+        }
     }
 
 // ffmpeg
@@ -61,15 +115,6 @@ public final class FFMPEG {
         final File cover, final boolean preserveCover,
         final Map<String,String> metadata, final boolean preserveMeta,
         final File OUT) throws IOException{
-        return apply(INPUT,cover,preserveCover,metadata,preserveMeta,OUT,null);
-    }
-
-    public final boolean apply(
-        final File INPUT,
-        final File cover, final boolean preserveCover,
-        final Map<String,String> metadata, final boolean preserveMeta,
-        final File OUT,
-        final ProgressListener listener) throws IOException{
 
         if(INPUT == null)
             throw new FileNotFoundException();
@@ -80,7 +125,7 @@ public final class FFMPEG {
         else if(!OUT.getParentFile().exists() && !OUT.getParentFile().mkdirs())
             throw new FileNotFoundException(OUT.getParentFile().getAbsolutePath());
         else if(cover != null && cover.exists() && cover.length() > 1e+7)
-            throw new OutOfMemoryError("Cover art files exceeding 10MB will corrupt video");
+            throw new OutOfMemoryError("Cover art files exceeding 10MB will corrupt video file");
 
         if(((cover == null || !cover.exists()) && preserveCover) && ((metadata == null || metadata.isEmpty())) && preserveMeta){ // skip if no changes and preserve
             Files.copy(INPUT.toPath(), OUT.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -89,18 +134,18 @@ public final class FFMPEG {
 
         final List<String> args = new ArrayList<>();
         args.add("-i");
-            args.add('"' + INPUT.getAbsolutePath().replace('\\','/') + '"');
+            args.add('"' + INPUT.getAbsolutePath() + '"');
 
-        if(cover != null && cover.exists()){
+        if(cover != null && cover.exists()){ // if cover exists
             args.add("-i");
-                args.add('"' + cover.getAbsolutePath().replace('\\','/') + '"');
+                args.add('"' + cover.getAbsolutePath() + '"');
             args.add("-map");
                 args.add("1");
             args.add("-map");
                 args.add("0");
             args.add("-disposition:0");
                 args.add("attached_pic");
-        }else if((cover == null || !cover.exists()) && !preserveCover){ // fixme
+        }else if((cover == null || !cover.exists()) && !preserveCover){ // if no cover and no preserve (remove cover)
             args.add("-map");
                 args.add("0");
             args.add("-map");
@@ -114,7 +159,7 @@ public final class FFMPEG {
         args.add("-vcodec");
             args.add("copy");
 
-        if(!preserveMeta) // fixme
+        if(!preserveMeta) // if no preserve (remove previous metadata)
             args.add("-map_metadata");
                 args.add("'-1'");
         if(metadata != null && !metadata.isEmpty())
@@ -123,24 +168,10 @@ public final class FFMPEG {
                     args.add(String.format("\"%s\"=\"%s\"",k,v));
             });
 
+        args.add('"' + OUT.getAbsolutePath() + '"');
 
-        args.add('"' + OUT.getAbsolutePath().replace('\\','/') + '"');
-
-        System.out.println(String.join(" ",args));
-
-        // ffmpeg wrapper does not add extra arguments in correct order
-        final FFmpegJob job = new FFmpegExecutor(ffmpeg,ffprobe).createJob(new ForcedFFMPEGBuilder(args), listener);
-        job.run();
-
-        switch(job.getState()){
-            case FINISHED:
-                return true;
-            default:
-            case RUNNING:
-            case WAITING:
-            case FAILED:
-                return false;
-        }
+        executor.executeFFMPEG(args.toArray(new String[0])); // todo
+        return true;
     }
 
 }
