@@ -176,7 +176,7 @@ public final class FFMPEG {
 
         if(!preserveMeta) // if no preserve (remove previous metadata)
             args.add("-map_metadata");
-                args.add("'-1'");
+                args.add("-1");
         if(metadata != null && !metadata.isEmpty())
             metadata.forEach((k,v) -> {
                 args.add("-metadata");

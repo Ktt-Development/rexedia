@@ -18,12 +18,19 @@ public class ffmpegTests {
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
-        new File(cover.getParentFile(),"cover2.png").deleteOnExit();
+        System.out.println("Initialized FFMPEG");
     }
 
     @AfterClass
-    public static void denitFFMPEG() throws IOException{
-        Files.delete(input.toPath());
+    public static void denitFFMPEG(){
+        try{
+            Files.delete(input.toPath());
+            Files.delete(new File(cover.getParentFile(), "cover2.png").toPath());
+
+        }catch(final Throwable e){
+            e.printStackTrace();
+        }
+        System.out.println("Cleaned up FFMPEG tests");
     }
 
     @Test

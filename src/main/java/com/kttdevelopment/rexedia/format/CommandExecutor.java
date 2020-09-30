@@ -64,7 +64,7 @@ final class CommandExecutor {
         }catch(final InterruptedException ignored){ }
 
         // debug
-        System.out.println("\n\n");
+        System.out.println("\n");
         System.out.println("$ " + String.join(" ", a));
         System.out.println(OUT);
 
