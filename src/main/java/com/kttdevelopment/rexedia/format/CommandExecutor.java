@@ -60,6 +60,11 @@ public final class CommandExecutor {
             if(consumer != null) consumer.accept(ln);
         }
 
+        // debug
+        System.out.println("\n\n\n\n");
+        System.out.println("$ " + String.join(" ", a));
+        System.out.println(OUT);
+
         return OUT.toString().trim();
     }
 
