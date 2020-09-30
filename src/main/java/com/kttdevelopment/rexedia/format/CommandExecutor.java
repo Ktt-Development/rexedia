@@ -55,13 +55,16 @@ public final class CommandExecutor {
         final StringBuilder OUT = new StringBuilder();
 
         String ln;
-        while((ln = IN.readLine()) != null || process.isAlive()){
+        while((ln = IN.readLine()) != null){
             OUT.append(ln).append('\n');
             if(consumer != null) consumer.accept(ln);
         }
 
+        try{ process.waitFor();
+        }catch(final InterruptedException ignored){ }
+
         // debug
-        System.out.println("\n\n\n\n");
+        System.out.println("\n\n");
         System.out.println("$ " + String.join(" ", a));
         System.out.println(OUT);
 
