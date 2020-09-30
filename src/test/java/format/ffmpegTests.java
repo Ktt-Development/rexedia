@@ -10,11 +10,12 @@ import java.util.Map;
 @SuppressWarnings("SpellCheckingInspection")
 public class ffmpegTests {
 
-    private static FFMPEG ffmpeg;
+    private static FFMPEG ffmpeg = new FFMPEG();
 
     @BeforeClass
     public static void initFFMPEG() throws IOException{
-        ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
+        //if(!ffmpeg.isValidInstallation()) // use bin if no local installation
+            ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
         input.deleteOnExit();
@@ -23,7 +24,7 @@ public class ffmpegTests {
 
     @Test
     public void testDuration() throws IOException{
-        Assert.assertEquals(4.97,ffmpeg.getDuration(new File("src/test/resources/format/video.mp4")),0);
+        Assert.assertEquals(4.97f,ffmpeg.getDuration(new File("src/test/resources/format/video.mp4")),0);
     }
 
     @Test
@@ -47,25 +48,24 @@ public class ffmpegTests {
         final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out.deleteOnExit();
 
-        Assert.assertTrue(ffmpeg.apply(input,null,false,null,false,out));
+        Assert.assertTrue(ffmpeg.apply(input,null,true,null,true,out));
         Assert.assertEquals(input.length(),out.length());
     }
 
     @Test
     public void testApplyCover() throws IOException{
         final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
-        //out.deleteOnExit();
+        out.deleteOnExit();
 
         Assert.assertTrue(ffmpeg.apply(input,cover,false,null,false,out));
-        System.exit(100);
         Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
 
         // test preserve
-        Assert.assertTrue(ffmpeg.apply(input,null,true,null,false,out));
+        Assert.assertTrue(ffmpeg.apply(out,null,true,null,false,out));
         Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
 
         // test remove
-        Assert.assertTrue(ffmpeg.apply(input,null,false,null,false,out));
+        Assert.assertTrue(ffmpeg.apply(out,null,false,null,false,out));
         // todo
     }
 

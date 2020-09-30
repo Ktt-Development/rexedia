@@ -1,8 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class CommandExecutor {
@@ -42,10 +41,15 @@ public final class CommandExecutor {
     }
 
     public final String execute(final String... args) throws IOException{
-        final List<String> a = Arrays.asList(this.args);
+        final List<String> a = new ArrayList<>();
+        a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
-        final Process process = Runtime.getRuntime().exec(String.join(" ",a));
+        final ProcessBuilder builder = new ProcessBuilder();
+        builder.redirectErrorStream(true);
+        builder.command(a.toArray(new String[0]));
+
+        final Process process = builder.start();
 
         final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final StringBuilder OUT = new StringBuilder();

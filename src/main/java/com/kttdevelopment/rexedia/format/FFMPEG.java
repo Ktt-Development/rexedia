@@ -12,8 +12,20 @@ public final class FFMPEG {
 
     private final FFMPEGExecutor executor;
 
+    public FFMPEG(){
+        executor = new FFMPEGExecutor("ffmpeg","ffprobe"); // local installation
+    }
+
     public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE){
         executor = new FFMPEGExecutor(pathToFFMPEG,pathToFFPROBE);
+    }
+
+    public final boolean isValidInstallation(){
+        try{
+            return !executor.executeFFMPEG(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.") && !executor.executeFFPROBE(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.");
+        }catch(final IOException ignored){
+            return false;
+        }
     }
 
 // ffprobe
@@ -31,10 +43,13 @@ public final class FFMPEG {
 
         final String result   = executor.executeFFPROBE(args);
         final Matcher matcher = duration.matcher(result);
-        return result.isBlank() || matcher.matches() ? Float.parseFloat(matcher.group(1)) : -1f;
+
+        return result.isBlank() || matcher.matches()
+               ? (float) (Math.ceil(Float.parseFloat(matcher.group(1)) * 100) / 100)
+               : -1f;
     }
 
-    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)|(\\d*)");
+    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)\\/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)");
     public final boolean verifyFileIntegrity(final File input){
         if(!input.exists()) return false;
 
@@ -42,7 +57,7 @@ public final class FFMPEG {
             "-i", '"' + input.getAbsolutePath() + '"',
             "-select_streams", "v",
             "-v", "0",
-            "-show_entries", "stream=r_frame_rate,nb_readframes,duration",
+            "-show_entries", "stream=r_frame_rate,nb_read_frames,duration",
             "-count_frames",
             "-of","compact=p=1:nk=1",
         };
