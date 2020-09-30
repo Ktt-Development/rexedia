@@ -14,7 +14,7 @@ public class ffmpegTests {
 
     @BeforeClass
     public static void initFFMPEG() throws IOException{
-        //if(!ffmpeg.isValidInstallation()) // use bin if no local installation
+        if(!ffmpeg.isValidInstallation()) // use bin if no local installation
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
