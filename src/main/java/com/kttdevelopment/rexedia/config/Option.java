@@ -2,7 +2,7 @@ package com.kttdevelopment.rexedia.config;
 
 import java.util.function.Function;
 
-public final class Option<T> {
+final class Option<T> {
 
     private final org.apache.commons.cli.Option option;
 

@@ -1,10 +1,11 @@
-name: Update Binaries
+name: Publish to releases
 on:
   release:
     types: [published]
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: windows-2019
     steps:
       - name: 📦 Prepate Git Repo
         uses: actions/checkout@v2
@@ -19,11 +20,34 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: 📦 Compile to exe
-        run: compile
+        run: sh ./build.sh
+
+      - name: 📦 Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: rexedia
+          path: rexedia
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Download Artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: rexedia
+            path: rexedia
+
+      - name: 📦 Zip file
+        uses: papeloto/action-zip@v1
+        with:
+          files: rexedia
+          dest: rexedia.zip
 
       - name: 💾 Save to Releases
         uses: JasonEtco/upload-to-release@master
         with:
-          args: release.zip
+          args: rexedia.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

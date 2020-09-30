@@ -18,8 +18,12 @@ public class ffmpegTests {
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
-        input.deleteOnExit();
         new File(cover.getParentFile(),"cover2.png").deleteOnExit();
+    }
+
+    @AfterClass
+    public static void denitFFMPEG() throws IOException{
+        Files.delete(input.toPath());
     }
 
     @Test

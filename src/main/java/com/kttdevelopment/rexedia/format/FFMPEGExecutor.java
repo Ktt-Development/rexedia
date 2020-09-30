@@ -3,7 +3,7 @@ package com.kttdevelopment.rexedia.format;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class FFMPEGExecutor {
+final class FFMPEGExecutor {
 
     private final String pathToFFMPEG, pathToFFPROBE;
 

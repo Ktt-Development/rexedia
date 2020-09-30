@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 
-public final class CommandExecutor {
+final class CommandExecutor {
 
     private final String[] args;
     private final Consumer<String> consumer;
