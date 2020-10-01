@@ -1,3 +1,0 @@
-import: Ktt-Development/.github:.travis/java-LTS.yml@master
-before_script:
-  - sudo apt-get install libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
