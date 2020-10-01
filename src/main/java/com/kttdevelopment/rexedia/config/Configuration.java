@@ -18,7 +18,6 @@ public final class Configuration {
         BACKUP  = "b",
         DEBUG   = "d",
         LOGGING = "l",
-        THREADS = "t",
         PRECOV  = "pc",
         PREMETA = "pm",
         PRESET  = "p",
@@ -64,13 +63,6 @@ public final class Configuration {
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
-            .build(),
-        new Option.Builder<Integer>(THREADS)
-            .setLongFlag("threads")
-            .setDesc("How many files can be formatted simultaneously")
-            .setExpectedArgs(1)
-            .argsRequired()
-            .setDefaultValue(1)
             .build(),
         new Option.Builder<>(PRECOV, booleanSupplier)
             .setLongFlag("preserveCover")
@@ -158,8 +150,6 @@ public final class Configuration {
             configuration.put(LOGGING, cmd.getOptionValue(LOGGING) == null || Boolean.parseBoolean(cmd.getOptionValue(LOGGING)));
         if(cmd.hasOption(DEBUG))
             configuration.put(DEBUG, cmd.getOptionValue(DEBUG) == null || Boolean.parseBoolean(cmd.getOptionValue(DEBUG)));
-        if(cmd.hasOption(THREADS))
-            configuration.put(THREADS, Math.max(1,Integer.parseInt(cmd.getOptionValue(THREADS))));
         if(cmd.hasOption(PRECOV))
             configuration.put(PRECOV, cmd.getOptionValue(PRECOV) == null || Boolean.parseBoolean(cmd.getOptionValue(PRECOV)));
         if(cmd.hasOption(PREMETA))

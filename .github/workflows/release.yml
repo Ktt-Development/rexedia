@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📦 Download Artifact
-          uses: actions/download-artifact@v2
-          with:
-            name: rexedia
-            path: rexedia
+        uses: actions/download-artifact@v2
+        with:
+          name: rexedia
+          path: rexedia
 
       - name: 📦 Zip file
         uses: papeloto/action-zip@v1

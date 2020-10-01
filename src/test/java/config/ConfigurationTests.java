@@ -89,7 +89,7 @@ public class ConfigurationTests {
     @Test
     public void testDefault() throws IOException, ParseException{
         final Configuration config = new Configuration("-input","file1.mp4","-meta","","","");
-        final String[] args = {WALK,BACKUP,LOGGING,THREADS,PRECOV,PREMETA};
+        final String[] args = {WALK,BACKUP,LOGGING,PRECOV,PREMETA};
 
         for(final String arg : args)
              Assert.assertNotNull(config.getConfiguration().get(arg));
@@ -104,26 +104,14 @@ public class ConfigurationTests {
             '-'+WALK,"true",
             '-'+BACKUP,"true",
             '-'+LOGGING,"true",
-            '-'+THREADS,"2",
             '-'+PRECOV,"false",
             '-'+PREMETA,"true"
         );
 
-        final String[] args = {WALK,BACKUP,LOGGING,THREADS,PRECOV,PREMETA};
+        final String[] args = {WALK,BACKUP,LOGGING,PRECOV,PREMETA};
 
         for(final String arg : args)
              Assert.assertNotEquals(def.getConfiguration().get(arg),config.getConfiguration().get(arg));
-    }
-
-    @Test(expected = NumberFormatException.class)
-    public void testMalformedThreads() throws IOException, ParseException{
-        new Configuration("-input","file1.mp4","-meta","","","","-t","one");
-    }
-
-    @Test
-    public void testNegativeThreads() throws IOException, ParseException{
-        final Configuration config = new Configuration("-input","file1.mp4","-meta","","","","-t","-1");
-        Assert.assertEquals(1,config.getConfiguration().get(THREADS));
     }
 
 }

@@ -18,6 +18,8 @@ public class ffmpegTests {
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
+        System.out.println(input.getAbsolutePath());
+        System.out.println(input.exists());
         System.out.println("Initialized FFMPEG");
     }
 

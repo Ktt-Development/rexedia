@@ -2,62 +2,76 @@ package com.kttdevelopment.rexedia.format;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
-import java.util.function.UnaryOperator;
 
 public final class ProgressTracker {
 
-    private final List<Integer> size                = Collections.synchronizedList(new ArrayList<>());
-    private final List<Float> dps                   = Collections.synchronizedList(new ArrayList<>());
-    private final List<List<Float>> fileDuration    = Collections.synchronizedList(new ArrayList<>());
+    private final List<Float> fileDuration;
+    private final int size;
+    private final AtomicInteger index = new AtomicInteger(0);
 
-    private final AtomicReference<Float> totalDuration = new AtomicReference<>(0f);
+    private final float totalDuration;
     private final AtomicReference<Float> remainingDuration = new AtomicReference<>(0f);
-    private long latest = -1;
+    private final AtomicReference<Float> dps               = new AtomicReference<>(1f);
 
-    public synchronized final void addFileDuration(final int thread, final float duration){
-        if(fileDuration.get(thread) == null){
-            fileDuration.add(new ArrayList<>());
-            size.add(0);
-            dps.add(1f);
+    private final long start        = System.currentTimeMillis();
+    private final AtomicLong latest = new AtomicLong(start);
+
+    public ProgressTracker(final List<Float> fileDuration){
+        this.fileDuration = Collections.unmodifiableList(fileDuration);
+        this.size = fileDuration.size();
+
+        float duration = 0;
+        for(final Float aFloat : fileDuration)
+            duration += aFloat;
+        this.totalDuration = duration;
+        this.remainingDuration.set(duration);
+    }
+
+    public synchronized final void next(){
+        final long now     = System.currentTimeMillis();
+        final long elapsed = latest.get() - now;
+        latest.set(now);
+
+        final float durationElapsed = fileDuration.get(index.get());
+        remainingDuration.getAndUpdate(f -> f - durationElapsed);
+        index.incrementAndGet();
+
+        // average elapsed time is total elapsed time over processed duration
+        dps.set((start - now) / Math.max(totalDuration - remainingDuration.get(),1));
+    }
+
+    public final Progress getProgress(){
+        return new Progress(index.get() + 1, size, start - System.currentTimeMillis(), (long) (remainingDuration.get() * dps.get()));
+    }
+
+    private static class Progress{
+
+        private final int filesProcessed, totalFiles;
+        private final long timeElapsed, estTimeRemaining;
+
+        public Progress(final int filesProcessed, final int totalFiles, final long timeElapsed, final long estTimeRemaining){
+            this.filesProcessed = filesProcessed;
+            this.totalFiles = totalFiles;
+            this.timeElapsed = timeElapsed;
+            this.estTimeRemaining = estTimeRemaining;
         }
-        fileDuration.get(thread).add(duration);
-        size.set(thread,size.get(thread) + 1);
-        totalDuration.getAndUpdate(aFloat -> aFloat + duration);
-        remainingDuration.getAndUpdate(aFloat -> aFloat + duration);
-    }
 
-    public synchronized final void next(final int thread){
-        if(fileDuration.get(thread) == null) return;
-
-        final float delapsed = fileDuration.get(thread).get(0);
-        remainingDuration.getAndUpdate(aFloat -> aFloat - delapsed);
-        fileDuration.get(thread).remove(0);
-
-        final long now = System.currentTimeMillis(); // total time elapsed
-        //elapsed += latest - now;
-        latest = now;
-
-        //dps.set(thread, (float) (elapsed / Math.max(delapsed, 1))); // average elapsed time per second in file
-    }
-
-    public synchronized final void start(){
-        if(latest != -1) latest = System.currentTimeMillis();
-    }
-
-    public final String getProgressString(){
-        final StringBuilder OUT = new StringBuilder();
-        final int size = fileDuration.size();
-        for(int i = 0; i < size; i++){
-            OUT.append(fileDuration.get(i).size() / this.size.get(i).floatValue());
-            if(i < size -1)
-                OUT.append(" | ");
+        public final int getFilesProcessed(){
+            return filesProcessed;
         }
 
-        final float dps = Collections.max(this.dps);
+        public final int getTotalFiles(){
+            return totalFiles;
+        }
 
+        public final long getTimeElapsed(){
+            return timeElapsed;
+        }
 
+        public final long getEstTimeRemaining(){
+            return estTimeRemaining;
+        }
 
-        return OUT.toString();
     }
 
 }
