@@ -1,5 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
+import com.kttdevelopment.core.classes.ToStringBuilder;
+
 import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
@@ -69,6 +71,16 @@ final class CommandExecutor {
         System.out.println(OUT);
 
         return OUT.toString().trim();
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("args",args)
+            .addObject("consumer",consumer)
+            .toString();
     }
 
 }

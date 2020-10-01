@@ -1,30 +1,15 @@
 package com.kttdevelopment.rexedia.config;
 
-import java.util.function.Function;
+import com.kttdevelopment.core.classes.ToStringBuilder;
 
 final class Option<T> {
 
     private final org.apache.commons.cli.Option option;
 
-    private final Function<String[],T> supplier;
-
     private final T defaultValue;
 
     public Option(final org.apache.commons.cli.Option option, final T defaultValue){
         this.option         = option;
-        this.supplier       = (args) -> defaultValue;
-        this.defaultValue   = defaultValue;
-    }
-
-    public Option(final org.apache.commons.cli.Option option, final Function<String[], T> supplier){
-        this.option         = option;
-        this.supplier       = supplier;
-        this.defaultValue   = null;
-    }
-
-    public Option(final org.apache.commons.cli.Option option, final Function<String[], T> supplier, final T defaultValue){
-        this.option         = option;
-        this.supplier       = supplier;
         this.defaultValue   = defaultValue;
     }
 
@@ -36,16 +21,20 @@ final class Option<T> {
         return defaultValue;
     }
 
-    public final T getValue(final String... subArgs){
-        return supplier.apply(subArgs);
-    }
-
     //
+
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("option",option)
+            .addObject("defaultValue",defaultValue)
+            .toString();
+    }
 
     public static class Builder<T>{
 
         private final String flag;
-        private Function<String[],T> supplier;
 
         private String longFlag, desc;
 
@@ -58,11 +47,6 @@ final class Option<T> {
 
         public Builder(final String flag){
             this.flag = flag;
-        }
-
-        public Builder(final String flag, final Function<String[],T> supplier){
-            this.flag = flag;
-            this.supplier = supplier;
         }
 
         public final Builder<T> setLongFlag(final String flag){
@@ -133,9 +117,22 @@ final class Option<T> {
             if(required)
                 builder.required();
 
-            return supplier != null
-                ? new Option<>(builder.build(), supplier, defaultValue)
-                : new Option<>(builder.build(), defaultValue);
+            return new Option<>(builder.build(), defaultValue);
+        }
+
+        //
+
+        @Override
+        public String toString(){
+            return new ToStringBuilder(getClass().getSimpleName())
+                .addObject("flag",flag)
+                .addObject("longFlag",longFlag)
+                .addObject("desc",desc)
+                .addObject("argsOptional",argsOptional)
+                .addObject("expectedArgs",expectedArgs)
+                .addObject("required",required)
+                .addObject("defaultValue",defaultValue)
+                .toString();
         }
 
     }

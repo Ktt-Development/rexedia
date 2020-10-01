@@ -1,5 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
+import com.kttdevelopment.core.classes.ToStringBuilder;
+
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -70,6 +72,18 @@ public final class ProgressTracker {
 
         public final long getEstTimeRemaining(){
             return estTimeRemaining;
+        }
+
+        //
+
+        @Override
+        public String toString(){
+            return new ToStringBuilder(getClass().getSimpleName())
+                .addObject("filesProcessed",filesProcessed)
+                .addObject("totalFiles",totalFiles)
+                .addObject("timeElapsed",timeElapsed)
+                .addObject("estTimeRemaining",estTimeRemaining)
+                .toString();
         }
 
     }

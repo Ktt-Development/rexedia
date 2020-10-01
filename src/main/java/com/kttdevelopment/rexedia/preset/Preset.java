@@ -74,6 +74,14 @@ public abstract class Preset {
             };
         }
 
+        @Override
+        public String toString(){
+            return new ToStringBuilder(getClass().getSimpleName())
+                .addObject("coverPreset",coverPreset)
+                .addObject("presets",presets)
+                .toString();
+        }
+
     }
 
 }

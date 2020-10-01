@@ -1,5 +1,6 @@
 package com.kttdevelopment.rexedia.config;
 
+import com.kttdevelopment.core.classes.ToStringBuilder;
 import com.kttdevelopment.rexedia.preset.*;
 import com.kttdevelopment.rexedia.utility.CollectionsUtility;
 import org.apache.commons.cli.*;
@@ -7,7 +8,6 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 
 public final class Configuration {
 
@@ -24,73 +24,69 @@ public final class Configuration {
         COVER   = "c",
         META    = "m";
 
-    private final Function<String[],File> fileSupplier       = (arg) -> new File(arg[0]);
-    private final Function<String[],Boolean> booleanSupplier = (arg) -> arg.length == 0 || Boolean.parseBoolean(arg[0]);
-
-    @SuppressWarnings("FieldCanBeLocal")
     private final Option<?>[] defaultOptions = {
-        new Option.Builder<>(INPUT, fileSupplier)
+        new Option.Builder<>(INPUT)
             .setLongFlag("input")
             .setDesc("The file or directory to format")
             .unlimitedArgs()
             .argsRequired()
             .required()
             .build(),
-        new Option.Builder<>(WALK, booleanSupplier)
+        new Option.Builder<>(WALK)
             .setLongFlag("walk")
             .setDesc("Should subdirectories also be formatted")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(BACKUP, booleanSupplier)
+        new Option.Builder<>(BACKUP)
             .setLongFlag("backup")
             .setDesc("Should a backup file be kept of the original")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(LOGGING, booleanSupplier)
+        new Option.Builder<>(LOGGING)
             .setLongFlag("log")
             .setDesc("Log process to a file")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(DEBUG, booleanSupplier)
+        new Option.Builder<>(DEBUG)
             .setLongFlag("debug")
             .setDesc("Run logging in debug mode and create a debug file")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(PRECOV, booleanSupplier)
+        new Option.Builder<>(PRECOV)
             .setLongFlag("preserveCover")
             .setDesc("Should files with no new cover art keep their original cover art")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(true)
             .build(),
-        new Option.Builder<>(PREMETA, booleanSupplier)
+        new Option.Builder<>(PREMETA)
             .setLongFlag("preserveMeta")
             .setDesc("Should files preserve any existing metadata")
             .setExpectedArgs(1)
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(PRESET, fileSupplier)
+        new Option.Builder<>(PRESET)
             .setLongFlag("preset")
             .setDesc("The preset file to use")
             .setExpectedArgs(1)
             .argsRequired()
             .build(),
-        new Option.Builder<>(COVER, fileSupplier)
+        new Option.Builder<>(COVER)
             .setLongFlag("cover")
             .setDesc("The cover format to use")
             .setExpectedArgs(2)
             .argsRequired()
             .build(),
-        new Option.Builder<>(META, fileSupplier)
+        new Option.Builder<>(META)
             .setLongFlag("metadata")
             .setDesc("The metadata format to use")
             .unlimitedArgs()
@@ -162,6 +158,17 @@ public final class Configuration {
 
     public final Map<String,Object> getConfiguration(){
         return Collections.unmodifiableMap(configuration);
+    }
+
+    //
+    
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("defaultOptions", defaultOptions)
+            .addObject("preset",preset)
+            .addObject("configuration", configuration)
+            .toString();
     }
 
 }

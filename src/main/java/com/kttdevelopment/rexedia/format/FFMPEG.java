@@ -1,5 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
+import com.kttdevelopment.core.classes.ToStringBuilder;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -49,7 +51,7 @@ public final class FFMPEG {
                : -1f;
     }
 
-    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)\\/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)");
+    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)");
     public final boolean verifyFileIntegrity(final File input){
         if(!input.exists()) return false;
 
@@ -187,6 +189,18 @@ public final class FFMPEG {
 
         executor.executeFFMPEG(args.toArray(new String[0])); // todo
         return true;
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("executor",executor)
+            .addObject("duration_regexp",duration.pattern())
+            .addObject("frames_regexp",frames.pattern())
+            .addObject("metadata_regexp",metadata.pattern())
+            .toString();
     }
 
 }

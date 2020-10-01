@@ -1,5 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
+import com.kttdevelopment.core.classes.ToStringBuilder;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -33,6 +35,16 @@ final class FFMPEGExecutor {
     private String execute(final String path, final String[] args, final Consumer<String> printStream) throws IOException{
         final CommandExecutor executor = new CommandExecutor(path, printStream);
         return executor.execute(args);
+    }
+
+    //
+
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("pathToFFMPEG",pathToFFMPEG)
+            .addObject("pathToFFPROBE",pathToFFPROBE)
+            .toString();
     }
 
 }
