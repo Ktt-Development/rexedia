@@ -4,6 +4,7 @@ import com.kttdevelopment.core.classes.ToStringBuilder;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 final class CommandExecutor {
@@ -56,14 +57,20 @@ final class CommandExecutor {
         final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final StringBuilder OUT = new StringBuilder();
 
-        String ln;
-        while((ln = IN.readLine()) != null){
-            OUT.append(ln).append('\n');
-            if(consumer != null) consumer.accept(ln);
+        while(true){ // fix BufferedReader#readLine holding thread
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final Future<String> future = executor.submit(IN::readLine);
+            final String ln;
+            try{
+                ln = future.get(1, TimeUnit.SECONDS);
+                if(ln == null) break;
+                OUT.append(ln).append('\n');
+                if(consumer != null) consumer.accept(ln);
+            }catch(InterruptedException | ExecutionException | TimeoutException e){
+                if(e instanceof TimeoutException | e instanceof InterruptedException)
+                    break;
+            }
         }
-
-        try{ process.waitFor();
-        }catch(final InterruptedException ignored){ }
 
         // debug
         System.out.println("\n");

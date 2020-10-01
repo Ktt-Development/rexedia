@@ -32,7 +32,7 @@ public final class FFMPEG {
 
 // ffprobe
 
-    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\n\\Qduration=\\E(\\d+\\.\\d+)\\n\\Q[/FORMAT]\\E");
+    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\n\\Qduration=\\E(\\d+\\.\\d+)\\n\\Q[/FORMAT]\\E",Pattern.MULTILINE);
     // duration in seconds
     public final float getDuration(final File input) throws IOException{
         if(!input.exists()) throw new FileNotFoundException(input.getAbsolutePath());
@@ -51,7 +51,7 @@ public final class FFMPEG {
                : -1f;
     }
 
-    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)");
+    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)",Pattern.MULTILINE);
     public final boolean verifyFileIntegrity(final File input){
         if(!input.exists()) return false;
 
@@ -82,7 +82,7 @@ public final class FFMPEG {
         }
     }
 
-    final Pattern metadata = Pattern.compile("^\\QTAG:\\E(.+)=(.+)$");
+    final Pattern metadata = Pattern.compile("^\\QTAG:\\E(.+)=(.+)$",Pattern.MULTILINE);
     public final Map<String,String> getMetadata(final File input){
         if(!input.exists()) return Collections.emptyMap();
 
@@ -96,8 +96,7 @@ public final class FFMPEG {
             final String result = executor.executeFFPROBE(args);
             final Matcher matcher = metadata.matcher(result);
 
-            if(!matcher.matches())
-                return Collections.emptyMap();
+            // #matches can not be used because it tests the whole string, not look for a match
 
             final Map<String,String> metadata = new HashMap<>();
             while(matcher.find())
@@ -112,15 +111,15 @@ public final class FFMPEG {
         final String[] args = {
             "-i", '"' + input.getAbsolutePath() + '"',
             "-map", "0:v",
-            "-map", "0:v",
+            "-map", "0:V",
             "-c","copy",
             '"' + output.getAbsolutePath() + '"'
         };
 
         try{
             executor.executeFFMPEG(args);
-            return output;
-        }catch(final IOException e){
+            return output.exists() ? output : null;
+        }catch(final IOException ignored){
             return null;
         }
     }
@@ -171,14 +170,17 @@ public final class FFMPEG {
 
         args.add("-y"); // override ? "-y" : "-n"
 
+        args.add("-c");
+            args.add("copy");
         args.add("-acodec");
             args.add("copy");
         args.add("-vcodec");
             args.add("copy");
 
-        if(!preserveMeta) // if no preserve (remove previous metadata)
+        if(!preserveMeta){ // if no preserve (remove previous metadata)
             args.add("-map_metadata");
                 args.add("-1");
+        }
         if(metadata != null && !metadata.isEmpty())
             metadata.forEach((k,v) -> {
                 args.add("-metadata");

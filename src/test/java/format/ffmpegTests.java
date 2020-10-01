@@ -18,14 +18,6 @@ public class ffmpegTests {
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
-        System.out.println(input.getAbsolutePath());
-        System.out.println(input.exists());
-        System.out.println("Initialized FFMPEG");
-    }
-
-    @Before
-    public void before(){
-        System.out.println("b4: " + input.exists());
     }
 
     @AfterClass
@@ -33,11 +25,8 @@ public class ffmpegTests {
         try{
             Files.delete(input.toPath());
             Files.delete(new File(cover.getParentFile(), "cover2.png").toPath());
-
-        }catch(final Throwable e){
-            e.printStackTrace();
-        }
-        System.out.println("Cleaned up FFMPEG tests");
+            Files.delete(new File(cover.getParentFile(), "cover3.png").toPath());
+        }catch(final Throwable ignored){ }
     }
 
     @Test
@@ -74,17 +63,19 @@ public class ffmpegTests {
     public void testApplyCover() throws IOException{
         final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out.deleteOnExit();
+        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out2.deleteOnExit();
 
         Assert.assertTrue(ffmpeg.apply(input,cover,false,null,false,out));
-        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
 
         // test preserve
-        Assert.assertTrue(ffmpeg.apply(out,null,true,null,false,out));
-        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertTrue(ffmpeg.apply(out,null,true,null,false,out2));
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
 
         // test remove
-        Assert.assertTrue(ffmpeg.apply(out,null,false,null,false,out));
-        // todo check for null file
+        Assert.assertTrue(ffmpeg.apply(out,null,false,null,false,out2));
+        Assert.assertNull(ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover3.png")));
     }
 
     @Test(expected = OutOfMemoryError.class)
@@ -100,6 +91,8 @@ public class ffmpegTests {
     public void testApplyMetadata() throws IOException{
         final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out.deleteOnExit();
+        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out2.deleteOnExit();
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
 
         Assert.assertTrue(ffmpeg.apply(input,null,false,metadata,false,out));
@@ -107,32 +100,40 @@ public class ffmpegTests {
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out).get("date"));
 
         // test preserve
-        Assert.assertTrue(ffmpeg.apply(out,null,false,null,true,out));
-        Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out).get("title"));
-        Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out).get("date"));
+        Assert.assertTrue(ffmpeg.apply(out,null,false,null,true,out2));
+        Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out2).get("title"));
+        Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out2).get("date"));
 
         // test remove
-        Assert.assertTrue(ffmpeg.apply(out,null,false,null,false,out));
-        Assert.assertNull(ffmpeg.getMetadata(out).get("title"));
-        Assert.assertNull(ffmpeg.getMetadata(out).get("date"));
+        Assert.assertTrue(ffmpeg.apply(out,null,false,null,false,out2));
+        Assert.assertNull(ffmpeg.getMetadata(out2).get("title"));
+        Assert.assertNull(ffmpeg.getMetadata(out2).get("date"));
     }
 
     @Test
     public void testApplyAll() throws IOException{
         final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out.deleteOnExit();
+        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out2.deleteOnExit();
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
 
         Assert.assertTrue(ffmpeg.apply(input,cover,false,metadata,false,out));
-        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
         Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out).get("title"));
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out).get("date"));
 
         // test preserve
-        Assert.assertTrue(ffmpeg.apply(out,cover,false,metadata,false,out));
-        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
-        Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out).get("title"));
-        Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out).get("date"));
+        Assert.assertTrue(ffmpeg.apply(out,cover,false,metadata,false,out2));
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out2,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out2).get("title"));
+        Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out2).get("date"));
+
+        // test remove
+        Assert.assertTrue(ffmpeg.apply(out,cover,false,null,false,out2));
+        Assert.assertNull(ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover3.png")));
+        Assert.assertNull(ffmpeg.getMetadata(out2).get("title"));
+        Assert.assertNull(ffmpeg.getMetadata(out2).get("date"));
     }
 
 }
