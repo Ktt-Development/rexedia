@@ -15,8 +15,7 @@ public final class ProgressTracker {
     private final AtomicReference<Float> remainingDuration = new AtomicReference<>(0f);
     private final AtomicReference<Float> dps               = new AtomicReference<>(1f);
 
-    private final long start        = System.currentTimeMillis();
-    private final AtomicLong latest = new AtomicLong(start);
+    private final long start = System.currentTimeMillis();
 
     public ProgressTracker(final List<Float> fileDuration){
         this.fileDuration = Collections.unmodifiableList(fileDuration);
@@ -30,9 +29,7 @@ public final class ProgressTracker {
     }
 
     public synchronized final void next(){
-        final long now     = System.currentTimeMillis();
-        final long elapsed = latest.get() - now;
-        latest.set(now);
+        final long now = System.currentTimeMillis();
 
         final float durationElapsed = fileDuration.get(index.get());
         remainingDuration.getAndUpdate(f -> f - durationElapsed);
@@ -43,19 +40,55 @@ public final class ProgressTracker {
     }
 
     public final Progress getProgress(){
-        return new Progress(index.get() + 1, size, start - System.currentTimeMillis(), (long) (remainingDuration.get() * dps.get()));
+        final long now = System.currentTimeMillis();
+        return new Progress(
+            index.get(),
+            size,
+            now - start,
+            now - (long) (remainingDuration.get() * dps.get())
+        );
     }
 
-    private static class Progress{
+    @Override
+    public String toString(){
+        return new ToStringBuilder(getClass().getSimpleName())
+            .addObject("fileDuration",fileDuration)
+            .addObject("size",size)
+            .addObject("index",index.get())
+            .addObject("totalDuration",totalDuration)
+            .addObject("remainingDuration",remainingDuration.get())
+            .addObject("dps",dps.get())
+            .addObject("stat",start)
+            .toString();
+    }
+
+    public static class Builder{
+
+        private final List<Float> fileDuration = new ArrayList<>();
+
+        public Builder(){ }
+
+        public final Builder addFileDuration(final float duration){
+            fileDuration.add(duration);
+            return this;
+        }
+
+        public final ProgressTracker build(){
+            return new ProgressTracker(fileDuration);
+        }
+
+    }
+
+    public static class Progress{
 
         private final int filesProcessed, totalFiles;
-        private final long timeElapsed, estTimeRemaining;
+        private final long timeElapsed, estCompleteTime;
 
         public Progress(final int filesProcessed, final int totalFiles, final long timeElapsed, final long estTimeRemaining){
             this.filesProcessed = filesProcessed;
             this.totalFiles = totalFiles;
             this.timeElapsed = timeElapsed;
-            this.estTimeRemaining = estTimeRemaining;
+            this.estCompleteTime = estTimeRemaining;
         }
 
         public final int getFilesProcessed(){
@@ -70,8 +103,8 @@ public final class ProgressTracker {
             return timeElapsed;
         }
 
-        public final long getEstTimeRemaining(){
-            return estTimeRemaining;
+        public final long getEstCompleteTime(){
+            return estCompleteTime;
         }
 
         //
@@ -82,7 +115,7 @@ public final class ProgressTracker {
                 .addObject("filesProcessed",filesProcessed)
                 .addObject("totalFiles",totalFiles)
                 .addObject("timeElapsed",timeElapsed)
-                .addObject("estTimeRemaining",estTimeRemaining)
+                .addObject("estCompleteTime", estCompleteTime)
                 .toString();
         }
 

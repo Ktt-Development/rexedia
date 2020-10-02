@@ -170,8 +170,6 @@ public final class FFMPEG {
 
         args.add("-y"); // override ? "-y" : "-n"
 
-        args.add("-c");
-            args.add("copy");
         args.add("-acodec");
             args.add("copy");
         args.add("-vcodec");

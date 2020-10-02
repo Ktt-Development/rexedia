@@ -62,7 +62,7 @@ final class CommandExecutor {
             final Future<String> future = executor.submit(IN::readLine);
             final String ln;
             try{
-                ln = future.get(1, TimeUnit.SECONDS);
+                ln = future.get(10, TimeUnit.SECONDS);
                 if(ln == null) break;
                 OUT.append(ln).append('\n');
                 if(consumer != null) consumer.accept(ln);
@@ -71,6 +71,9 @@ final class CommandExecutor {
                     break;
             }
         }
+
+        try{ process.waitFor();
+        }catch(final InterruptedException ignored){ }
 
         // debug
         System.out.println("\n");
