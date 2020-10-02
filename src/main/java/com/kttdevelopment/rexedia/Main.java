@@ -54,7 +54,7 @@ public abstract class Main {
             final File[] files = null;
 
             for(final File file : files){
-
+                // todo: handle file walking, backup deletion, etc. here
             }
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();

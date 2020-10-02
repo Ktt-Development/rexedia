@@ -6,35 +6,19 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 final class CommandExecutor {
 
     private final String[] args;
-    private final Consumer<String> consumer;
 
     public CommandExecutor(){
-        this(new String[0],null);
-    }
-
-    public CommandExecutor(final Consumer<String> consumer){
-        this(new String[0],consumer);
-    }
-
-    public CommandExecutor(final String arg){
-        this(new String[]{arg},null);
+        this(new String[0]);
     }
 
     public CommandExecutor(final String... args){
-        this(args,null);
-    }
-
-    public CommandExecutor(final String arg, final Consumer<String> consumer){
-        this(new String[]{arg},consumer);
-    }
-
-    public CommandExecutor(final String[] args, final Consumer<String> consumer){
-        this.args     = args;
-        this.consumer = consumer;
+        this.args = args;
     }
 
     //
@@ -48,38 +32,37 @@ final class CommandExecutor {
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
+        Logger.getGlobal().log(Level.FINE,"Executing args: " + String.join(" ", a));
+
         final ProcessBuilder builder = new ProcessBuilder();
         builder.redirectErrorStream(true);
         builder.command(a.toArray(new String[0]));
 
-        final Process process = builder.start();
-
+        final Process process   = builder.start();
         final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final StringBuilder OUT = new StringBuilder();
 
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         while(true){ // fix BufferedReader#readLine holding thread
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<String> future = executor.submit(IN::readLine);
             final String ln;
             try{
                 ln = future.get(10, TimeUnit.SECONDS);
                 if(ln == null) break;
                 OUT.append(ln).append('\n');
-                if(consumer != null) consumer.accept(ln);
             }catch(InterruptedException | ExecutionException | TimeoutException e){
                 if(e instanceof TimeoutException | e instanceof InterruptedException)
                     break;
             }
         }
 
-        try{ process.waitFor();
-        }catch(final InterruptedException ignored){ }
+        final Future<Integer> future = executor.submit((Callable<Integer>) process::waitFor);
+        try{ future.get(30,TimeUnit.SECONDS);  // fix wait for holding thread
+        }catch(final InterruptedException | ExecutionException | TimeoutException ignored){ }
+        executor.shutdownNow();
 
         // debug
-        System.out.println("\n");
-        System.out.println("$ " + String.join(" ", a));
-        System.out.println(OUT);
-
+        Logger.getGlobal().log(Level.FINE,"Execution returned:\n" + OUT);
         return OUT.toString().trim();
     }
 
@@ -89,7 +72,6 @@ final class CommandExecutor {
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("args",args)
-            .addObject("consumer",consumer)
             .toString();
     }
 
