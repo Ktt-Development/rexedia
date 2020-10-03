@@ -42,9 +42,9 @@ final class CommandExecutor {
         final StringBuilder OUT = new StringBuilder();
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
+        String ln = "";
         while(true){ // fix BufferedReader#readLine holding thread
             final Future<String> future = executor.submit(IN::readLine);
-            final String ln;
             try{
                 ln = future.get(10, TimeUnit.SECONDS);
                 if(ln == null) break;
@@ -55,10 +55,10 @@ final class CommandExecutor {
             }
         }
 
-        final Future<Integer> future = executor.submit((Callable<Integer>) process::waitFor);
-        try{ future.get(30,TimeUnit.SECONDS);  // fix wait for holding thread
-        }catch(final InterruptedException | ExecutionException | TimeoutException ignored){ }
-        executor.shutdownNow();
+        if(ln == null || (!ln.equalsIgnoreCase("Terminate batch job (Y/N)?") && !ln.startsWith("Press any key to continue . . ."))) // idk if last space is included in ln
+            try{ process.waitFor();
+            }catch(final InterruptedException ignored){ }
+
 
         // debug
         Logger.getGlobal().log(Level.FINER,"Execution returned:\n" + OUT);
