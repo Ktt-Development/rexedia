@@ -1,13 +1,13 @@
 package format;
 
 import com.kttdevelopment.rexedia.format.FFMPEG;
+import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import org.junit.*;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class ffmpegTests {
@@ -22,6 +22,10 @@ public class ffmpegTests {
     @Before
     public void before(){
         Logger.getGlobal().setLevel(Level.ALL);
+        Logger.getGlobal().addHandler(new ConsoleHandler() {{
+            setLevel(Level.ALL);
+            setFormatter(new LoggerFormatter(false,true));
+        }});
     }
 
     @BeforeClass
