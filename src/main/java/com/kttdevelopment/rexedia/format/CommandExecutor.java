@@ -41,12 +41,15 @@ final class CommandExecutor {
         final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final StringBuilder OUT = new StringBuilder();
 
+        Logger.getGlobal().log(Level.FINER,"--- [ START EXECUTION ] ---");
+
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         String ln = "";
         while(true){ // fix BufferedReader#readLine holding thread
             final Future<String> future = executor.submit(IN::readLine);
             try{
                 ln = future.get(10, TimeUnit.SECONDS);
+                Logger.getGlobal().log(Level.FINEST, ln);
                 if(ln == null) break;
                 OUT.append(ln).append('\n');
             }catch(InterruptedException | ExecutionException | TimeoutException e){
@@ -60,7 +63,7 @@ final class CommandExecutor {
             }catch(final InterruptedException ignored){ }
 
         // debug
-        Logger.getGlobal().log(Level.FINER,"Execution returned:\n" + OUT);
+        Logger.getGlobal().log(Level.FINER,"--- [ END EXECUTION ] ---");
         return OUT.toString().trim();
     }
 

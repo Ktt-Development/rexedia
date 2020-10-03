@@ -6,6 +6,8 @@ import org.junit.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class ffmpegTests {
@@ -16,6 +18,11 @@ public class ffmpegTests {
             DO NOT FORCEFULLY STOP INTELLIJ EXECUTION;
             THIS MAY BE CAUSE OF PERMISSION DENIED ISSUE
      */
+
+    @Before
+    public void before(){
+        Logger.getGlobal().setLevel(Level.ALL);
+    }
 
     @BeforeClass
     public static void initFFMPEG() throws IOException{
