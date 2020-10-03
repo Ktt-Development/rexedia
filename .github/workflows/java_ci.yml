@@ -4,7 +4,7 @@ jobs:
   build:
     name: Build
     runs-on: windows-2019
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: 📦 Prepate Git Repo
         uses: actions/checkout@v2
@@ -16,4 +16,4 @@ jobs:
           architecture: x64
 
       - name: 📦 Test with Maven
-        run: mvn test -fae
+        run: mvn test -fae -X

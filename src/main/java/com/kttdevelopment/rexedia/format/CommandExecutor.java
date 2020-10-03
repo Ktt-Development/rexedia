@@ -55,10 +55,9 @@ final class CommandExecutor {
             }
         }
 
-        if(ln == null || (!ln.equalsIgnoreCase("Terminate batch job (Y/N)?") && !ln.startsWith("Press any key to continue . . ."))) // idk if last space is included in ln
+        if(ln == null || (!ln.trim().equalsIgnoreCase("Terminate batch job (Y/N)?") && !ln.trim().equalsIgnoreCase("Press any key to continue . . .")))
             try{ process.waitFor();
             }catch(final InterruptedException ignored){ }
-
 
         // debug
         Logger.getGlobal().log(Level.FINER,"Execution returned:\n" + OUT);
