@@ -106,7 +106,7 @@ public final class FFMPEG {
         return Collections.emptyMap();
     }
 
-    // (technically ffmpeg but we are getting a file)
+    // (technically ffmpeg but we are getting a file) // fixme
     public final File getCoverArt(final File input, final File output){
         final String[] args = {
             "-i", '"' + input.getAbsolutePath() + '"',
@@ -126,7 +126,7 @@ public final class FFMPEG {
 
 // ffmpeg
 
-    public final boolean apply(
+    public final void apply(
         final File INPUT,
         final File cover, final boolean preserveCover,
         final Map<String,String> metadata, final boolean preserveMeta,
@@ -145,13 +145,14 @@ public final class FFMPEG {
 
         if(((cover == null || !cover.exists()) && preserveCover) && ((metadata == null || metadata.isEmpty())) && preserveMeta){ // skip if no changes and preserve
             Files.copy(INPUT.toPath(), OUT.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return true;
+            return;
         }
 
         final List<String> args = new ArrayList<>();
         args.add("-i");
             args.add('"' + INPUT.getAbsolutePath() + '"');
 
+        // fixme
         if(cover != null && cover.exists()){ // if cover exists
             args.add("-i");
                 args.add('"' + cover.getAbsolutePath() + '"');
@@ -187,8 +188,7 @@ public final class FFMPEG {
 
         args.add('"' + OUT.getAbsolutePath() + '"');
 
-        executor.executeFFMPEG(args.toArray(new String[0])); // todo
-        return true;
+        executor.executeFFMPEG(args.toArray(new String[0]));
     }
 
     //

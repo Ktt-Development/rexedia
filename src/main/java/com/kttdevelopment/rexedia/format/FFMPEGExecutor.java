@@ -3,7 +3,6 @@ package com.kttdevelopment.rexedia.format;
 import com.kttdevelopment.core.classes.ToStringBuilder;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 final class FFMPEGExecutor {
 
@@ -15,25 +14,17 @@ final class FFMPEGExecutor {
     }
 
     public final String executeFFMPEG(final String[] args) throws IOException{
-        return execute(pathToFFMPEG, args, null);
-    }
-
-    public final String executeFFMPEG(final String[] args, final Consumer<String> printStream) throws IOException{
-        return execute(pathToFFMPEG, args, printStream);
+        return execute(pathToFFMPEG, args);
     }
 
     public final String executeFFPROBE(final String[] args) throws IOException{
-        return execute(pathToFFPROBE, args, null);
-    }
-
-    public final String executeFFPROBE(final String[] args, final Consumer<String> printStream) throws IOException{
-        return execute(pathToFFPROBE, args, printStream);
+        return execute(pathToFFPROBE, args);
     }
 
     //
 
-    private String execute(final String path, final String[] args, final Consumer<String> printStream) throws IOException{
-        final CommandExecutor executor = new CommandExecutor(path, printStream);
+    private String execute(final String path, final String[] args) throws IOException{
+        final CommandExecutor executor = new CommandExecutor(path);
         return executor.execute(args);
     }
 

@@ -1,23 +1,33 @@
 package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
+import com.kttdevelopment.rexedia.config.Configuration;
+import com.kttdevelopment.rexedia.preset.MetadataPreset;
 import com.kttdevelopment.rexedia.preset.Preset;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public final class MetadataFormatter {
 
+    private final boolean preserveCover, preserveMetadata, preserveBackup;
     private final FFMPEG ffmpeg;
     private final Preset preset;
 
-    public MetadataFormatter(final FFMPEG ffmpeg, final Preset preset){
+    public MetadataFormatter(final Configuration configuration, final FFMPEG ffmpeg, final Preset preset){
+        this.preserveCover    = (boolean) configuration.getConfiguration().get(Configuration.PRECOV);
+        this.preserveMetadata = (boolean) configuration.getConfiguration().get(Configuration.PREMETA);
+        this.preserveBackup   = (boolean) configuration.getConfiguration().get(Configuration.BACKUP);
+
         this.ffmpeg = ffmpeg;
         this.preset = preset;
     }
 
+    // todo: Adjust info logging to list phase/files completed
     public synchronized final boolean format(final File file){
         final Logger logger = Logger.getGlobal();
         final String abs    = file.getAbsolutePath();
@@ -32,13 +42,14 @@ public final class MetadataFormatter {
         }
         // create a backup file
         final File backup;
+        final String babs;
         {
             final String full_name  = file.getName();
             final String name       = full_name.substring(0,full_name.lastIndexOf('.'));
             final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1);
 
             backup = getUsableFile(new File(file.getParentFile(),String.format("%s.backup.%s",name,ext)));
-            final String babs = backup.getAbsolutePath();
+            babs   = backup.getAbsolutePath();
 
             logger.info("Creating backup at " + babs);
             try{
@@ -58,7 +69,22 @@ public final class MetadataFormatter {
         }
         // apply cover & metadata
         {
-            // todo
+            final String name = file.getName();
+            final File cover = new File(file.getParentFile(),preset.getCoverPreset().format(name));
+            final Map<String,String> metadata = new HashMap<>();
+            for(final MetadataPreset meta : preset.getPresets())
+                metadata.put(meta.getKey(),meta.format(name));
+            logger.fine("Applying preset to file " + abs + '\n' + preset);
+            logger.finer("Cover file: " + cover.getAbsolutePath());
+            logger.finer("Metadata: " + metadata);
+            logger.info("Formatting file " + abs);
+
+            try{
+                ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, file);
+            }catch(final IOException e){
+                logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                return false;
+            }
         }
 
         // verify file integrity
@@ -69,6 +95,16 @@ public final class MetadataFormatter {
                 return false;
             }else
                 logger.finer("Verified output file " + abs);
+        }
+
+        // delete backup
+        {
+            if(!preserveBackup)
+                try{
+                    Files.delete(backup.toPath());
+                }catch(final IOException e){
+                    logger.warning("Failed to delete backup " + babs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                }
         }
         return true;
     }

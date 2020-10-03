@@ -2,6 +2,8 @@ package com.kttdevelopment.rexedia;
 
 import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
 import com.kttdevelopment.rexedia.config.Configuration;
+import com.kttdevelopment.rexedia.format.FFMPEG;
+import com.kttdevelopment.rexedia.format.MetadataFormatter;
 import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import com.kttdevelopment.rexedia.preset.Preset;
 import com.kttdevelopment.rexedia.utility.FileUtility;
@@ -11,15 +13,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.*;
 import java.util.logging.*;
 
 public abstract class Main {
 
+    private static Configuration config;
+
     public static void main(String[] args){
         try{
             // config
-            final Configuration config = new Configuration(args);
+            config = new Configuration(args);
 
             // logger
             final Logger logger = Logger.getGlobal();
@@ -50,11 +54,31 @@ public abstract class Main {
             }
 
             // format
-            final Preset preset = config.getPreset();
-            final File[] files = null;
+            {
+                logger.fine("Preallocating files");
+                final Preset preset = config.getPreset();
+                // preallocate
+                final boolean walk = (boolean) config.getConfiguration().get(Configuration.WALK);
+                final File[] files = (File[]) config.getConfiguration().get(Configuration.INPUT);
 
-            for(final File file : files){
-                // todo: handle file walking, backup deletion, etc. here
+                final List<File> queue = new ArrayList<>();
+                for(final File file : files)
+                    if(file.isFile())
+                        queue.add(file);
+                    else
+                        if(!walk)
+                            queue.addAll(Arrays.asList(Objects.requireNonNullElse(file.listFiles(), new File[0])));
+                        else
+                            try{
+                                Files.walk(file.toPath()).forEach(path -> queue.add(path.toFile()));
+                            }catch(final IOException e){
+                                logger.warning("Failed to walk through directory " + file.getAbsolutePath() + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                            }
+                logger.fine("Starting file format");
+                final MetadataFormatter formatter = new MetadataFormatter(config,new FFMPEG(),preset);
+
+                for(final File file : queue)
+                    formatter.format(file); // todo: add live logger
             }
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();
@@ -63,6 +87,7 @@ public abstract class Main {
                                     "OS: "              + System.getProperty("os.name").toLowerCase() + '\n' +
                                     "Java Version: "    + System.getProperty("java.version") + '\n' +
                                     "Args: "            + Arrays.toString(args) + '\n' +
+                                    "Config: "          + config + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtil.getStackTraceAsString(e);
             Logger.getGlobal().log(Level.SEVERE,'\n' + response);

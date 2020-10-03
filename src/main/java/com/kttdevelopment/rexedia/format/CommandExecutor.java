@@ -5,7 +5,6 @@ import com.kttdevelopment.core.classes.ToStringBuilder;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +31,7 @@ final class CommandExecutor {
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
-        Logger.getGlobal().log(Level.FINE,"Executing args: " + String.join(" ", a));
+        Logger.getGlobal().log(Level.FINER,"Executing args: " + String.join(" ", a));
 
         final ProcessBuilder builder = new ProcessBuilder();
         builder.redirectErrorStream(true);
@@ -62,7 +61,7 @@ final class CommandExecutor {
         executor.shutdownNow();
 
         // debug
-        Logger.getGlobal().log(Level.FINE,"Execution returned:\n" + OUT);
+        Logger.getGlobal().log(Level.FINER,"Execution returned:\n" + OUT);
         return OUT.toString().trim();
     }
 
