@@ -48,15 +48,16 @@ final class CommandExecutor {
         while(true){ // fix BufferedReader#readLine holding thread
             final Future<String> future = executor.submit(IN::readLine);
             try{
+                Logger.getGlobal().log(Level.FINEST,"<↓> NEXT LINE <↓>");
                 ln = future.get(10, TimeUnit.SECONDS);
                 if(ln == null) break;
-                Logger.getGlobal().log(Level.FINEST, ln);
+                Logger.getGlobal().log(Level.FINER, ln);
                 OUT.append(ln).append('\n');
-            }catch(InterruptedException | ExecutionException | TimeoutException e){
-                if(e instanceof TimeoutException | e instanceof InterruptedException)
-                    break;
+            }catch(InterruptedException | ExecutionException | TimeoutException ignored){
+                break;
             }
         }
+        executor.shutdownNow();
 
         Logger.getGlobal().log(Level.FINER,"--- [ END EXECUTION ] ---");
         Logger.getGlobal().log(Level.FINER,"LAST LINE: " + ln);
