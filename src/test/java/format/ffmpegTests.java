@@ -24,7 +24,6 @@ public class ffmpegTests {
         Logger.getGlobal().setLevel(Level.ALL);
         Logger.getGlobal().addHandler(new ConsoleHandler() {{
             setLevel(Level.ALL);
-            setFormatter(new LoggerFormatter(false,true));
         }});
     }
 

@@ -49,8 +49,8 @@ final class CommandExecutor {
             final Future<String> future = executor.submit(IN::readLine);
             try{
                 ln = future.get(10, TimeUnit.SECONDS);
-                Logger.getGlobal().log(Level.FINEST, ln);
                 if(ln == null) break;
+                Logger.getGlobal().log(Level.FINEST, ln);
                 OUT.append(ln).append('\n');
             }catch(InterruptedException | ExecutionException | TimeoutException e){
                 if(e instanceof TimeoutException | e instanceof InterruptedException)
@@ -58,12 +58,13 @@ final class CommandExecutor {
             }
         }
 
+        Logger.getGlobal().log(Level.FINER,"--- [ END EXECUTION ] ---");
+        Logger.getGlobal().log(Level.FINER,"LAST LINE: " + ln);
+
         if(ln == null || (!ln.trim().equalsIgnoreCase("Terminate batch job (Y/N)?") && !ln.trim().equalsIgnoreCase("Press any key to continue . . .")))
             try{ process.waitFor();
             }catch(final InterruptedException ignored){ }
 
-        // debug
-        Logger.getGlobal().log(Level.FINER,"--- [ END EXECUTION ] ---");
         return OUT.toString().trim();
     }
 
