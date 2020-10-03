@@ -16,4 +16,4 @@ jobs:
           architecture: x64
 
       - name: 📦 Test with Maven
-        run: mvn test -fae
+        run: mvn test -fae -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn

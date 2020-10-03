@@ -46,14 +46,14 @@ final class CommandExecutor {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         String ln = "";
         while(true){ // fix BufferedReader#readLine holding thread
-            final Future<String> future = executor.submit(IN::readLine);
             try{
-                Logger.getGlobal().log(Level.FINEST,"<↓> NEXT LINE <↓>");
+                final Future<String> future = executor.submit(IN::readLine);
                 ln = future.get(10, TimeUnit.SECONDS);
                 if(ln == null) break;
                 Logger.getGlobal().log(Level.FINER, ln);
                 OUT.append(ln).append('\n');
             }catch(InterruptedException | ExecutionException | TimeoutException ignored){
+                IN.close();
                 break;
             }
         }
