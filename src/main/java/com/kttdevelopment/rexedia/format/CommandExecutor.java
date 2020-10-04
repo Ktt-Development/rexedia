@@ -34,9 +34,7 @@ final class CommandExecutor {
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
-        a.addAll(Arrays.asList("&&","echo","<> done <>"));
-
-        logger.log(Level.FINER,"Executing args: " + String.join(" ", a));
+        logger.log(Level.FINER,"Executing args:\n" + String.join(" ", a));
 
         final StringBuilder OUT = new StringBuilder();
 
@@ -48,38 +46,20 @@ final class CommandExecutor {
 
         final Process process = builder.start();
 
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
         final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while(true){
-            try{
-                logger.finest("b4 future");
-                final Future<String> future = executor.submit(IN::readLine);
-                final String ln = future.get(10, TimeUnit.SECONDS);
-                if(ln == null) break;
-                logger.log(Level.FINER, ln);
-                logger.finest("ar future");
-                synchronized(this){
-                    logger.finest("b4 append");
-                    OUT.append(ln).append('\n');
-                    logger.finest("ar append");
-                }
-            }catch(final Throwable e){
-                e.printStackTrace();
-                logger.finest("broke from while loop");
-                break;
-            }finally{
-                logger.finest("finally");
-                IN.close();
-                executor.shutdownNow();
+        String ln;
+        while((ln = IN.readLine()) != null){
+            logger.log(Level.FINEST, ln);
+            synchronized(this){
+                OUT.append(ln).append('\n');
             }
         }
 
-        logger.finest("before waitfor");
-
-        try{ process.waitFor();
-        }catch(final InterruptedException ignored){ }finally{
-            process.destroy();
-        }
+        // try{ process.waitFor();
+        // }catch(final InterruptedException ignored){ }finally{
+        //     process.destroy();
+        // }
+        process.destroy();
         
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
