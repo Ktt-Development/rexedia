@@ -53,15 +53,15 @@ final class CommandExecutor {
                 try{ // fix thread hold on no end line
                     logger.finest("b4 future");
                     final Future<String> future = executor.submit(IN::readLine);
-                    logger.finest("ar future");
                     final String ln = future.get(10, TimeUnit.SECONDS);
                     if(ln == null) break;
                     logger.log(Level.FINER, ln);
+                    logger.finest("ar future");
                     synchronized(this){
                         OUT.append(ln).append('\n');
                     }
                 }catch(InterruptedException | ExecutionException | TimeoutException ignored){
-                    try{ IS.close();
+                    try{ IN.close();
                     }catch(final IOException ignored1){ }
                     break;
                 }

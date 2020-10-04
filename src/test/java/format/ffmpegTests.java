@@ -19,18 +19,15 @@ public class ffmpegTests {
             THIS MAY BE CAUSE OF PERMISSION DENIED ISSUE
      */
 
-    @Before
-    public void before(){
+    @BeforeClass
+    public static void initFFMPEG() throws IOException{
         Logger.getGlobal().setLevel(Level.ALL);
         Logger.getGlobal().setUseParentHandlers(false);
         Logger.getGlobal().addHandler(new ConsoleHandler() {{
             setLevel(Level.ALL);
             setFormatter(new LoggerFormatter(false,true));
         }});
-    }
 
-    @BeforeClass
-    public static void initFFMPEG() throws IOException{
         if(!ffmpeg.isValidInstallation()) // use bin if no local installation
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
