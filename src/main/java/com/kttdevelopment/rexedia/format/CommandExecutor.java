@@ -34,6 +34,8 @@ final class CommandExecutor {
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
+        a.addAll(Arrays.asList("&&","echo","<> done <>"));
+
         logger.log(Level.FINER,"Executing args: " + String.join(" ", a));
 
         final StringBuilder OUT = new StringBuilder();

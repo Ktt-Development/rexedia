@@ -46,7 +46,7 @@ public final class FFMPEG {
         final String result   = executor.executeFFPROBE(args);
         final Matcher matcher = duration.matcher(result);
 
-        return result.isBlank() || matcher.matches()
+        return result.isBlank() || matcher.find()
                ? (float) (Math.ceil(Float.parseFloat(matcher.group(1)) * 100) / 100)
                : -1f;
     }
@@ -68,7 +68,7 @@ public final class FFMPEG {
             final String result   = executor.executeFFPROBE(args);
             final Matcher matcher = frames.matcher(result);
 
-            if(!matcher.matches())
+            if(!matcher.find())
                 return false;
 
             final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));
