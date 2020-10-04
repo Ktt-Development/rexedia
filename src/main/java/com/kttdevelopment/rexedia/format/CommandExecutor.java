@@ -47,8 +47,9 @@ final class CommandExecutor {
         final Process process = builder.start();
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
+        final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while(true){
-            try(final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+            try{
                 logger.finest("b4 future");
                 final Future<String> future = executor.submit(IN::readLine);
                 final String ln = future.get(10, TimeUnit.SECONDS);
@@ -66,6 +67,7 @@ final class CommandExecutor {
                 break;
             }
         }
+        IN.close();
         executor.shutdownNow();
 
         logger.finest("before waitfor");
