@@ -46,20 +46,18 @@ final class CommandExecutor {
 
         final Process process = builder.start();
 
-        final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String ln;
-        while((ln = IN.readLine()) != null){
-            logger.log(Level.FINEST, ln);
-            synchronized(this){
+        try(final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+            String ln;
+            while((ln = IN.readLine()) != null){
+                logger.log(Level.FINEST, ln);
                 OUT.append(ln).append('\n');
             }
         }
-
         // try{ process.waitFor();
         // }catch(final InterruptedException ignored){ }finally{
         //     process.destroy();
         // }
-        process.destroy();
+        process.destroyForcibly();
         
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
