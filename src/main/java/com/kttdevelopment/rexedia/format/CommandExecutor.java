@@ -57,10 +57,20 @@ final class CommandExecutor {
         // }catch(final InterruptedException ignored){ }finally{
         //     process.destroy();
         // }
-        process.destroyForcibly();
+        try{
+            process.waitFor(10,TimeUnit.SECONDS);
+        }catch(final InterruptedException e){
+            e.printStackTrace();
+        }finally{
+            process.destroyForcibly();
+
+            if(process.isAlive())
+                throw new IllegalThreadStateException(process.toString());
+        }
         
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
+        logger.finest("About to return!");
         return OUT.toString().trim();
     }
 

@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +45,7 @@ public final class FFMPEG {
         };
 
         final String result   = executor.executeFFPROBE(args);
+        Logger.getGlobal().finest("returned!!");
         final Matcher matcher = duration.matcher(result);
 
         return result.isBlank() || matcher.find()
