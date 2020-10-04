@@ -65,10 +65,12 @@ final class CommandExecutor {
                 e.printStackTrace();
                 logger.finest("broke from while loop");
                 break;
+            }finally{
+                logger.finest("finally");
+                IN.close();
+                executor.shutdownNow();
             }
         }
-        IN.close();
-        executor.shutdownNow();
 
         logger.finest("before waitfor");
 
