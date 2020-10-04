@@ -1,6 +1,7 @@
 package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.core.classes.ToStringBuilder;
+import org.apache.commons.exec.*;
 
 import java.io.*;
 import java.util.*;
@@ -34,44 +35,26 @@ final class CommandExecutor {
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
-        logger.log(Level.FINER,"Executing args:\n" + String.join(" ", a));
+        final String asString = String.join(" ", a);
 
-        final StringBuilder OUT = new StringBuilder();
+        logger.log(Level.FINER,"Executing args:\n" + asString);
+
 
         logger.log(Level.FINER,"--- [ START EXECUTION ] ---");
 
-        final ProcessBuilder builder = new ProcessBuilder();
-        builder.redirectErrorStream(true);
-        builder.command(a.toArray(new String[0]));
+        final CommandLine cmd           = CommandLine.parse(asString);
+        final DefaultExecutor executor  = new DefaultExecutor();
+        final ByteArrayOutputStream OUT = new ByteArrayOutputStream();
 
-        final Process process = builder.start();
+        executor.setWatchdog(new ExecuteWatchdog(10 * 1000));
+        executor.setStreamHandler(new PumpStreamHandler(OUT));
+        executor.execute(cmd);
 
-        try(final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()))){
-            String ln;
-            while((ln = IN.readLine()) != null){
-                logger.log(Level.FINEST, ln);
-                OUT.append(ln).append('\n');
-            }
-        }
-        // try{ process.waitFor();
-        // }catch(final InterruptedException ignored){ }finally{
-        //     process.destroy();
-        // }
-        try{
-            process.waitFor(10,TimeUnit.SECONDS);
-        }catch(final InterruptedException e){
-            e.printStackTrace();
-        }finally{
-            process.destroyForcibly();
-
-            if(process.isAlive())
-                throw new IllegalThreadStateException(process.toString());
-        }
-        
+        final String result = OUT.toString().trim();
+        System.out.println(result);
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
-        logger.finest("About to return!");
-        return OUT.toString().trim();
+        return result;
     }
 
     //

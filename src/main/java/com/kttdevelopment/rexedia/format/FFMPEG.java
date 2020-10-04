@@ -33,7 +33,7 @@ public final class FFMPEG {
 
 // ffprobe
 
-    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\n\\Qduration=\\E(\\d+\\.\\d+)\\n\\Q[/FORMAT]\\E",Pattern.MULTILINE);
+    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\r?\\n\\Qduration=\\E(\\d+\\.\\d+)\\r?\\n\\Q[/FORMAT]\\E",Pattern.MULTILINE);
     // duration in seconds
     public final float getDuration(final File input) throws IOException{
         if(!input.exists()) throw new FileNotFoundException(input.getAbsolutePath());
@@ -45,10 +45,9 @@ public final class FFMPEG {
         };
 
         final String result   = executor.executeFFPROBE(args);
-        Logger.getGlobal().finest("returned!!");
         final Matcher matcher = duration.matcher(result);
 
-        return result.isBlank() || matcher.find()
+        return result.isBlank() || matcher.matches()
                ? (float) (Math.ceil(Float.parseFloat(matcher.group(1)) * 100) / 100)
                : -1f;
     }
@@ -70,7 +69,7 @@ public final class FFMPEG {
             final String result   = executor.executeFFPROBE(args);
             final Matcher matcher = frames.matcher(result);
 
-            if(!matcher.find())
+            if(!matcher.matches())
                 return false;
 
             final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));
