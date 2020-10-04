@@ -5,6 +5,7 @@ import com.kttdevelopment.core.classes.ToStringBuilder;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,44 +28,58 @@ final class CommandExecutor {
     }
 
     public final String execute(final String... args) throws IOException{
+        final Logger logger = Logger.getGlobal();
+        
         final List<String> a = new ArrayList<>();
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));
 
-        Logger.getGlobal().log(Level.FINER,"Executing args: " + String.join(" ", a));
+        logger.log(Level.FINER,"Executing args: " + String.join(" ", a));
 
         final ProcessBuilder builder = new ProcessBuilder();
         builder.redirectErrorStream(true);
         builder.command(a.toArray(new String[0]));
 
         final Process process   = builder.start();
-        final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        final BufferedReader IS = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        final BufferedReader ES = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         final StringBuilder OUT = new StringBuilder();
 
-        Logger.getGlobal().log(Level.FINER,"--- [ START EXECUTION ] ---");
+        logger.log(Level.FINER,"--- [ START EXECUTION ] ---");
 
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
-        String ln = "";
-        while(true){ // fix BufferedReader#readLine holding thread
-            try{
-                final Future<String> future = executor.submit(IN::readLine);
-                ln = future.get(10, TimeUnit.SECONDS);
-                if(ln == null) break;
-                Logger.getGlobal().log(Level.FINER, ln);
-                OUT.append(ln).append('\n');
-            }catch(InterruptedException | ExecutionException | TimeoutException ignored){
-                IN.close();
-                break;
+        final Consumer<BufferedReader> append = (IN) -> {
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            while(true){
+                try{ // fix thread hold on no end line
+                    final Future<String> future = executor.submit(IN::readLine);
+                    final String ln = future.get(10, TimeUnit.SECONDS);
+                    if(ln == null) break;
+                    logger.log(Level.FINER, ln);
+                    synchronized(this){
+                        OUT.append(ln).append('\n');
+                    }
+                }catch(InterruptedException | ExecutionException | TimeoutException ignored){
+                    try{ IS.close();
+                    }catch(final IOException ignored1){ }
+                    break;
+                }
             }
+            executor.shutdownNow();
+        };
+
+        final Thread ISR = new Thread(() -> append.accept(IS));
+        ISR.start();
+        final Thread ESR = new Thread(() -> append.accept(ES));
+        ESR.start();
+
+        try{ process.waitFor();
+        }catch(final InterruptedException ignored){ }finally{
+            process.destroy();
         }
-        executor.shutdownNow();
-
-        Logger.getGlobal().log(Level.FINER,"--- [ END EXECUTION ] ---");
-        Logger.getGlobal().log(Level.FINER,"LAST LINE: " + ln);
-
-        if(ln == null || (!ln.trim().equalsIgnoreCase("Terminate batch job (Y/N)?") && !ln.trim().equalsIgnoreCase("Press any key to continue . . .")))
-            try{ process.waitFor();
-            }catch(final InterruptedException ignored){ }
+        ISR.stop();
+        ESR.stop();
+        
+        logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
         return OUT.toString().trim();
     }
