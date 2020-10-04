@@ -61,6 +61,7 @@ final class CommandExecutor {
                         OUT.append(ln).append('\n');
                     }
                 }catch(InterruptedException | ExecutionException | TimeoutException ignored){
+                    logger.finest("broke from while loop");
                     try{ IN.close();
                     }catch(final IOException ignored1){ }
                     break;
@@ -73,6 +74,8 @@ final class CommandExecutor {
         ISR.start();
         final Thread ESR = new Thread(() -> append.accept(ES));
         ESR.start();
+
+        logger.finest("before waitfor");
 
         try{ process.waitFor();
         }catch(final InterruptedException ignored){ }finally{
