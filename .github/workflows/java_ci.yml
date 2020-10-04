@@ -4,7 +4,7 @@ jobs:
   build:
     name: Build
     runs-on: windows-2019
-    timeout-minutes: 15
+    timeout-minutes: 7
     steps:
       - name: 📦 Prepate Git Repo
         uses: actions/checkout@v2

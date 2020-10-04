@@ -29,6 +29,7 @@ public abstract class Main {
             final Logger logger = Logger.getGlobal();
             {
                 logger.setLevel(Level.ALL);
+                logger.setUseParentHandlers(false);
 
                 final boolean debug = (Boolean) config.getConfiguration().get(Configuration.DEBUG);
                 logger.addHandler(new ConsoleHandler() {{

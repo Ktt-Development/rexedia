@@ -51,7 +51,9 @@ final class CommandExecutor {
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             while(true){
                 try{ // fix thread hold on no end line
+                    logger.finest("b4 future");
                     final Future<String> future = executor.submit(IN::readLine);
+                    logger.finest("ar future");
                     final String ln = future.get(10, TimeUnit.SECONDS);
                     if(ln == null) break;
                     logger.log(Level.FINER, ln);

@@ -22,8 +22,10 @@ public class ffmpegTests {
     @Before
     public void before(){
         Logger.getGlobal().setLevel(Level.ALL);
+        Logger.getGlobal().setUseParentHandlers(false);
         Logger.getGlobal().addHandler(new ConsoleHandler() {{
             setLevel(Level.ALL);
+            setFormatter(new LoggerFormatter(false,true));
         }});
     }
 
