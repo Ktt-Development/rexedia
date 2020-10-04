@@ -36,44 +36,37 @@ final class CommandExecutor {
 
         logger.log(Level.FINER,"Executing args: " + String.join(" ", a));
 
-        final ProcessBuilder builder = new ProcessBuilder();
-        builder.redirectErrorStream(true);
-        builder.command(a.toArray(new String[0]));
-
-        final Process process   = builder.start();
-        final BufferedReader IS = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        final BufferedReader ES = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         final StringBuilder OUT = new StringBuilder();
 
         logger.log(Level.FINER,"--- [ START EXECUTION ] ---");
 
-        final Consumer<BufferedReader> append = (IN) -> {
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            while(true){
-                try{ // fix thread hold on no end line
-                    logger.finest("b4 future");
-                    final Future<String> future = executor.submit(IN::readLine);
-                    final String ln = future.get(10, TimeUnit.SECONDS);
-                    if(ln == null) break;
-                    logger.log(Level.FINER, ln);
-                    logger.finest("ar future");
-                    synchronized(this){
-                        OUT.append(ln).append('\n');
-                    }
-                }catch(InterruptedException | ExecutionException | TimeoutException ignored){
-                    logger.finest("broke from while loop");
-                    try{ IN.close();
-                    }catch(final IOException ignored1){ }
-                    break;
-                }
-            }
-            executor.shutdownNow();
-        };
+        final ProcessBuilder builder = new ProcessBuilder();
+        builder.redirectErrorStream(true);
+        builder.command(a.toArray(new String[0]));
 
-        final Thread ISR = new Thread(() -> append.accept(IS));
-        ISR.start();
-        final Thread ESR = new Thread(() -> append.accept(ES));
-        ESR.start();
+        final Process process = builder.start();
+
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        while(true){
+            try(final BufferedReader IN = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+                logger.finest("b4 future");
+                final Future<String> future = executor.submit(IN::readLine);
+                final String ln = future.get(10, TimeUnit.SECONDS);
+                if(ln == null) break;
+                logger.log(Level.FINER, ln);
+                logger.finest("ar future");
+                synchronized(this){
+                    logger.finest("b4 append");
+                    OUT.append(ln).append('\n');
+                    logger.finest("ar append");
+                }
+            }catch(final Throwable e){
+                e.printStackTrace();
+                logger.finest("broke from while loop");
+                break;
+            }
+        }
+        executor.shutdownNow();
 
         logger.finest("before waitfor");
 
@@ -81,8 +74,6 @@ final class CommandExecutor {
         }catch(final InterruptedException ignored){ }finally{
             process.destroy();
         }
-        ISR.stop();
-        ESR.stop();
         
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
 
