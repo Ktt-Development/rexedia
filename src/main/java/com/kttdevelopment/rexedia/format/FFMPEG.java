@@ -168,6 +168,9 @@ public final class FFMPEG {
                 args.add("0");
             args.add("-map");
                 args.add("-0:v");
+        }else{
+            args.add("-map");
+            args.add("0");
         }
 
         args.add("-y"); // override ? "-y" : "-n"

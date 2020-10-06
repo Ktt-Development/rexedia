@@ -7,6 +7,7 @@ import org.junit.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.*;
 
 @SuppressWarnings("SpellCheckingInspection")
@@ -75,7 +76,7 @@ public class ffmpegTests {
 
     @Test
     public void testApplyNone() throws IOException{
-        final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out = new File(input.getParentFile(), UUID.randomUUID() + ".mp4");
         out.deleteOnExit();
 
         ffmpeg.apply(input,null,true,null,true,out);
@@ -85,11 +86,11 @@ public class ffmpegTests {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void testApplyCover() throws IOException{
-        final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out3.deleteOnExit();
 
         ffmpeg.apply(input,cover,false,null,false,out);
@@ -107,7 +108,7 @@ public class ffmpegTests {
     @Test(expected = OutOfMemoryError.class)
     public void testOversizedCover() throws IOException{
         final File cover = new File("src/test/resources/format/apply/oversized.png");
-        final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out.deleteOnExit();
 
         ffmpeg.apply(input,cover,false,null,false,out);
@@ -115,13 +116,13 @@ public class ffmpegTests {
 
     @Test
     public void testApplyMetadata() throws IOException{
-        final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out3.deleteOnExit();
-        final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
+        final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(UUID.randomUUID()));
 
         ffmpeg.apply(input,null,false,metadata,false,out);
         Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out).get("title"));
@@ -141,13 +142,13 @@ public class ffmpegTests {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void testApplyAll() throws IOException{
-        final File out = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
         out3.deleteOnExit();
-        final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
+        final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(UUID.randomUUID()));
 
         ffmpeg.apply(input,cover,false,metadata,false,out);
         Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,cover2).length());
