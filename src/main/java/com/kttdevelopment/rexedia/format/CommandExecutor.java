@@ -46,14 +46,21 @@ final class CommandExecutor {
         final DefaultExecutor executor  = new DefaultExecutor();
         final ByteArrayOutputStream OUT = new ByteArrayOutputStream();
 
+        String result;
+
         executor.setWatchdog(new ExecuteWatchdog(10 * 1000));
         executor.setStreamHandler(new PumpStreamHandler(OUT));
-        executor.execute(cmd);
-
-        final String result = OUT.toString().trim();
-        System.out.println(result);
+        try{
+            executor.execute(cmd);
+        }catch(final ExecuteException e){
+            result = OUT.toString().trim();
+            logger.severe('\n' + result);
+            logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
+            throw e;
+        }
+        result = OUT.toString().trim();
+        logger.finer('\n' + result);
         logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
-
         return result;
     }
 
