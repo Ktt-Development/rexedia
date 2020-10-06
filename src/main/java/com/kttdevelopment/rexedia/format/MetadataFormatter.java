@@ -27,13 +27,15 @@ public final class MetadataFormatter {
         this.preset = preset;
     }
 
-    // todo: Adjust info logging to list phase/files completed
-    public synchronized final boolean format(final File file){
+    public synchronized final boolean format(final File file, final int current, final int total){
+        final String lstr = "| STAGE > %s (%s/5) \t| FILES > (" + current + '/' + total + ')';
+
         final Logger logger = Logger.getGlobal();
         final String abs    = file.getAbsolutePath();
         // check if input is a media file (verify file integrity)
         {
-            logger.info("Verifying " + abs);
+            logger.info(String.format(lstr, "VERIFY / MEDIA ", 1));
+            logger.fine("Verifying " + abs);
             if(!ffmpeg.verifyFileIntegrity(file)){
                 logger.severe("Failed to verify " + abs + " (file was corrupt)");
                 return false;
@@ -51,7 +53,8 @@ public final class MetadataFormatter {
             backup = getUsableFile(new File(file.getParentFile(),String.format("%s.backup.%s",name,ext)));
             babs   = backup.getAbsolutePath();
 
-            logger.info("Creating backup at " + babs);
+            logger.info(String.format(lstr, "CLONE  / BACKUP", 2));
+            logger.fine("Creating backup at " + babs);
             try{
                 Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }catch(final IOException e){
@@ -60,7 +63,8 @@ public final class MetadataFormatter {
             }
 
             // verify backup integrity
-            logger.info("Verifying backup " + babs);
+            logger.info(String.format(lstr, "VERIFY / BACKUP", 3));
+            logger.fine("Verifying backup " + babs);
             if(!ffmpeg.verifyFileIntegrity(backup)){
                 logger.severe("Failed to verify backup " + babs + " (file was corrupt)");
                 return false;
@@ -77,7 +81,7 @@ public final class MetadataFormatter {
             logger.fine("Applying preset to file " + abs + '\n' + preset);
             logger.finer("Cover file: " + cover.getAbsolutePath());
             logger.finer("Metadata: " + metadata);
-            logger.info("Formatting file " + abs);
+            logger.info(String.format(lstr, "APPLY  / MEDIA ", 4));
 
             try{
                 ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, file);
@@ -89,7 +93,8 @@ public final class MetadataFormatter {
 
         // verify file integrity
         {
-            logger.info("Verifying output " + abs);
+            logger.fine("Verifying output " + abs);
+            logger.info(String.format(lstr, "VERIFY / FINAL ", 5));
             if(!ffmpeg.verifyFileIntegrity(file)){
                 logger.severe("Failed to verify output " + abs + " (file was corrupt)");
                 return false;

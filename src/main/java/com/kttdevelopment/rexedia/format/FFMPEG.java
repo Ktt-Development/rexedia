@@ -6,7 +6,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,20 +106,21 @@ public final class FFMPEG {
         return Collections.emptyMap();
     }
 
-    // (technically ffmpeg but we are getting a file) // fixme
     public final File getCoverArt(final File input, final File output){
         final String[] args = {
             "-i", '"' + input.getAbsolutePath() + '"',
-            "-map", "0:v",
-            "-map", "0:V",
+            "-map", "0:2",
+            "-frames:v 1",
             "-c","copy",
+            "-y",
             '"' + output.getAbsolutePath() + '"'
         };
 
         try{
             executor.executeFFMPEG(args);
             return output.exists() ? output : null;
-        }catch(final IOException ignored){
+        }catch(final IOException e){
+            e.printStackTrace();
             return null;
         }
     }
@@ -172,10 +172,8 @@ public final class FFMPEG {
 
         args.add("-y"); // override ? "-y" : "-n"
 
-        args.add("-acodec");
-            args.add("copy");
-        args.add("-vcodec");
-            args.add("copy");
+        args.add("-c");
+        args.add("copy");
 
         if(!preserveMeta){ // if no preserve (remove previous metadata)
             args.add("-map_metadata");

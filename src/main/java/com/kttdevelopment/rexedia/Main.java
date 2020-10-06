@@ -78,8 +78,9 @@ public abstract class Main {
                 logger.fine("Starting file format");
                 final MetadataFormatter formatter = new MetadataFormatter(config,new FFMPEG(),preset);
 
-                for(final File file : queue)
-                    formatter.format(file); // todo: add live logger
+                final int size = queue.size();
+                for(int i = 0; i < size; i++)
+                    formatter.format(queue.get(i),i+1,size);
             }
         }catch(final Throwable e){
             final long time = System.currentTimeMillis();

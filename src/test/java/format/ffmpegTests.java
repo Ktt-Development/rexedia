@@ -37,10 +37,13 @@ public class ffmpegTests {
 
     @AfterClass
     public static void denitFFMPEG(){
-        try{
-            Files.delete(input.toPath());
-            Files.delete(new File(cover.getParentFile(), "cover2.png").toPath());
-            Files.delete(new File(cover.getParentFile(), "cover3.png").toPath());
+        try{ Files.delete(input.toPath());
+        }catch(final Throwable ignored){ }
+        try{ Files.delete(cover2.toPath());
+        }catch(final Throwable ignored){ }
+        try{ Files.delete(cover3.toPath());
+        }catch(final Throwable ignored){ }
+        try{ Files.delete(cover4.toPath());
         }catch(final Throwable ignored){ }
     }
 
@@ -58,6 +61,10 @@ public class ffmpegTests {
     private static final File input = new File("src/test/resources/format/apply/clean.mp4");
     private static final File cover = new File("src/test/resources/format/apply/cover.png");
 
+    private static final File cover2 = new File("src/test/resources/format/apply/cover2.png");
+    private static final File cover3 = new File("src/test/resources/format/apply/cover3.png");
+    private static final File cover4 = new File("src/test/resources/format/apply/cover4.png");
+    
     @SuppressWarnings("ConstantConditions")
     @Test
     public void missingArgs(){
@@ -82,17 +89,19 @@ public class ffmpegTests {
         out.deleteOnExit();
         final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out2.deleteOnExit();
+        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out3.deleteOnExit();
 
         ffmpeg.apply(input,cover,false,null,false,out);
-        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,cover2).length());
 
         // test preserve
         ffmpeg.apply(out,null,true,null,false,out2);
-        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out2,cover3).length());
 
         // test remove
-        ffmpeg.apply(out,null,false,null,false,out2);
-        Assert.assertNull(ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover3.png")));
+        ffmpeg.apply(out,null,false,null,false,out3);
+        Assert.assertNull(ffmpeg.getCoverArt(out3,cover4));
     }
 
     @Test(expected = OutOfMemoryError.class)
@@ -110,6 +119,8 @@ public class ffmpegTests {
         out.deleteOnExit();
         final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out2.deleteOnExit();
+        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out3.deleteOnExit();
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
 
         ffmpeg.apply(input,null,false,metadata,false,out);
@@ -122,9 +133,9 @@ public class ffmpegTests {
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out2).get("date"));
 
         // test remove
-        ffmpeg.apply(out,null,false,null,false,out2);
-        Assert.assertNull(ffmpeg.getMetadata(out2).get("title"));
-        Assert.assertNull(ffmpeg.getMetadata(out2).get("date"));
+        ffmpeg.apply(out,null,false,null,false,out3);
+        Assert.assertNull(ffmpeg.getMetadata(out3).get("title"));
+        Assert.assertNull(ffmpeg.getMetadata(out3).get("date"));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -134,24 +145,26 @@ public class ffmpegTests {
         out.deleteOnExit();
         final File out2 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
         out2.deleteOnExit();
+        final File out3 = new File(input.getParentFile(),System.currentTimeMillis() + ".mp4");
+        out3.deleteOnExit();
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(System.currentTimeMillis()));
 
         ffmpeg.apply(input,cover,false,metadata,false,out);
-        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out,cover2).length());
         Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out).get("title"));
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out).get("date"));
 
         // test preserve
         ffmpeg.apply(out,cover,false,metadata,false,out2);
-        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out2,new File(cover.getParentFile(),"cover2.png")).length());
+        Assert.assertNotEquals(0,ffmpeg.getCoverArt(out2,cover3).length());
         Assert.assertEquals(metadata.get("title"),ffmpeg.getMetadata(out2).get("title"));
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out2).get("date"));
 
         // test remove
-        ffmpeg.apply(out,cover,false,null,false,out2);
-        Assert.assertNull(ffmpeg.getCoverArt(out,new File(cover.getParentFile(),"cover3.png")));
-        Assert.assertNull(ffmpeg.getMetadata(out2).get("title"));
-        Assert.assertNull(ffmpeg.getMetadata(out2).get("date"));
+        ffmpeg.apply(out,cover,false,null,false,out3);
+        Assert.assertNull(ffmpeg.getCoverArt(out3,cover4));
+        Assert.assertNull(ffmpeg.getMetadata(out3).get("title"));
+        Assert.assertNull(ffmpeg.getMetadata(out3).get("date"));
     }
 
 }
