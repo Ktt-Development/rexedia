@@ -118,11 +118,10 @@ public final class FFMPEG {
 
         try{
             executor.executeFFMPEG(args);
-            return output.exists() ? output : null;
         }catch(final IOException e){
             e.printStackTrace();
-            return null;
         }
+        return output.exists() ? output : null;
     }
 
 // ffmpeg
