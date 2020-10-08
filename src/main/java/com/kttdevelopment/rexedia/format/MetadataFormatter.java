@@ -73,7 +73,10 @@ public final class MetadataFormatter {
         }
         // apply cover & metadata
         {
-            final String name = file.getName();
+            final String full_name = file.getName();
+            final String name = full_name.contains(".")
+                ? full_name.substring(0, full_name.lastIndexOf('.'))
+                : full_name;
             final File cover = new File(file.getParentFile(),preset.getCoverPreset().format(name));
             final Map<String,String> metadata = new HashMap<>();
             for(final MetadataPreset meta : preset.getPresets())

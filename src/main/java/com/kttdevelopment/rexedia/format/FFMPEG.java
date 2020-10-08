@@ -75,7 +75,7 @@ public final class FFMPEG {
             final float duration    = Float.parseFloat(matcher.group(3));
             final int frames        = Integer.parseInt(matcher.group(4));
 
-            // return framerate * duration (calculated frame rate)
+            // framerate * duration (calculated frame rate)
             return framerate * duration == frames;
         }catch(final IOException | NumberFormatException ignored){
             return false;
@@ -96,8 +96,6 @@ public final class FFMPEG {
             final String result = executor.executeFFPROBE(args);
             final Matcher matcher = metadata.matcher(result);
 
-            // #matches can not be used because it tests the whole string, not look for a match
-
             final Map<String,String> metadata = new HashMap<>();
             while(matcher.find())
                 metadata.put(matcher.group(1), matcher.group(2));
@@ -106,6 +104,7 @@ public final class FFMPEG {
         return Collections.emptyMap();
     }
 
+    // this method is used for testing, so it's ok to hardcode the video stream number
     public final File getCoverArt(final File input, final File output){
         final String[] args = {
             "-i", '"' + input.getAbsolutePath() + '"',
@@ -149,41 +148,41 @@ public final class FFMPEG {
         }
 
         final List<String> args = new ArrayList<>();
-        args.add("-i");
+        args.add("-i"); // input
             args.add('"' + INPUT.getAbsolutePath() + '"');
 
         // fixme
         if(cover != null && cover.exists()){ // if cover exists
-            args.add("-i");
+            args.add("-i"); // cover input
                 args.add('"' + cover.getAbsolutePath() + '"');
-            args.add("-map");
-                args.add("1");
-            args.add("-map");
+            args.add("-map"); // all streams from first input
                 args.add("0");
-            args.add("-disposition:0");
+            args.add("-map"); // all streames from cover input
+                args.add("1");
+            args.add("-disposition:0"); // is this needed?
                 args.add("attached_pic");
         }else if((cover == null || !cover.exists()) && !preserveCover){ // if no cover and no preserve (remove cover)
-            args.add("-map");
+            args.add("-map"); // all streams from input
                 args.add("0");
-            args.add("-map");
+            args.add("-map"); // remove all video streams? (supposed to remove cover) // fixme
                 args.add("-0:v");
         }else{
-            args.add("-map");
+            args.add("-map"); // copy all streams
             args.add("0");
         }
 
         args.add("-y"); // override ? "-y" : "-n"
 
-        args.add("-c");
-        args.add("copy");
+        args.add("-c"); // copy codec
+            args.add("copy");
 
         if(!preserveMeta){ // if no preserve (remove previous metadata)
-            args.add("-map_metadata");
+            args.add("-map_metadata"); // remove all metadata
                 args.add("-1");
         }
         if(metadata != null && !metadata.isEmpty())
             metadata.forEach((k,v) -> {
-                args.add("-metadata");
+                args.add("-metadata"); // add metadata
                     args.add(String.format("\"%s\"=\"%s\"",k,v));
             });
 
