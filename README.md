@@ -57,13 +57,13 @@ metadata:  # list of metadata tags
 ```yml
 metadata:  
   - meta: "season_number"  
-    regex: "\[S0*(\d*) E0*\d*\]"
+    regex: "\\[S0*(\\d*) E0*\\d*\\]"
     format: "$1"
   - meta: "episode_number"
-    regex: "\[S0*\d* E0*(\d*)\]"
+    regex: "\\[S0*\\d* E0*(\\d*)\\]"
     format: "$1"
   - meta: "show"
-    regex: "\[S0*\d* E0*\d*\] (.+)"
+    regex: "\\[S0*\\d* E0*\\d*\\] (.+)"
     format: "$1"
 ```
 `rexedia -i video.mp4 -p preset.yml`
