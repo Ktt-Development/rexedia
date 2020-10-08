@@ -1,10 +1,10 @@
-FFmpeg 64-bit static Windows builds from www.gyan.dev
+FFmpeg 64-bit static Windows build from www.gyan.dev
 
-Version: 4.3.1-2020-09-21-full_build-www.gyan.dev
+Version: 4.3.1-2020-10-01-full_build-www.gyan.dev
 
 License: GPL v3
 
-Source Code: https://github.com/FFmpeg/FFmpeg/commit/6d886b6586
+Source Code: https://github.com/FFmpeg/FFmpeg/commit/8a2acdc6da
 
 release-full build configuration: 
 
@@ -64,7 +64,6 @@ release-full build configuration:
     --enable-libtheora
     --enable-libtwolame
     --enable-libvo-amrwbenc
-    --enable-libwavpack
     --enable-libilbc
     --enable-libgsm
     --enable-libopencore-amrnb
