@@ -23,7 +23,9 @@
 ┬ video.mp4
 └ video.png
 ```
-`rexedia -i video.mp4 -c "(.+)" "$1.png"`
+```sh
+rexedia -i video.mp4 -c "(.+)" "$1.png"
+```
 
 **Assign video metadata based on the name**
 ```
@@ -31,9 +33,12 @@
                         ├ episode_number = 2
                         └ show = video
 ```
-`rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_number" "\[S0*\d* E0*(\d*)\]" "$1" -m "show" "\[S0*\d* E0*\d*\] (.+)" "$1"`
+```sh
+rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_number" "\[S0*\d* E0*(\d*)\]" "$1" -m "show" "\[S0*\d* E0*\d*\] (.+)" "$1"
+```
 
 ## Presets
+**yaml syntax may require additional backslashes for escape characters**
 
 ```yml
 cover:  # cover art
@@ -66,4 +71,6 @@ metadata:
     regex: "\\[S0*\\d* E0*\\d*\\] (.+)"
     format: "$1"
 ```
-`rexedia -i video.mp4 -p preset.yml`
+```sh
+rexedia -i video.mp4 -p preset.yml
+```
