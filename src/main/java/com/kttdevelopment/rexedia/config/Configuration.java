@@ -22,7 +22,8 @@ public final class Configuration {
         PREMETA = "pm",
         PRESET  = "p",
         COVER   = "c",
-        META    = "m";
+        META    = "m",
+        OUTPUT  = "o";
 
     private final Option<?>[] defaultOptions = {
         new Option.Builder<>(INPUT)
@@ -91,6 +92,12 @@ public final class Configuration {
             .setDesc("The metadata format to use")
             .unlimitedArgs()
             .argsRequired()
+            .build(),
+        new Option.Builder<>(OUTPUT)
+            .setLongFlag("output")
+            .setDesc("The output format to use")
+            .setExpectedArgs(2)
+            .argsRequired()
             .build()
     };
 
@@ -117,7 +124,7 @@ public final class Configuration {
         }
         if(cmd.hasOption(PRESET)){
             preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));
-        }else if(cmd.hasOption(COVER) || cmd.hasOption(META)){
+        }else if(cmd.hasOption(COVER) || cmd.hasOption(META) || cmd.hasOption(OUTPUT)){
             final Preset.Builder p = new Preset.Builder();
             if(cmd.hasOption(COVER)){
                 final String[] v = cmd.getOptionValues(COVER);
@@ -133,6 +140,10 @@ public final class Configuration {
                     }catch(final IndexOutOfBoundsException ignored){
                         throw new MissingArgumentException(META);
                     }
+            }
+            if(cmd.hasOption(OUTPUT)){
+                final String[] v = cmd.getOptionValues(OUTPUT);
+                p.setOutputPreset(new MetadataPreset(null,v[0],v[1]));
             }
             preset = p.build();
         }else{

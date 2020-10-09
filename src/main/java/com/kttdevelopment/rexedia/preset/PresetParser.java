@@ -27,6 +27,10 @@ public final class PresetParser {
         if(meta != null)
             for(final YamlNode node : meta)
                 preset.addPreset(parseMetadataPreset(node.asMapping()));
+        // output
+        final YamlMapping output = map.yamlMapping(Preset.OUTPUT);
+        if(output != null)
+            preset.setOutputPreset(new MetadataPreset(null,Objects.requireNonNull(output.string(Preset.FORMAT)),Objects.requireNonNull(output.string(Preset.REGEX))));
 
         return preset.build();
     }

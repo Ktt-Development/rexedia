@@ -42,15 +42,20 @@ public final class MetadataFormatter {
             }else
                 logger.finer("Verified file " + abs);
         }
+
+        final File parent = file.getParentFile();
+
+        final String full_name  = file.getName();
+        final String name       = full_name.contains(".")
+            ? full_name.substring(0, full_name.lastIndexOf('.'))
+            : full_name;
+        final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1); // contains check not needed because if none found the index is 0
+
         // create a backup file
         final File backup;
         final String babs;
         {
-            final String full_name  = file.getName();
-            final String name       = full_name.substring(0,full_name.lastIndexOf('.'));
-            final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1);
-
-            backup = getUsableFile(new File(file.getParentFile(),String.format("%s.backup.%s",name,ext)));
+            backup = getUsableFile(new File(parent,String.format("%s.backup.%s",name,ext)));
             babs   = backup.getAbsolutePath();
 
             logger.info(String.format(lstr, "CLONE  / BACKUP", 2));
@@ -71,34 +76,52 @@ public final class MetadataFormatter {
             }else
                 logger.finer("Verified backup " + babs);
         }
+
+        // set output file
+        final File output;
+        {
+            final MetadataPreset target = preset.getOutputPreset();
+            logger.fine("Setting output file using preset " + target);
+
+            if(target == null)
+                output = file;
+            else{
+                final String out = target.format(name);
+                output = getUsableFile(new File(parent,out + (out.contains(".") ? "" : ext)));
+            }
+            logger.fine("Set output file as " + output.getAbsolutePath());
+        }
+
         // apply cover & metadata
         {
-            final String full_name = file.getName();
-            final String name = full_name.contains(".")
-                ? full_name.substring(0, full_name.lastIndexOf('.'))
-                : full_name;
-            final File cover = new File(file.getParentFile(),preset.getCoverPreset().format(name));
-            final Map<String,String> metadata = new HashMap<>();
-            for(final MetadataPreset meta : preset.getPresets())
-                metadata.put(meta.getKey(),meta.format(name));
-            logger.fine("Applying preset to file " + abs + '\n' + preset);
-            logger.finer("Cover file: " + cover.getAbsolutePath());
-            logger.finer("Metadata: " + metadata);
-            logger.info(String.format(lstr, "APPLY  / MEDIA ", 4));
+            final MetadataPreset covp = preset.getCoverPreset();
+            if(covp == null)
+                logger.fine("Skipping cover art (no cover art preset)");
+            else{
+                final File cover = new File(parent,preset.getCoverPreset().format(name));
+                final Map<String,String> metadata = new HashMap<>();
+                for(final MetadataPreset meta : preset.getPresets())
+                    metadata.put(meta.getKey(),meta.format(name));
+                logger.fine("Applying preset to file " + abs + '\n' + preset);
+                logger.finer("Cover file: " + cover.getAbsolutePath());
+                logger.finer("Metadata: " + metadata);
+                logger.info(String.format(lstr, "APPLY  / MEDIA ", 4));
 
-            try{
-                ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, file);
-            }catch(final IOException e){
-                logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
-                return false;
+                try{
+                    ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, output);
+                }catch(final IOException e){
+                    logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                    return false;
+                }
             }
+
         }
 
         // verify file integrity
         {
             logger.fine("Verifying output " + abs);
             logger.info(String.format(lstr, "VERIFY / FINAL ", 5));
-            if(!ffmpeg.verifyFileIntegrity(file)){
+            if(!ffmpeg.verifyFileIntegrity(output)){
                 logger.severe("Failed to verify output " + abs + " (file was corrupt)");
                 return false;
             }else
@@ -123,8 +146,10 @@ public final class MetadataFormatter {
             return file;
 
         final String full_name  = file.getName();
-        final String name       = full_name.substring(0,full_name.lastIndexOf('.'));
-        final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1);
+        final String name       = full_name.contains(".")
+            ? full_name.substring(0, full_name.lastIndexOf('.'))
+            : full_name;
+        final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1); // contains check not needed because if none found the index is 0
         long copyno = 0;
         File copy;
 

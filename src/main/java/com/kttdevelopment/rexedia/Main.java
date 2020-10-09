@@ -18,7 +18,8 @@ import java.util.logging.*;
 
 public abstract class Main {
 
-    private static Configuration config;
+    private static Configuration config = null;
+    private static Preset preset = null;
 
     public static void main(String[] args){
         try{
@@ -57,7 +58,7 @@ public abstract class Main {
             // format
             {
                 logger.fine("Preallocating files");
-                final Preset preset = config.getPreset();
+                preset = config.getPreset();
                 // preallocate
                 final boolean walk = (boolean) config.getConfiguration().get(Configuration.WALK);
                 final File[] files = (File[]) config.getConfiguration().get(Configuration.INPUT);
@@ -90,6 +91,7 @@ public abstract class Main {
                                     "Java Version: "    + System.getProperty("java.version") + '\n' +
                                     "Args: "            + Arrays.toString(args) + '\n' +
                                     "Config: "          + config + '\n' +
+                                    "Preset: "          + preset + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtil.getStackTraceAsString(e);
             Logger.getGlobal().log(Level.SEVERE,'\n' + response);

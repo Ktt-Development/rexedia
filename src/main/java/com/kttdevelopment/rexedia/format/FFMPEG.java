@@ -139,6 +139,8 @@ public final class FFMPEG {
             throw new FileNotFoundException();
         else if(!OUT.getParentFile().exists() && !OUT.getParentFile().mkdirs())
             throw new FileNotFoundException(OUT.getParentFile().getAbsolutePath());
+        else if(INPUT.getAbsolutePath().equals(OUT.getAbsolutePath()))
+            throw new IllegalArgumentException("FFMPEG can not write to the file it is reading from");
         else if(cover != null && cover.exists() && cover.length() > 1e+7)
             throw new OutOfMemoryError("Cover art files exceeding 10MB will corrupt video file");
 
@@ -151,24 +153,26 @@ public final class FFMPEG {
         args.add("-i"); // input
             args.add('"' + INPUT.getAbsolutePath() + '"');
 
-        // fixme
+        args.add("-map"); // copy all streams from input
+            args.add("0");
+
         if(cover != null && cover.exists()){ // if cover exists
             args.add("-i"); // cover input
                 args.add('"' + cover.getAbsolutePath() + '"');
-            args.add("-map"); // all streams from first input
-                args.add("0");
+            // args.add("-map"); // all streams from first input // todo: remove
+            //     args.add("0");
             args.add("-map"); // all streames from cover input
                 args.add("1");
-            args.add("-disposition:0"); // is this needed?
+            args.add("-disposition:0"); // is this needed? // todo
                 args.add("attached_pic");
         }else if((cover == null || !cover.exists()) && !preserveCover){ // if no cover and no preserve (remove cover)
-            args.add("-map"); // all streams from input
-                args.add("0");
+            // args.add("-map"); // all streams from input // todo: remove
+            //     args.add("0");
             args.add("-map"); // remove all video streams? (supposed to remove cover) // fixme
                 args.add("-0:v");
         }else{
-            args.add("-map"); // copy all streams
-            args.add("0");
+            // args.add("-map"); // copy all streams // todo: remove
+            // args.add("0");
         }
 
         args.add("-y"); // override ? "-y" : "-n"

@@ -12,12 +12,14 @@ public abstract class Preset {
         METADATA    = "metadata",
         META        = "meta",
         FORMAT      = "format",
-        REGEX       = "regex";
+        REGEX       = "regex",
+        OUTPUT      = "output";
 
     //
 
     public abstract MetadataPreset getCoverPreset();
     public abstract MetadataPreset[] getPresets();
+    public abstract MetadataPreset getOutputPreset();
 
     Preset(){ }
 
@@ -35,6 +37,7 @@ public abstract class Preset {
         return new ToStringBuilder(getClass().getSimpleName())
             .addObject("coverPreset", getCoverPreset())
             .addObject("presets", getPresets())
+            .addObject("outputPreset", getOutputPreset())
             .toString();
     }
 
@@ -43,6 +46,7 @@ public abstract class Preset {
 
         private MetadataPreset coverPreset = null;
         private final List<MetadataPreset> presets = new ArrayList<>();
+        private MetadataPreset outputPreset = null;
 
         public Builder(){ }
 
@@ -56,10 +60,16 @@ public abstract class Preset {
             return this;
         }
 
+        public final Builder setOutputPreset(final MetadataPreset outputPreset){
+            this.outputPreset = outputPreset;
+            return this;
+        }
+
         public final Preset build(){
             return new Preset() {
                 private final MetadataPreset coverPreset = Builder.this.coverPreset;
                 private final MetadataPreset[] presets = Builder.this.presets.toArray(new MetadataPreset[0]);
+                private final MetadataPreset outputPreset = Builder.this.outputPreset;
 
                 @Override
                 public final MetadataPreset getCoverPreset(){
@@ -71,15 +81,11 @@ public abstract class Preset {
                     return presets;
                 }
 
+                @Override
+                public final MetadataPreset getOutputPreset(){
+                    return outputPreset;
+                }
             };
-        }
-
-        @Override
-        public String toString(){
-            return new ToStringBuilder(getClass().getSimpleName())
-                .addObject("coverPreset",coverPreset)
-                .addObject("presets",presets)
-                .toString();
         }
 
     }

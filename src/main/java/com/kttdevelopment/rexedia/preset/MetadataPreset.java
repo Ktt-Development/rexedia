@@ -10,10 +10,10 @@ public final class MetadataPreset {
     private final String metadata_key, format;
     private final Pattern regex;
 
-    public MetadataPreset(final String key, final String format, final String regex){
+    public MetadataPreset(final String key, final String regex, final String format){
         this.metadata_key = key;
-        this.format       = format;
         this.regex        = Pattern.compile(regex);
+        this.format       = format;
     }
 
     public final String getKey(){

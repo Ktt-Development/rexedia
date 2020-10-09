@@ -3,7 +3,9 @@
 🎬 rexedia :: Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
 
 ## Arguments
-**Regular expression will test against the file name without the extension**
+**Regular expression will test against the file name without the extension.**
+**At least one input required.**
+**A cover, metadata, or output; or preset must be specified.**
 
 - `-i` `-input` *[file]* - File or directory path to format. Can be used multiple times.
 - `-w` `-walk` *[boolean]* - If true, subdirectories will also be formatted.
@@ -15,6 +17,7 @@
 - `-p` `-preset` *[boolean]* - The preset file to use. Overrides cover and metadata flags.
 - `-c` `-cover` *[regex]* *[string]* - The regular expression and back reference string to use for cover art.
 - `-m` `-metadata` *[string]* *[regex]* *[string]* - The metadata tag name, the regular expression, and back reference string to use for metadata. Can be used multiple times.
+- `-o` `-output` *[regex]* *[string]* - The regular expression and back reference string to use for output file. If final string has no extensions then the extension of the input file will be used.
 
 ### Example Usage
 
@@ -25,6 +28,15 @@
 ```
 ```sh
 rexedia -i video.mp4 -c "(.+)" "$1.png"
+```
+
+**Assign video a cover art image with the same name and save to new file**
+```
+┬ video.mp4 → video.avi
+└ video.png
+```
+```sh
+rexedia -i video.mp4 -c "(.+)" "$1.png" -o "(.+)" "$1.avi"
 ```
 
 **Assign video metadata based on the name**
@@ -48,6 +60,9 @@ metadata:  # list of metadata tags
   - meta: "name"  # the metadata tag name
     regex: "(.+)"  # the regex capture string
     format: "$1"  # the final metadata value (regex backreferences supported)
+output:  # output file
+  regex: "(.+)"  # the regex capture string
+  format: "$1"  # the final output name (regex backreferences supported)
 ```
 
 ### Example Usage
