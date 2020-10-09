@@ -162,7 +162,7 @@ public class ffmpegTests {
         Assert.assertEquals(metadata.get("date"),ffmpeg.getMetadata(out2).get("date"));
 
         // test remove
-        ffmpeg.apply(out,cover,false,null,false,out3);
+        ffmpeg.apply(out,null,false,null,false,out3);
         Assert.assertNull(ffmpeg.getCoverArt(out3,cover4));
         Assert.assertNull(ffmpeg.getMetadata(out3).get("title"));
         Assert.assertNull(ffmpeg.getMetadata(out3).get("date"));

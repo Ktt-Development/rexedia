@@ -40,7 +40,7 @@ public final class FFMPEG {
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
             "-v", "0",
-            "-show_entries", "format=duration"
+            "-show_entries", "format=duration" // get format tag duration
         };
 
         final String result   = executor.executeFFPROBE(args);
@@ -57,11 +57,11 @@ public final class FFMPEG {
 
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
-            "-select_streams", "v",
             "-v", "0",
-            "-show_entries", "stream=r_frame_rate,nb_read_frames,duration",
-            "-count_frames",
-            "-of","compact=p=1:nk=1",
+            "-select_streams", "v", // video stream only
+            "-show_entries", "stream=r_frame_rate,nb_read_frames,duration", // get framerate, total frames, and duration
+            "-count_frames", // count frames
+            "-of","compact=p=1:nk=1", // other stuff
         };
 
         try{
@@ -89,7 +89,7 @@ public final class FFMPEG {
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
             "-v", "0",
-            "-show_entries", "format_tags",
+            "-show_entries", "format_tags", // get all format tags
         };
 
         try{
@@ -108,8 +108,8 @@ public final class FFMPEG {
     public final File getCoverArt(final File input, final File output){
         final String[] args = {
             "-i", '"' + input.getAbsolutePath() + '"',
-            "-map", "0:2",
-            "-frames:v 1",
+            "-map", "0:2", // get second stream
+            "-frames:v 1", // get image
             "-c","copy",
             "-y",
             '"' + output.getAbsolutePath() + '"'
@@ -121,6 +121,30 @@ public final class FFMPEG {
             e.printStackTrace();
         }
         return output.exists() ? output : null;
+    }
+
+    final Pattern disp = Pattern.compile("\\Q[STREAM]\\E\\r?\\nindex=(\\d+)\\r?\\n\\QDISPOSITION:attached_pic=\\E(\\d+)\\r?\\n\\Q[/STREAM]\\E", Pattern.MULTILINE);
+    public final List<Integer> getCoverArtStream(final File input){
+        final String[] args = new String[]{
+            "-i", '"' + input.getAbsolutePath() + '"',
+            "-v", "0",
+            "-select_streams", "v", // video stream only
+            "-show_entries", "stream_disposition=attached_pic", // get attached pic property
+            "-show_entries", "stream=index" // get index
+        };
+
+        try{
+            final String result   = executor.executeFFPROBE(args);
+            final Matcher matcher = disp.matcher(result);
+
+            final ArrayList<Integer> remove = new ArrayList<>();
+            while(matcher.find())
+                if(matcher.group(2).equals("1"))
+                    remove.add(Integer.parseInt(matcher.group(1)));
+            return Collections.unmodifiableList(remove);
+        }catch(final IOException | NumberFormatException ignored){
+            return Collections.emptyList();
+        }
     }
 
 // ffmpeg
@@ -153,26 +177,30 @@ public final class FFMPEG {
         args.add("-i"); // input
             args.add('"' + INPUT.getAbsolutePath() + '"');
 
-        args.add("-map"); // copy all streams from input
-            args.add("0");
+        // map can not be added here because it would cause the cover map order to be incorrect
 
         if(cover != null && cover.exists()){ // if cover exists
             args.add("-i"); // cover input
                 args.add('"' + cover.getAbsolutePath() + '"');
-            // args.add("-map"); // all streams from first input // todo: remove
-            //     args.add("0");
-            args.add("-map"); // all streames from cover input
+            args.add("-map"); // all streams from cover input (this must come first)
                 args.add("1");
-            args.add("-disposition:0"); // is this needed? // todo
-                args.add("attached_pic");
+            args.add("-map"); // all streams from first input (this must come last)
+                args.add("0");
+            args.add("-disposition:0"); // set stream as an attached_pic
+               args.add("attached_pic");
         }else if((cover == null || !cover.exists()) && !preserveCover){ // if no cover and no preserve (remove cover)
-            // args.add("-map"); // all streams from input // todo: remove
-            //     args.add("0");
-            args.add("-map"); // remove all video streams? (supposed to remove cover) // fixme
-                args.add("-0:v");
+            final List<Integer> covart = getCoverArtStream(INPUT);
+
+            args.add("-map");
+                args.add("0");
+
+            for(final Integer index : covart){
+                args.add("-map"); // remove stream index
+                    args.add("-0:" + index);
+            }
         }else{
-            // args.add("-map"); // copy all streams // todo: remove
-            // args.add("0");
+            args.add("-map");
+            args.add("0");
         }
 
         args.add("-y"); // override ? "-y" : "-n"
