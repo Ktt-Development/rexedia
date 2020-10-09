@@ -4,7 +4,9 @@
 
 ## Arguments
 **Regular expression will test against the file name without the extension.**
+
 **At least one input required.**
+
 **A cover, metadata, or output; or preset must be specified.**
 
 - `-i` `-input` *[file]* - File or directory path to format. Can be used multiple times.
@@ -17,7 +19,7 @@
 - `-p` `-preset` *[boolean]* - The preset file to use. Overrides cover and metadata flags.
 - `-c` `-cover` *[regex]* *[string]* - The regular expression and back reference string to use for cover art.
 - `-m` `-metadata` *[string]* *[regex]* *[string]* - The metadata tag name, the regular expression, and back reference string to use for metadata. Can be used multiple times.
-- `-o` `-output` *[regex]* *[string]* - The regular expression and back reference string to use for output file. If final string has no extensions then the extension of the input file will be used.
+- `-o` `-output` *[regex]* *[string]* - The regular expression and back reference string to use for output file. If the final string has no extensions then the extension of the input file will be used.
 
 ### Example Usage
 
@@ -73,8 +75,8 @@ output:  # output file
 └ preset.yml            ├ episode_number = 2
                         └ show = video
 ```
-`preset.yml`
 ```yml
+// preset.yml
 metadata:  
   - meta: "season_number"  
     regex: "\\[S0*(\\d*) E0*\\d*\\]"
