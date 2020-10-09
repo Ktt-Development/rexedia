@@ -21,7 +21,7 @@ public final class PresetParser {
         // cover
         final YamlMapping cover = map.yamlMapping(Preset.COVER);
         if(cover != null)
-            preset.setCoverPreset(new MetadataPreset(null,Objects.requireNonNull(cover.string(Preset.FORMAT)),Objects.requireNonNull(cover.string(Preset.REGEX))));
+            preset.setCoverPreset(new MetadataPreset(null,Objects.requireNonNull(cover.string(Preset.REGEX)),Objects.requireNonNull(cover.string(Preset.FORMAT))));
         // meta
         final YamlSequence meta = map.yamlSequence(Preset.METADATA);
         if(meta != null)
@@ -30,13 +30,13 @@ public final class PresetParser {
         // output
         final YamlMapping output = map.yamlMapping(Preset.OUTPUT);
         if(output != null)
-            preset.setOutputPreset(new MetadataPreset(null,Objects.requireNonNull(output.string(Preset.FORMAT)),Objects.requireNonNull(output.string(Preset.REGEX))));
+            preset.setOutputPreset(new MetadataPreset(null,Objects.requireNonNull(output.string(Preset.REGEX)),Objects.requireNonNull(output.string(Preset.FORMAT))));
 
         return preset.build();
     }
 
     private MetadataPreset parseMetadataPreset(final YamlMapping yaml) throws NullPointerException{
-        return new MetadataPreset(Objects.requireNonNull(yaml.string(Preset.META)), Objects.requireNonNull(yaml.string(Preset.FORMAT)), Objects.requireNonNull(yaml.string(Preset.REGEX)));
+        return new MetadataPreset(Objects.requireNonNull(yaml.string(Preset.META)),Objects.requireNonNull(yaml.string(Preset.REGEX)),Objects.requireNonNull(yaml.string(Preset.FORMAT)));
     }
 
 }

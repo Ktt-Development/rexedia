@@ -12,9 +12,9 @@ public class PresetParserTests {
     @Test
     public void testFile() throws IOException{
         final Preset preset = new PresetParser().parse(new File("src/test/resources/preset/preset.yml"));
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),preset.getCoverPreset());
-        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),preset.getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),preset.getOutputPreset());
+        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getCoverPreset());
+        Assert.assertEquals(new MetadataPreset("name","(.+)","$1"),preset.getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
     }
 
     @Test
@@ -30,8 +30,8 @@ public class PresetParserTests {
 
         final Preset preset = new PresetParser().parse(yaml);
         Assert.assertNull(preset.getCoverPreset());
-        Assert.assertEquals(new MetadataPreset("name","$1","(.+)"),preset.getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),preset.getOutputPreset());
+        Assert.assertEquals(new MetadataPreset("name","(.+)","$1"),preset.getPresets()[0]);
+        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
     }
 
     @Test
@@ -45,9 +45,9 @@ public class PresetParserTests {
             "  regex: '(.+)'";
 
         final Preset preset = new PresetParser().parse(yaml);
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),new PresetParser().parse(yaml).getCoverPreset());
+        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),new PresetParser().parse(yaml).getCoverPreset());
         Assert.assertEquals(0,preset.getPresets().length);
-        Assert.assertEquals(new MetadataPreset(null,"$1","(.+)"),preset.getOutputPreset());
+        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
     }
 
     @Test

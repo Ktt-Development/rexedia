@@ -1,10 +1,10 @@
 cover:
-  format: "$1"
   regex: "(.+)"
+  format: "$1"
 metadata:
   - meta: "name"
-    format: "$1"
     regex: "(.+)"
+    format: "$1"
 output:
-  format: "$1"
   regex: "(.+)"
+  format: "$1"
