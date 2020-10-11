@@ -69,14 +69,15 @@ public abstract class Main {
                         queue.add(file);
                     else
                         if(!walk)
-                            queue.addAll(Arrays.asList(Objects.requireNonNullElse(file.listFiles(), new File[0])));
+                            queue.addAll(Arrays.asList(Objects.requireNonNullElse(file.listFiles(File::isFile), new File[0])));
                         else
                             try{
-                                Files.walk(file.toPath()).forEach(path -> queue.add(path.toFile()));
+                                Files.walk(file.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> queue.add(path.toFile()));
                             }catch(final IOException e){
                                 logger.warning("Failed to walk through directory " + file.getAbsolutePath() + '\n' + ExceptionUtil.getStackTraceAsString(e));
                             }
                 logger.fine("Starting file format");
+                logger.fine("Loaded file queue: " + queue);
                 final MetadataFormatter formatter = new MetadataFormatter(config,new FFMPEG(),preset);
 
                 final int size = queue.size();
