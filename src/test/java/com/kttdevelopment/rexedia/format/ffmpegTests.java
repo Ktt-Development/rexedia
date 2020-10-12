@@ -18,10 +18,11 @@ public class ffmpegTests {
     public static void initFFMPEG() throws IOException{
         Logger.getGlobal().setLevel(Level.ALL);
         Logger.getGlobal().setUseParentHandlers(false);
-        Logger.getGlobal().addHandler(new ConsoleHandler() {{
-            setLevel(Level.ALL);
-            setFormatter(new LoggerFormatter(false,true));
-        }});
+        if(Logger.getGlobal().getHandlers().length == 0)
+            Logger.getGlobal().addHandler(new ConsoleHandler() {{
+                setLevel(Level.ALL);
+                setFormatter(new LoggerFormatter(false,true));
+            }});
 
         if(!ffmpeg.isValidInstallation()) // use bin if no local installation
             ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");

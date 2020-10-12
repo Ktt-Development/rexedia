@@ -29,7 +29,8 @@ public class MainTests {
         // logging
         Logger.getGlobal().setLevel(Level.ALL);
         Logger.getGlobal().setUseParentHandlers(false);
-        Logger.getGlobal().addHandler(new ConsoleHandler() {{
+        if(Logger.getGlobal().getHandlers().length == 0)
+            Logger.getGlobal().addHandler(new ConsoleHandler() {{
             setLevel(Level.ALL);
             setFormatter(new LoggerFormatter(false, true));
         }});
@@ -76,7 +77,7 @@ public class MainTests {
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-logging\""
+            "-o", "\"(.+)\"", "\"$1-logging\""
         });
 
         Assert.assertNull(getFile(new File("."),"\\d+\\Q.log\\E"));
@@ -88,7 +89,7 @@ public class MainTests {
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-logging\"",
+            "-o", "\"(.+)\"", "\"$1-logging\"",
             "-l"
         });
 
@@ -101,7 +102,7 @@ public class MainTests {
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-logging\"",
+            "-o", "\"(.+)\"", "\"$1-logging\"",
             "-d"
         });
         Assert.assertTrue(debug.exists());
@@ -130,7 +131,7 @@ public class MainTests {
             Main.main(new String[]{
                 "-i", '"' + input + '"',
                 "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-                "-o", "(.+)", "\"$1-corrupt\""
+                "-o", "\"(.+)\"", "\"$1-corrupt\""
             });
             Assert.assertFalse(new File(main, "video-corrupt.mp4").exists());
         }
@@ -141,7 +142,7 @@ public class MainTests {
             Main.main(new String[]{
                 "-i", '"' + input + '"',
                 "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-                "-o", "(.+)", "\"$1-valid\""
+                "-o", "\"(.+)\"", "\"$1-valid\""
             });
 
             final File output = new File(main, "video-valid.mp4");
@@ -159,7 +160,7 @@ public class MainTests {
             Main.main(new String[]{
                 "-i", '"' + input + '"',
                 "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-                "-o", "(.+)", "\"$1-valid2\""
+                "-o", "\"(.+)\"", "\"$1-valid2\""
             });
 
             final File output = new File(main, "video-valid2.mp4");
@@ -181,7 +182,7 @@ public class MainTests {
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-backup\""
+            "-o", "\"(.+)\"", "\"$1-backup\""
         });
 
         Assert.assertNull(getFile(main,".+\\Q.backup.\\E.+"));
@@ -189,7 +190,7 @@ public class MainTests {
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-backup\"",
+            "-o", "\"(.+)\"", "\"$1-backup\"",
             "-b"
         });
 
@@ -198,7 +199,7 @@ public class MainTests {
 
     @Test
     public void testPresetOverrideArgs(){
-        final File preset = new File("preset.yml");
+        final File preset  = new File("preset.yml");
         final String input = video.getAbsolutePath();
 
         TestUtil.createTestFile(
@@ -206,13 +207,15 @@ public class MainTests {
             "metadata:\n" +
             "  - meta: 'title'\n" +
             "    regex: '(.+)'\n" +
-            "    format: '$1.preset'"
+            "    format: '$1.preset'\n" +
+            "output:\n" +
+            "  regex: '(.+)'\n" +
+            "  format: '$1-preset'"
         );
 
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-            "-o", "(.+)", "\"$1-preset\"",
             "-p", '"' + preset.getAbsolutePath() + '"'
         });
 
