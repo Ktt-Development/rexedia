@@ -1,6 +1,5 @@
-package format;
+package com.kttdevelopment.rexedia.format;
 
-import com.kttdevelopment.rexedia.format.FFMPEG;
 import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import org.junit.*;
 

@@ -1,6 +1,5 @@
-package preset;
+package com.kttdevelopment.rexedia.preset;
 
-import com.kttdevelopment.rexedia.preset.*;
 import org.junit.Assert;
 import org.junit.Test;
 

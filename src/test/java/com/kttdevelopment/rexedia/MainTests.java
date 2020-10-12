@@ -1,3 +1,5 @@
+package com.kttdevelopment.rexedia;
+
 import com.kttdevelopment.core.tests.TestUtil;
 import com.kttdevelopment.rexedia.Main;
 import com.kttdevelopment.rexedia.format.FFMPEG;

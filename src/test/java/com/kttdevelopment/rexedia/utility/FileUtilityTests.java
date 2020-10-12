@@ -1,7 +1,6 @@
-package utility;
+package com.kttdevelopment.rexedia.utility;
 
 import com.kttdevelopment.core.tests.TestUtil;
-import com.kttdevelopment.rexedia.utility.FileUtility;
 import org.junit.Assert;
 import org.junit.Test;
 

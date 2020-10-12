@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia.format;
 
-import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
+import com.kttdevelopment.core.exceptions.ExceptionUtil;
 import com.kttdevelopment.rexedia.config.Configuration;
 import com.kttdevelopment.rexedia.preset.MetadataPreset;
 import com.kttdevelopment.rexedia.preset.Preset;

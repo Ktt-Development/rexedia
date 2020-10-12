@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia;
 
-import com.kttdevelopment.core.tests.exceptions.ExceptionUtil;
+import com.kttdevelopment.core.exceptions.ExceptionUtil;
 import com.kttdevelopment.rexedia.config.Configuration;
 import com.kttdevelopment.rexedia.format.FFMPEG;
 import com.kttdevelopment.rexedia.format.MetadataFormatter;

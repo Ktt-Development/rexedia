@@ -1,6 +1,5 @@
-package config;
+package com.kttdevelopment.rexedia.config;
 
-import com.kttdevelopment.rexedia.config.Configuration;
 import com.kttdevelopment.rexedia.preset.MetadataPreset;
 import org.apache.commons.cli.*;
 import org.junit.*;

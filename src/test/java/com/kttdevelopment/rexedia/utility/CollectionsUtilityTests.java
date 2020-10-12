@@ -1,6 +1,5 @@
-package utility;
+package com.kttdevelopment.rexedia.utility;
 
-import com.kttdevelopment.rexedia.utility.CollectionsUtility;
 import org.junit.Assert;
 import org.junit.Test;
 
