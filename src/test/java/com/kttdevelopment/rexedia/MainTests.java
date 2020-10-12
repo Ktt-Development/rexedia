@@ -22,7 +22,7 @@ public class MainTests {
     private static final Path sc = Paths.get("src/test/resources/format/corrupt.mp4");
     private static final Path sv = Paths.get("src/test/resources/format/video.mp4");
 
-    private static FFMPEG ffmpeg = new FFMPEG();
+    private static final FFMPEG ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
     @BeforeClass
     public static void setup() throws IOException{
@@ -34,10 +34,6 @@ public class MainTests {
             setLevel(Level.ALL);
             setFormatter(new LoggerFormatter(false, true));
         }});
-
-        // ffmpeg
-        if(!ffmpeg.isValidInstallation()) // use bin if no local installation
-            ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         // files
         Assert.assertTrue(main.exists() || main.mkdirs());

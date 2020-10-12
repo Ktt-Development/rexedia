@@ -49,7 +49,7 @@ final class CommandExecutor {
         executor.setStreamHandler(new PumpStreamHandler(OUT));
         try{
             executor.execute(cmd);
-        }catch(final ExecuteException e){
+        }catch(final Throwable e){
             result = OUT.toString().trim();
             logger.severe('\n' + result);
             logger.log(Level.FINER,"--- [ END EXECUTION ] ---");

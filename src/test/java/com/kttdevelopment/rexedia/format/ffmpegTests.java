@@ -12,7 +12,7 @@ import java.util.logging.*;
 @SuppressWarnings("SpellCheckingInspection")
 public class ffmpegTests {
 
-    private static FFMPEG ffmpeg = new FFMPEG();
+    private static final FFMPEG ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
     @BeforeClass
     public static void initFFMPEG() throws IOException{
@@ -23,9 +23,6 @@ public class ffmpegTests {
                 setLevel(Level.ALL);
                 setFormatter(new LoggerFormatter(false,true));
             }});
-
-        if(!ffmpeg.isValidInstallation()) // use bin if no local installation
-            ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
 
         if(!input.exists())
             Files.copy(new File("src/test/resources/format/video.mp4").toPath(),input.toPath());
