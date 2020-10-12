@@ -32,12 +32,13 @@ public final class MetadataFormatter {
 
         final Logger logger = Logger.getGlobal();
         final String abs    = file.getAbsolutePath();
+
         // check if input is a media file (verify file integrity)
         {
             logger.info(String.format(lstr, "VERIFY / MEDIA ", 1));
             logger.fine("Verifying " + abs);
             if(!ffmpeg.verifyFileIntegrity(file)){
-                logger.severe("Failed to verify " + abs + " (file was corrupt)");
+                logger.severe("Failed to verify " + abs + " (file was " + (file.exists() ? "corrupt" : "missing") + ")");
                 return false;
             }else
                 logger.finer("Verified file " + abs);
@@ -56,6 +57,7 @@ public final class MetadataFormatter {
         final String babs;
         {
             backup = getUsableFile(new File(parent,String.format("%s.backup.%s",name,ext)));
+
             babs   = backup.getAbsolutePath();
 
             logger.info(String.format(lstr, "CLONE  / BACKUP", 2));
@@ -71,7 +73,7 @@ public final class MetadataFormatter {
             logger.info(String.format(lstr, "VERIFY / BACKUP", 3));
             logger.fine("Verifying backup " + babs);
             if(!ffmpeg.verifyFileIntegrity(backup)){
-                logger.severe("Failed to verify backup " + babs + " (file was corrupt)");
+                logger.severe("Failed to verify " + babs + " (file was " + (backup.exists() ? "corrupt" : "missing") + ")");
                 return false;
             }else
                 logger.finer("Verified backup " + babs);
