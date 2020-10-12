@@ -160,7 +160,8 @@ public class MainTests {
             Main.main(new String[]{
                 "-i", '"' + input + '"',
                 "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
-                "-o", "\"(.+)\"", "\"$1-valid2\""
+                "-o", "\"(.+)\"", "\"$1-valid2\"",
+                "-w"
             });
 
             final File output = new File(main, "video-valid2.mp4");
