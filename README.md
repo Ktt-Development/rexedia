@@ -7,7 +7,7 @@
 
 **At least one input required.**
 
-**A cover, metadata, or output; or preset must be specified.**
+**A cover, metadata, or output; or preset must be specified. If a preset is specified then the cover, metadata, and output flags will be ignored.**
 
 - `-i` `-input` *[file]* - File or directory path to format. Can be used multiple times.
 - `-w` `-walk` *[boolean]* - If true, subdirectories will also be formatted.
