@@ -15,11 +15,6 @@ public class ffmpegTests {
 
     private static FFMPEG ffmpeg = new FFMPEG();
 
-    /* fixme
-            DO NOT FORCEFULLY STOP INTELLIJ EXECUTION;
-            THIS MAY BE CAUSE OF PERMISSION DENIED ISSUE
-     */
-
     @BeforeClass
     public static void initFFMPEG() throws IOException{
         Logger.getGlobal().setLevel(Level.ALL);

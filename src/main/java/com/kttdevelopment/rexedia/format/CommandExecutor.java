@@ -5,8 +5,6 @@ import org.apache.commons.exec.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +36,6 @@ final class CommandExecutor {
         final String asString = String.join(" ", a);
 
         logger.log(Level.FINER,"Executing args:\n" + asString);
-
 
         logger.log(Level.FINER,"--- [ START EXECUTION ] ---");
 

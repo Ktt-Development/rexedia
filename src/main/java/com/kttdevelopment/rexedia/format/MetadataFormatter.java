@@ -95,24 +95,21 @@ public final class MetadataFormatter {
         // apply cover & metadata
         {
             final MetadataPreset covp = preset.getCoverPreset();
-            if(covp == null)
-                logger.fine("Skipping cover art (no cover art preset)");
-            else{
-                final File cover = new File(parent,preset.getCoverPreset().format(name));
-                final Map<String,String> metadata = new HashMap<>();
-                for(final MetadataPreset meta : preset.getPresets())
-                    metadata.put(meta.getKey(),meta.format(name));
-                logger.fine("Applying preset to file " + abs + '\n' + preset);
-                logger.finer("Cover file: " + cover.getAbsolutePath());
-                logger.finer("Metadata: " + metadata);
-                logger.info(String.format(lstr, "APPLY  / MEDIA ", 4));
 
-                try{
-                    ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, output);
-                }catch(final IOException e){
-                    logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
-                    return false;
-                }
+            final File cover = covp == null ? null : new File(parent,preset.getCoverPreset().format(name));
+            final Map<String,String> metadata = new HashMap<>();
+            for(final MetadataPreset meta : preset.getPresets())
+                metadata.put(meta.getKey(),meta.format(name));
+            logger.fine("Applying preset to file " + abs + '\n' + preset);
+            logger.finer("Cover file: " + (covp == null ? null : cover.getAbsolutePath()));
+            logger.finer("Metadata: " + metadata);
+            logger.info(String.format(lstr, "APPLY  / MEDIA ", 4));
+
+            try{
+                ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, output);
+            }catch(final IOException e){
+                logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                return false;
             }
 
         }
