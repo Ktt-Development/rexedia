@@ -89,7 +89,7 @@ public final class MetadataFormatter {
                 output = file;
             else{
                 final String out = target.format(name);
-                output = getUsableFile(new File(parent,out + (out.contains(".") ? "" : ext)));
+                output = getUsableFile(new File(parent,out + (out.contains(".") ? "" : '.' + ext)));
             }
             logger.fine("Set output file as " + output.getAbsolutePath());
         }

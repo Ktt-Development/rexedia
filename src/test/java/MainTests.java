@@ -20,7 +20,7 @@ public class MainTests {
     private static final Path sc = Paths.get("src/test/resources/format/corrupt.mp4");
     private static final Path sv = Paths.get("src/test/resources/format/video.mp4");
 
-    private static FFMPEG ffmpeg;
+    private static FFMPEG ffmpeg = new FFMPEG();
 
     @BeforeClass
     public static void setup() throws IOException{
@@ -40,12 +40,12 @@ public class MainTests {
         Assert.assertTrue(main.exists() || main.mkdirs());
 
         Files.copy(
-                sc,
+            sc,
             corrupt.toPath(),
             StandardCopyOption.REPLACE_EXISTING
         );
         Files.copy(
-                sv,
+            sv,
             video.toPath(),
             StandardCopyOption.REPLACE_EXISTING
         );
@@ -89,6 +89,7 @@ public class MainTests {
             "-o", "(.+)", "\"$1-logging\"",
             "-l"
         });
+
         Assert.assertNotNull(log = getFile(new File("."),"\\d+\\Q.log\\E"));
         Assert.assertTrue(latest.exists());
 
