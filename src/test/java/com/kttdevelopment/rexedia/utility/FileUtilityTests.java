@@ -37,15 +37,14 @@ public class FileUtilityTests {
         final String
             name = String.valueOf(System.currentTimeMillis()),
             ext = "txt";
-        final File resources = new File("src/test/resources");
-        File file = new File(resources,name + '.' + ext);
+        File file = new File(dir.getRoot(),name + '.' + ext);
         Assert.assertEquals(file,FileUtility.getFreeFile(file));
         // test blocked
-        dir.newFile(name + '.' + ext);
-        Assert.assertEquals(new File(resources,name + " (0)." + ext), FileUtility.getFreeFile(file));
+        dir.newFile(file.getName());
+        Assert.assertEquals(new File(dir.getRoot(),name + " (0)." + ext), FileUtility.getFreeFile(file));
         // test double blocked
         dir.newFile(name + " (0)." + ext);
-        Assert.assertEquals(new File(resources,name + " (1)." + ext), FileUtility.getFreeFile(file));
+        Assert.assertEquals(new File(dir.getRoot(),name + " (1)." + ext), FileUtility.getFreeFile(file));
     }
 
 }
