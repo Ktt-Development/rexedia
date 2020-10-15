@@ -1,16 +1,35 @@
 package com.kttdevelopment.rexedia.preset;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class PresetParserTests {
 
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+
     @Test
     public void testFile() throws IOException{
-        final Preset preset = new PresetParser().parse(new File("src/test/resources/preset/preset.yml"));
+        final String yml =
+            "cover:\n" +
+            "  regex: \"(.+)\"\n" +
+            "  format: \"$1\"\n" +
+            "metadata:\n" +
+            "  - meta: \"name\"\n" +
+            "    regex: \"(.+)\"\n" +
+            "    format: \"$1\"\n" +
+            "output:\n" +
+            "  regex: \"(.+)\"\n" +
+            "  format: \"$1\"";
+
+        final File presetFile = dir.newFile();
+        Files.write(presetFile.toPath(),yml.getBytes());
+
+        final Preset preset = new PresetParser().parse(presetFile);
         Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getCoverPreset());
         Assert.assertEquals(new MetadataPreset("name","(.+)","$1"),preset.getPresets()[0]);
         Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());

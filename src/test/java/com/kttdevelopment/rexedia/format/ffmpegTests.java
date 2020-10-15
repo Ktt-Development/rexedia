@@ -2,6 +2,7 @@ package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -40,6 +41,9 @@ public class ffmpegTests {
         }catch(final Throwable ignored){ }
     }
 
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+
     @Test
     public void testDuration() throws IOException{
         Assert.assertEquals(4.97f,ffmpeg.getDuration(new File("src/test/resources/format/video.mp4")),0);
@@ -68,8 +72,7 @@ public class ffmpegTests {
 
     @Test
     public void testApplyNone() throws IOException{
-        final File out = new File(input.getParentFile(), UUID.randomUUID() + ".mp4");
-        out.deleteOnExit();
+        final File out = dir.newFile();
 
         ffmpeg.apply(input,null,true,null,true,out);
         Assert.assertEquals(input.length(),out.length());
@@ -78,12 +81,9 @@ public class ffmpegTests {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void testApplyCover() throws IOException{
-        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out3.deleteOnExit();
+        final File out = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out2 = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out3 = dir.newFile(UUID.randomUUID() + ".mp4");
 
         ffmpeg.apply(input,cover,false,null,false,out);
         Assert.assertEquals(cover.length(),ffmpeg.getCoverArt(out,cover2).length());
@@ -100,20 +100,16 @@ public class ffmpegTests {
     @Test(expected = OutOfMemoryError.class)
     public void testOversizedCover() throws IOException{
         final File cover = new File("src/test/resources/format/apply/oversized.png");
-        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out.deleteOnExit();
+        final File out = dir.newFile();
 
         ffmpeg.apply(input,cover,false,null,false,out);
     }
 
     @Test
     public void testApplyMetadata() throws IOException{
-        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out3.deleteOnExit();
+        final File out = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out2 = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out3 = dir.newFile(UUID.randomUUID() + ".mp4");
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(UUID.randomUUID()));
 
         ffmpeg.apply(input,null,false,metadata,false,out);
@@ -134,12 +130,9 @@ public class ffmpegTests {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void testApplyAll() throws IOException{
-        final File out = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out.deleteOnExit();
-        final File out2 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out2.deleteOnExit();
-        final File out3 = new File(input.getParentFile(),UUID.randomUUID() + ".mp4");
-        out3.deleteOnExit();
+        final File out = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out2 = dir.newFile(UUID.randomUUID() + ".mp4");
+        final File out3 = dir.newFile(UUID.randomUUID() + ".mp4");
         final Map<String,String> metadata = Map.of("title","value","date",String.valueOf(UUID.randomUUID()));
 
         ffmpeg.apply(input,cover,false,metadata,false,out);

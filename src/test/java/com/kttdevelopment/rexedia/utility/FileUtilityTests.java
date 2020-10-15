@@ -1,10 +1,10 @@
 package com.kttdevelopment.rexedia.utility;
 
-import com.kttdevelopment.core.tests.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileUtilityTests {
 
@@ -28,22 +28,23 @@ public class FileUtilityTests {
         Assert.assertEquals("",FileUtility.getFileExtension("filename"));
     }
 
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+
     @Test
-    public void testUnblockedFile(){
+    public void testUnblockedFile() throws IOException{
         // test unblocked
         final String
             name = String.valueOf(System.currentTimeMillis()),
             ext = "txt";
-        final File resources = new File("src/test/resources");
-        File file = new File(resources,name + '.' + ext);
+        File file = new File(dir.getRoot(),name + '.' + ext);
         Assert.assertEquals(file,FileUtility.getFreeFile(file));
         // test blocked
-        TestUtil.createTestFile(file);
-        final File file2;
-        Assert.assertEquals(file2 = new File(resources,name + " (0)." + ext), FileUtility.getFreeFile(file));
+        dir.newFile(file.getName());
+        Assert.assertEquals(new File(dir.getRoot(),name + " (0)." + ext), FileUtility.getFreeFile(file));
         // test double blocked
-        TestUtil.createTestFile(file2);
-        Assert.assertEquals(new File(resources,name + " (1)." + ext), FileUtility.getFreeFile(file));
+        dir.newFile(name + " (0)." + ext);
+        Assert.assertEquals(new File(dir.getRoot(),name + " (1)." + ext), FileUtility.getFreeFile(file));
     }
 
 }
