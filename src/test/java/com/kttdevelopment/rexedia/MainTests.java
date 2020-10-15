@@ -1,6 +1,5 @@
 package com.kttdevelopment.rexedia;
 
-import com.kttdevelopment.core.tests.TestUtil;
 import com.kttdevelopment.rexedia.format.FFMPEG;
 import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import org.junit.*;
@@ -223,18 +222,7 @@ public class MainTests {
 
         final File preset = dir.newFile();
         Files.write(preset.toPath(),yml.getBytes());
-
-        TestUtil.createTestFile(
-            new File("preset.yml"),
-            "metadata:\n" +
-            "  - meta: 'title'\n" +
-            "    regex: '(.+)'\n" +
-            "    format: '" + unique + "'\n" +
-            "output:\n" +
-            "  regex: '(.+)'\n" +
-            "  format: '$1-" + unique + "'"
-        );
-
+        
         Main.main(new String[]{
             "-i", '"' + input + '"',
             "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
