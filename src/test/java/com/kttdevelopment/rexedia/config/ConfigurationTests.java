@@ -3,9 +3,11 @@ package com.kttdevelopment.rexedia.config;
 import com.kttdevelopment.rexedia.preset.MetadataPreset;
 import org.apache.commons.cli.*;
 import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import static com.kttdevelopment.rexedia.config.Configuration.*;
 
@@ -43,9 +45,27 @@ public class ConfigurationTests {
         new Configuration("-input", "file.mp4");
     }
 
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+
     @Test
     public void testPresetSubstituteMeta() throws IOException, ParseException{
-        new Configuration("-input", "file.mp4","-preset","src/test/resources/preset/preset.yml");
+        final String yml =
+            "cover:\n" +
+            "  regex: \"(.+)\"\n" +
+            "  format: \"$1\"\n" +
+            "metadata:\n" +
+            "  - meta: \"name\"\n" +
+            "    regex: \"(.+)\"\n" +
+            "    format: \"$1\"\n" +
+            "output:\n" +
+            "  regex: \"(.+)\"\n" +
+            "  format: \"$1\"";
+
+        final File presetFile = dir.newFile();
+        Files.write(presetFile.toPath(), yml.getBytes());
+
+        new Configuration("-input", "file.mp4","-preset",'"' + presetFile.getAbsolutePath() + '"');
     }
 
     @Test(expected = MissingArgumentException.class)

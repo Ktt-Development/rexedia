@@ -1,10 +1,10 @@
 package com.kttdevelopment.rexedia.utility;
 
-import com.kttdevelopment.core.tests.TestUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileUtilityTests {
 
@@ -28,8 +28,11 @@ public class FileUtilityTests {
         Assert.assertEquals("",FileUtility.getFileExtension("filename"));
     }
 
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+
     @Test
-    public void testUnblockedFile(){
+    public void testUnblockedFile() throws IOException{
         // test unblocked
         final String
             name = String.valueOf(System.currentTimeMillis()),
@@ -38,11 +41,10 @@ public class FileUtilityTests {
         File file = new File(resources,name + '.' + ext);
         Assert.assertEquals(file,FileUtility.getFreeFile(file));
         // test blocked
-        TestUtil.createTestFile(file);
-        final File file2;
-        Assert.assertEquals(file2 = new File(resources,name + " (0)." + ext), FileUtility.getFreeFile(file));
+        dir.newFile(name + '.' + ext);
+        Assert.assertEquals(new File(resources,name + " (0)." + ext), FileUtility.getFreeFile(file));
         // test double blocked
-        TestUtil.createTestFile(file2);
+        dir.newFile(name + " (0)." + ext);
         Assert.assertEquals(new File(resources,name + " (1)." + ext), FileUtility.getFreeFile(file));
     }
 

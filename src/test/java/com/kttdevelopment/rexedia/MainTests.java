@@ -4,6 +4,7 @@ import com.kttdevelopment.core.tests.TestUtil;
 import com.kttdevelopment.rexedia.format.FFMPEG;
 import com.kttdevelopment.rexedia.logger.LoggerFormatter;
 import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import java.util.regex.Pattern;
 
 public class MainTests {
 
-    private static final File main    = new File("src/test/resources/main");
+    private static final File main = new File("src/test/resources/main");
+
     private static final File corrupt = new File("src/test/resources/main/corrupt.mp4");
     private static final File video   = new File("src/test/resources/main/video.mp4");
 
@@ -48,15 +50,19 @@ public class MainTests {
             video.toPath(),
             StandardCopyOption.REPLACE_EXISTING
         );
+
+        corrupt.deleteOnExit();
+        video.deleteOnExit();
     }
 
     @AfterClass
     public static void cleanup() throws IOException{
-        for(final File file : Objects.requireNonNullElse(new File(main, "walk").listFiles(),new File[0]))
-            Files.delete(file.toPath());
         for(final File file : Objects.requireNonNullElse(main.listFiles(), new File[0]))
             Files.delete(file.toPath());
     }
+
+    @Rule
+    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
 
     //
 
@@ -117,7 +123,7 @@ public class MainTests {
 
     @Test // this method also tests preset as args
     public void testInput() throws IOException{
-        final File walk = new File(main,"walk");
+        final File walk = dir.newFolder();
         final File walkv = new File(walk,"video.mp4");
         Assert.assertTrue(walk.exists() || walk.mkdirs());
         Files.copy(video.toPath(),walkv.toPath(),StandardCopyOption.REPLACE_EXISTING);
@@ -133,7 +139,7 @@ public class MainTests {
                 "-m", "\"title\"", "\"(.+)\"", "\"$1\"",
                 "-o", "\"(.+)\"", "\"$1-" + unique + "\""
             });
-            Assert.assertFalse(new File(main, "video-" + unique + ".mp4").exists());
+            Assert.assertFalse(new File(dir.getRoot(), "video-" + unique + ".mp4").exists());
         }
         // test no walk
         {
@@ -146,7 +152,7 @@ public class MainTests {
                 "-o", "\"(.+)\"", "\"$1-" + unique + "\""
             });
 
-            final File output = new File(main, "video-" + unique + ".mp4");
+            final File output = new File(dir.getRoot(), "video-" + unique + ".mp4");
             final File outputw = new File(walk, "video-" + unique + ".mp4");
             output.deleteOnExit();
 
@@ -166,7 +172,7 @@ public class MainTests {
                 "-w"
             });
 
-            final File output = new File(main, "video-" + unique + ".mp4");
+            final File output = new File(dir.getRoot(), "video-" + unique + ".mp4");
             output.deleteOnExit();
             final File outputw = new File(walk, "video-" + unique + ".mp4");
             outputw.deleteOnExit();
@@ -189,7 +195,7 @@ public class MainTests {
             "-o", "\"(.+)\"", "\"$1-" + unique + "\""
         });
 
-        Assert.assertNull(getFile(main,".+\\Q.backup.\\E.+"));
+        Assert.assertNull(getFile(dir.getRoot(),".+\\Q.backup.\\E.+"));
 
         Main.main(new String[]{
             "-i", '"' + input + '"',
@@ -198,14 +204,25 @@ public class MainTests {
             "-b"
         });
 
-        Assert.assertNotNull(getFile(main,".+\\Q.backup.\\E.+"));
+        Assert.assertNotNull(getFile(dir.getRoot(),".+\\Q.backup.\\E.+"));
     }
 
     @Test
-    public void testPresetOverrideArgs(){
+    public void testPresetOverrideArgs() throws IOException{
         final String unique = String.valueOf(UUID.randomUUID());
-        final File preset   = new File("preset.yml");
         final String input  = video.getAbsolutePath();
+
+        final String yml =
+            "metadata:\n" +
+            "  - meta: 'title'\n" +
+            "    regex: '(.+)'\n" +
+            "    format: '" + unique + "'\n" +
+            "output:\n" +
+            "  regex: '(.+)'\n" +
+            "  format: '$1-" + unique + "'";
+
+        final File preset = dir.newFile();
+        Files.write(preset.toPath(),yml.getBytes());
 
         TestUtil.createTestFile(
             new File("preset.yml"),
@@ -224,7 +241,9 @@ public class MainTests {
             "-p", '"' + preset.getAbsolutePath() + '"'
         });
 
-        Assert.assertEquals(unique, ffmpeg.getMetadata(new File(main,"video-" + unique + ".mp4")).get("title"));
+        final File output = new File(dir.getRoot(),"video-" + unique + ".mp4");
+        output.deleteOnExit();
+        Assert.assertEquals(unique, ffmpeg.getMetadata(output).get("title"));
     }
 
 }
