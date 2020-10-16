@@ -1,16 +1,18 @@
 package com.kttdevelopment.rexedia.preset;
 
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 public class PresetParserTests {
 
-    @Rule
-    public final TemporaryFolder dir = new TemporaryFolder(new File("."));
+    @TempDir
+    public final File dir = new File(String.valueOf(UUID.randomUUID()));
 
     @Test
     public void testFile() throws IOException{
@@ -26,13 +28,13 @@ public class PresetParserTests {
             "  regex: \"(.+)\"\n" +
             "  format: \"$1\"";
 
-        final File presetFile = dir.newFile();
-        Files.write(presetFile.toPath(),yml.getBytes());
+        final File presetFile = new File(dir, String.valueOf(UUID.randomUUID()));
+        Files.write(presetFile.toPath(), yml.getBytes());
 
         final Preset preset = new PresetParser().parse(presetFile);
-        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getCoverPreset());
-        Assert.assertEquals(new MetadataPreset("name","(.+)","$1"),preset.getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
+        Assertions.assertEquals(new MetadataPreset(null, "(.+)", "$1"), preset.getCoverPreset());
+        Assertions.assertEquals(new MetadataPreset("name","(.+)","$1"), preset.getPresets()[0]);
+        Assertions.assertEquals(new MetadataPreset(null,"(.+)","$1"), preset.getOutputPreset());
     }
 
     @Test
@@ -47,9 +49,9 @@ public class PresetParserTests {
             "  regex: '(.+)'";
 
         final Preset preset = new PresetParser().parse(yaml);
-        Assert.assertNull(preset.getCoverPreset());
-        Assert.assertEquals(new MetadataPreset("name","(.+)","$1"),preset.getPresets()[0]);
-        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
+        Assertions.assertNull(preset.getCoverPreset());
+        Assertions.assertEquals(new MetadataPreset("name","(.+)","$1"), preset.getPresets()[0]);
+        Assertions.assertEquals(new MetadataPreset(null,"(.+)","$1"), preset.getOutputPreset());
     }
 
     @Test
@@ -63,80 +65,80 @@ public class PresetParserTests {
             "  regex: '(.+)'";
 
         final Preset preset = new PresetParser().parse(yaml);
-        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),new PresetParser().parse(yaml).getCoverPreset());
-        Assert.assertEquals(0,preset.getPresets().length);
-        Assert.assertEquals(new MetadataPreset(null,"(.+)","$1"),preset.getOutputPreset());
+        Assertions.assertEquals(new MetadataPreset(null,"(.+)","$1"), new PresetParser().parse(yaml).getCoverPreset());
+        Assertions.assertEquals(0, preset.getPresets().length);
+        Assertions.assertEquals(new MetadataPreset(null,"(.+)","$1"), preset.getOutputPreset());
     }
 
     @Test
     public void testNone(){
         final Preset preset = new Preset.Builder().build();
-        Assert.assertNull(preset.getCoverPreset());
-        Assert.assertEquals(0,preset.getPresets().length);
-        Assert.assertNull(preset.getOutputPreset());
+        Assertions.assertNull(preset.getCoverPreset());
+        Assertions.assertEquals(0, preset.getPresets().length);
+        Assertions.assertNull(preset.getOutputPreset());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingCoverFormat() throws IOException{
+    @Test
+    public void testMissingCoverFormat(){
         final String yaml =
             "cover:\n" +
             "  regex: '(.+)'";
 
-        new PresetParser().parse(yaml).getCoverPreset();
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml).getCoverPreset());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingCoverRegex() throws IOException{
+    @Test
+    public void testMissingCoverRegex(){
         final String yaml =
             "cover:\n" +
             "  format: '$1'";
 
-        new PresetParser().parse(yaml);
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml));
     }
 
-        @Test(expected = NullPointerException.class)
-    public void testMissingOutputFormat() throws IOException{
+    @Test
+    public void testMissingOutputFormat(){
         final String yaml =
             "output:\n" +
             "  regex: '(.+)'";
 
-        new PresetParser().parse(yaml).getOutputPreset();
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml).getOutputPreset());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingOutputRegex() throws IOException{
+    @Test
+    public void testMissingOutputRegex(){
         final String yaml =
             "output:\n" +
             "  format: '$1'";
 
-        new PresetParser().parse(yaml);
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingMetaName() throws IOException{
+    @Test
+    public void testMissingMetaName(){
         final String yaml =
             "metadata:\n" +
             "  - format: '$1'\n" +
             "    regex: '(.+)'";
-        new PresetParser().parse(yaml);
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingMetaFormat() throws IOException{
+    @Test
+    public void testMissingMetaFormat(){
         final String yaml =
             "metadata:\n" +
             "  - meta: 'name'\n" +
             "    regex: '(.+)'";
-        new PresetParser().parse(yaml);
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testMissingMetaRegex() throws IOException{
+    @Test
+    public void testMissingMetaRegex(){
         final String yaml =
             "metadata:\n" +
             "  - meta: 'name'\n" +
             "    format: '$1'";
-        new PresetParser().parse(yaml);
+        Assertions.assertThrows(NullPointerException.class, () -> new PresetParser().parse(yaml));
     }
 
     @Test
@@ -147,18 +149,18 @@ public class PresetParserTests {
             "    format: '[$1]'\n" +
             "    regex: '(.+)'";
 
-        Assert.assertEquals("[format]",new PresetParser().parse(yaml).getPresets()[0].format("format"));
+        Assertions.assertEquals("[format]", new PresetParser().parse(yaml).getPresets()[0].format("format"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testEscapeChar() throws IOException{
+    @Test
+    public void testEscapeChar(){
         final String yaml =
             "metadata:\n" +
             "  - meta: 'name'\n" +
             "    format: '\\$1\\'\n" +
             "    regex: '(.+)'";
 
-        Assert.assertNotEquals("\\format\\",new PresetParser().parse(yaml).getPresets()[0].format("format"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new PresetParser().parse(yaml).getPresets()[0].format("format"));
     }
 
     @Test
@@ -169,7 +171,7 @@ public class PresetParserTests {
             "    format: '\\\\$1\\\\'\n" +
             "    regex: '(.+)'";
 
-        Assert.assertEquals("\\format\\",new PresetParser().parse(yaml).getPresets()[0].format("format"));
+        Assertions.assertEquals("\\format\\", new PresetParser().parse(yaml).getPresets()[0].format("format"));
     }
 
 }
