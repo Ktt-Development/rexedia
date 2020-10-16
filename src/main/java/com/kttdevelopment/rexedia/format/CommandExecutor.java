@@ -66,7 +66,7 @@ final class CommandExecutor {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("args",args)
+            .addObject("args", args)
             .toString();
     }
 
