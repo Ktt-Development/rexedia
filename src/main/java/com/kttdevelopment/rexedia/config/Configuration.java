@@ -26,12 +26,14 @@ public final class Configuration {
         OUTPUT  = "o";
 
     private final Option<?>[] defaultOptions = {
+        new Option.Builder<>("h")
+            .setLongFlag("help")
+            .build(),
         new Option.Builder<>(INPUT)
             .setLongFlag("input")
             .setDesc("The file or directory to format")
             .unlimitedArgs()
             .argsRequired()
-            .required()
             .build(),
         new Option.Builder<>(WALK)
             .setLongFlag("walk")
@@ -113,6 +115,10 @@ public final class Configuration {
 
         final CommandLine cmd = new DefaultParser().parse(options, args);
 
+        if(args.length == 0 || cmd.hasOption("h")){
+            new HelpFormatter().printHelp("rexedia", options);
+            System.exit(0);
+        }
         if(cmd.hasOption(INPUT)){
             final String[] sargs = cmd.getOptionValues(INPUT);
             if(sargs.length < 1)
@@ -121,6 +127,8 @@ public final class Configuration {
             for(final String arg : sargs)
                 files.add(new File(arg));
             configuration.put(INPUT, files.toArray(new File[0]));
+        }else{
+            throw new MissingOptionException(INPUT);
         }
         if(cmd.hasOption(PRESET)){
             preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));

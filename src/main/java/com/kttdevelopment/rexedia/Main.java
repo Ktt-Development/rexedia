@@ -23,20 +23,27 @@ public abstract class Main {
 
     public static void main(String[] args){
         try{
-            // config
-            config = new Configuration(args);
-
             // logger
             final Logger logger = Logger.getGlobal();
             {
                 logger.setLevel(Level.ALL);
                 logger.setUseParentHandlers(false);
+            }
+            final Handler consoleHandler = new ConsoleHandler() {{
+                setLevel(Level.INFO);
+                setFormatter(new LoggerFormatter(false, false));
+            }};
+            logger.addHandler(consoleHandler);
 
+            // config
+            config = new Configuration(args);
+
+            // config dependent loggers
+            {
                 final boolean debug = (Boolean) config.getConfiguration().get(Configuration.DEBUG);
-                logger.addHandler(new ConsoleHandler() {{
-                    setLevel(debug ? Level.ALL : Level.INFO);
-                    setFormatter(new LoggerFormatter(debug, debug));
-                }});
+
+                consoleHandler.setLevel(debug ? Level.ALL : Level.INFO);
+                consoleHandler.setFormatter(new LoggerFormatter(debug, debug));
 
                 if((Boolean) config.getConfiguration().get(Configuration.LOGGING)){
                     logger.addHandler(new FileHandler(FileUtility.getFreeFile(new File(System.currentTimeMillis() + ".log")).getName()){{

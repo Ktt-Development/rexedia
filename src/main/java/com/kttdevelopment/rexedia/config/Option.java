@@ -88,15 +88,6 @@ final class Option<T> {
             return this;
         }
 
-        public final Builder<T> required(){
-            return required(true);
-        }
-
-        public final Builder<T> required(final boolean required){
-            this.required = required;
-            return this;
-        }
-
         public final Builder<T> setDefaultValue(final T defaultValue){
             this.defaultValue = defaultValue;
             return this;
@@ -110,8 +101,7 @@ final class Option<T> {
                 builder.longOpt(longFlag);
             if(desc != null)
                 builder.desc(desc);
-            if(argsOptional)
-                builder.optionalArg(true);
+            builder.optionalArg(argsOptional);
             builder.numberOfArgs(expectedArgs);
             if(required)
                 builder.required();
