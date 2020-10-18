@@ -15,11 +15,6 @@ import static com.kttdevelopment.rexedia.config.Configuration.*;
 
 public class ConfigurationTests {
 
-    @Test
-    public void testMissingRequiredOptions(){
-        Assertions.assertThrows(MissingOptionException.class, Configuration::new);
-    }
-
     // input
 
     @Test
