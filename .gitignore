@@ -18,4 +18,4 @@
 *.log
 *crash-log-*.txt
 /rexedia*/
-/jar/
+/package/

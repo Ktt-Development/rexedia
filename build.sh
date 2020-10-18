@@ -1,12 +1,14 @@
 #!/bin/bash
 Version=1.0.0
 Vendor="Ktt Development"
-Workspace=jar
+Workspace=package
+Dest="rexedia"
 
-cp -r bin $Workspace/bin
-cp LICENSE $Workspace/LICENSE
+cp icon.ico $Workspace/icon.ico
 
-jpackage --name "rexedia" \
+jpackage \
+--name "rexedia" \
+--icon icon.ico \
 --input $Workspace \
 --dest . \
 --type app-image \
@@ -14,5 +16,8 @@ jpackage --name "rexedia" \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "$Vendor" \
+--copyright "Copyright $Vendor 2020" \
 --win-console
+
+cp -r bin $Dest/bin
+cp LICENSE $Dest/LICENSE

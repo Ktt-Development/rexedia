@@ -50,7 +50,7 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>jar</outputDirectory>
+                    <outputDirectory>package</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
