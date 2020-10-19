@@ -2,7 +2,7 @@
     <a href="https://github.com/Ktt-Development/rexedia">
         <img src="https://raw.githubusercontent.com/Ktt-Development/rexedia/main/icon.png" alt="Logo" width="100" height="100">
     </a>
-    <h3 align="center">Rexedua</h3>
+    <h3 align="center">Rexedia</h3>
     <p align="center">
         Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
         <br />
