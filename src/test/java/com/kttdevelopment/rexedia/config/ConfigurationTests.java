@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.regex.PatternSyntaxException;
 
 import static com.kttdevelopment.rexedia.config.Configuration.*;
 
@@ -90,6 +91,11 @@ public class ConfigurationTests {
     }
 
     @Test
+    public void testInvalidPattern() {
+        Assertions.assertThrows(PatternSyntaxException.class, () -> new Configuration("-input","file.mp4","-m","name","(.+","$1"));
+    }
+
+    @Test
     public void testMultipleMeta() throws IOException, ParseException{
         Configuration config = new Configuration("-input","file.mp4","-m","name","(.+)","$1","name2","(.+)","$1");
         Assertions.assertEquals(new MetadataPreset("name","(.+)","$1"), config.getPreset().getPresets()[0]);
@@ -118,7 +124,7 @@ public class ConfigurationTests {
              Assertions.assertNotNull(config.getConfiguration().get(arg));
     }
 
-        // test not needed for malformed (default is false)
+    // test not needed for malformed (default is false)
 
     @Test
     public void testArgs() throws IOException, ParseException{
