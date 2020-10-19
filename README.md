@@ -19,6 +19,13 @@
 [![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia&include_prereleases)](https://github.com/Ktt-Development/rexedia/releases)
 [![license](https://img.shields.io/github/license/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/blob/main/LICENSE)
 
+---
+**Contents:**
+- [Setup](#setup)
+- [Features](#features)
+- [Arguments](#arguments)
+- [Presets](#presets)
+---
 # Setup
 
 Compiled binaries can be found in releases.
