@@ -44,9 +44,9 @@ public class ffmpegTests {
     @TempDir
     public final File dir = new File(String.valueOf(UUID.randomUUID()));
 
-    @Test
-    public void testDuration() throws IOException{
-        Assertions.assertEquals(4.97f, ffmpeg.getDuration(new File("src/test/resources/format/video.mp4")), 0);
+    @Test @Disabled
+    public void testFrames(){
+        // todo
     }
 
     @Test
