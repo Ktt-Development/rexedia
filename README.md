@@ -1,8 +1,70 @@
-# rexedia ![Java CI](https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg) [![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia&include_prereleases)](https://github.com/Ktt-Development/rexedia/releases) [![license](https://img.shields.io/github/license/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/blob/main/LICENSE)
+<p align="center">
+    <a href="https://github.com/Ktt-Development/rexedia">
+        <img src="https://raw.githubusercontent.com/Ktt-Development/rexedia/main/icon.png" alt="Logo" width="100" height="100">
+    </a>
+    <h3 align="center">Rexedua</h3>
+    <p align="center">
+        Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
+        <br />
+        <a href="https://docs.kttdevelopment.com/rexedia/">Docs</a>
+        •
+        <a href="https://wiki.kttdevelopment.com/rexedia/">Wiki</a>
+        •
+        <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
+    </p>
+</p>
 
-🎬 rexedia :: Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
+[![Deploy](https://github.com/Ktt-Development/rexedia/workflows/Deploy/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3ADeploy)
+[![Java CI](https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3A%22Java+CI%22)
+[![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia&include_prereleases)](https://github.com/Ktt-Development/rexedia/releases) ]
+[![license](https://img.shields.io/github/license/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/blob/main/LICENSE)]
 
-## Arguments
+# Setup
+
+Compiled binaries can be found in releases.
+[![releases](https://img.shields.io/github/v/release/Ktt-Development/rexedia&include_prereleases)](https://github.com/Ktt-Development/rexedia/releases)
+
+# Features
+
+## 🎬 Wide Media Support
+
+Rexedia supports all file extensions supported by [FFMPEG](https://ffmpeg.org/).
+
+```shell
+rexedia -i "file.mp4" -c "(.+)" "$1.png" -o "(.+)" "$1.avi"
+```
+
+## ⭐ Features
+
+Complicated tasks simplified:
+- Apply cover art and metadata.
+- Customize output with regular expressions and back references.
+- Support for preset files instead of command-line flags.
+- Logging to track changes.
+
+```shell
+rexedia -i video.mp4 -p preset.yml
+```
+```yml
+// preset.yml
+metadata:  
+  - meta: "title"  
+    regex: "(.+)"
+    format: "$1"
+```
+
+## ✔️ Safe Video Formatting
+
+Rexedia preserves the integrity of the video file.
+- Media file integrity is verified at every stage.
+- Backup files will always be saved on format failure.
+- Use the `-b` flag to keep backup files even on successful formats.
+  
+```shell
+rexedia -i "file.mp4" -c "(.+)" "$1.png" -b
+```
+
+# Arguments
 **Regular expression will test against the file name without the extension.**
 
 **At least one input required.**
@@ -21,7 +83,7 @@
 - `-m` `-metadata` *[string]* *[regex]* *[string]* - The metadata tag name, the regular expression, and back reference string to use for metadata. Can be used multiple times.
 - `-o` `-output` *[regex]* *[string]* - The regular expression and back reference string to use for output file. If the final string has no extensions then the extension of the input file will be used.
 
-### Example Usage
+## Example Usage
 
 **Assign video a cover art image with the same name**
 ```
@@ -51,7 +113,7 @@ rexedia -i video.mp4 -c "(.+)" "$1.png" -o "(.+)" "$1.avi"
 rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_number" "\[S0*\d* E0*(\d*)\]" "$1" -m "show" "\[S0*\d* E0*\d*\] (.+)" "$1"
 ```
 
-## Presets
+# Presets
 **yaml syntax may require additional backslashes for escape characters**
 
 ```yml
@@ -67,7 +129,7 @@ output:  # output file
   format: "$1"  # the final output name (regex backreferences supported)
 ```
 
-### Example Usage
+## Example Usage
 
 **Assign video metadata based on the name from preset**
 ```

@@ -1,4 +1,4 @@
-name: Publish to releases
+name: Deploy
 on:
   release:
     types: [published]
