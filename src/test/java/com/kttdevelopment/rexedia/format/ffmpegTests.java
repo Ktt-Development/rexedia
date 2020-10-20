@@ -44,11 +44,6 @@ public class ffmpegTests {
     @TempDir
     public final File dir = new File(String.valueOf(UUID.randomUUID()));
 
-    @Test @Disabled
-    public void testFrames(){
-        // todo
-    }
-
     @Test
     public void testVerify(){
         Assertions.assertTrue(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/video.mp4")));

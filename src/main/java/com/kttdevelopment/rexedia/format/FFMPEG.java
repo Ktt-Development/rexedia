@@ -32,7 +32,9 @@ public final class FFMPEG {
 
 // ffprobe
 
-    public final int getFrames(final File input){
+    private final Pattern frames = Pattern.compile("^\\Qframe=\\E *(\\d+)\\Q fps=\\E.+$", Pattern.MULTILINE);
+
+    private int getFrames(final File input){
         if(input == null) return -1;
         
         final String[] args = new String[]{
@@ -44,8 +46,12 @@ public final class FFMPEG {
 
         try{
             final String output = executor.executeFFMPEG(args);
-            // todo: parse this to get frames
-            return 0;
+            final Matcher matcher = frames.matcher(output);
+
+            if(!matcher.find())
+                return -1;
+
+            return Integer.parseInt(matcher.group(1));
         }catch(final IOException ignored){
             return -1;
         }
