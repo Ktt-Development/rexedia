@@ -20,6 +20,7 @@ public abstract class Main {
 
     private static Configuration config = null;
     private static Preset preset = null;
+    private static FFMPEG ffmpeg = null;
 
     public static void main(String[] args){
         try{
@@ -85,8 +86,8 @@ public abstract class Main {
                             }
                 logger.fine("Starting file format");
                 logger.fine("Loaded file queue: " + queue);
-                final FFMPEG ffmpeg = new FFMPEG();
-                final MetadataFormatter formatter = new MetadataFormatter(config,ffmpeg.isValidInstallation() ? ffmpeg : new FFMPEG("bin/ffmpeg","bin/ffprobe"),preset);
+                ffmpeg = new FFMPEG("bin/ffmpeg","bin/ffprobe");
+                final MetadataFormatter formatter = new MetadataFormatter(config, ffmpeg, preset);
 
                 final int size = queue.size();
                 for(int i = 0; i < size; i++)
@@ -101,6 +102,7 @@ public abstract class Main {
                                     "Args: "            + Arrays.toString(args) + '\n' +
                                     "Config: "          + config + '\n' +
                                     "Preset: "          + preset + '\n' +
+                                    "FFMPEG: "          + ffmpeg + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtil.getStackTraceAsString(e);
             Logger.getGlobal().log(Level.SEVERE,'\n' + response);

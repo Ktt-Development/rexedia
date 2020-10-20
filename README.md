@@ -66,7 +66,7 @@ Rexedia preserves the integrity of the video file.
 - Media file integrity is verified at every stage.
 - Backup files will always be saved on format failure.
 - Use the `-b` flag to keep backup files even on successful formats.
-  
+
 ```shell
 rexedia -i "file.mp4" -c "(.+)" "$1.png" -b
 ```

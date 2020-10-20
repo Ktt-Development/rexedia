@@ -28,7 +28,7 @@ final class CommandExecutor {
 
     public final String execute(final String... args) throws IOException{
         final Logger logger = Logger.getGlobal();
-        
+
         final List<String> a = new ArrayList<>();
         a.addAll(Arrays.asList(this.args));
         a.addAll(Arrays.asList(args));

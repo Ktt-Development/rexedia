@@ -56,7 +56,7 @@ public class ffmpegTests {
     private static final File cover2 = new File("src/test/resources/format/apply/cover2.png");
     private static final File cover3 = new File("src/test/resources/format/apply/cover3.png");
     private static final File cover4 = new File("src/test/resources/format/apply/cover4.png");
-    
+
     @Test
     public void missingArgs(){
        Assertions.assertThrows(FileNotFoundException.class, () -> ffmpeg.apply(null, null, false, null, false, null));

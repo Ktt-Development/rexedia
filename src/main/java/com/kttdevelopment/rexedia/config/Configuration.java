@@ -180,7 +180,7 @@ public final class Configuration {
     }
 
     //
-    
+
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())

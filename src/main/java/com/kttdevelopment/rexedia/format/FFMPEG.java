@@ -14,20 +14,8 @@ public final class FFMPEG {
 
     private final FFMPEGExecutor executor;
 
-    public FFMPEG(){
-        executor = new FFMPEGExecutor("ffmpeg","ffprobe"); // local installation
-    }
-
     public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE){
         executor = new FFMPEGExecutor(pathToFFMPEG,pathToFFPROBE);
-    }
-
-    public final boolean isValidInstallation(){
-        try{
-            return !executor.executeFFMPEG(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.") && !executor.executeFFPROBE(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.");
-        }catch(final IOException ignored){
-            return false;
-        }
     }
 
 // ffprobe
@@ -36,7 +24,7 @@ public final class FFMPEG {
 
     private int getFrames(final File input){
         if(input == null) return -1;
-        
+
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
             "-map", "0:v:0", // copy video track
@@ -232,9 +220,9 @@ public final class FFMPEG {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("executor",executor)
-            //.addObject("duration_regexp",duration.pattern()) // fixme
-            .addObject("frames_regexp", framerate.pattern())
+            .addObject("executor", executor)
+            .addObject("frames_regexp", frames.pattern())
+            .addObject("framerate_regexp", framerate.pattern())
             .addObject("metadata_regexp",metadata.pattern())
             .toString();
     }
