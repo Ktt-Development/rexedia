@@ -33,7 +33,7 @@ public final class FFMPEG {
         };
 
         try{
-            final String output = executor.executeFFMPEG(args);
+            final String output   = executor.executeFFMPEG(args);
             final Matcher matcher = frames.matcher(output);
 
             if(!matcher.find())
@@ -223,7 +223,7 @@ public final class FFMPEG {
             .addObject("executor", executor)
             .addObject("frames_regexp", frames.pattern())
             .addObject("framerate_regexp", framerate.pattern())
-            .addObject("metadata_regexp",metadata.pattern())
+            .addObject("metadata_regexp", metadata.pattern())
             .toString();
     }
 

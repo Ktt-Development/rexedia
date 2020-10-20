@@ -45,13 +45,13 @@ final class CommandExecutor {
 
         String result;
 
-        executor.setWatchdog(new ExecuteWatchdog(10 * 1000));
+        executor.setWatchdog(new ExecuteWatchdog(30 * 1000));
         executor.setStreamHandler(new PumpStreamHandler(OUT));
         try{
             executor.execute(cmd);
         }catch(final Throwable e){
             result = OUT.toString().trim();
-            logger.severe('\n' + result);
+            logger.severe(result.isEmpty() ? "Execution timed out" : '\n' + result);
             logger.log(Level.FINER,"--- [ END EXECUTION ] ---");
             throw e;
         }
