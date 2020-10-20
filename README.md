@@ -113,11 +113,11 @@ rexedia -i video.mp4 -c "(.+)" "$1.png" -o "(.+)" "$1.avi"
 **Assign video metadata based on the name**
 ```
 ─ [S01 E02] video.mp4 → ┌ season_number = 1
-                        ├ episode_number = 2
+                        ├ episode_sort = 2
                         └ show = video
 ```
 ```sh
-rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_number" "\[S0*\d* E0*(\d*)\]" "$1" -m "show" "\[S0*\d* E0*\d*\] (.+)" "$1"
+rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_sort" "\[S0*\d* E0*(\d*)\]" "$1" -m "show" "\[S0*\d* E0*\d*\] (.+)" "$1"
 ```
 
 # Presets
@@ -140,7 +140,7 @@ output:  # output file
 **Assign video metadata based on the name from preset**
 ```
 ┬ [S01 E02] video.mp4 → ┌ season_number = 1
-└ preset.yml            ├ episode_number = 2
+└ preset.yml            ├ episode_sort = 2
                         └ show = video
 ```
 ```yml
@@ -149,7 +149,7 @@ metadata:
   - meta: 'season_number'
     regex: '\[S0*(\d*) E0*\d*\\]'
     format: '$1'
-  - meta: 'episode_number'
+  - meta: 'episode_sort'
     regex: '\[S0*\d* E0*(\d*)\]'
     format: '$1'
   - meta: 'show'
