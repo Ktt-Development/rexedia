@@ -28,7 +28,7 @@ public final class MetadataFormatter {
     }
 
     public synchronized final boolean format(final File file, final int current, final int total){
-        final String lstr = "| STAGE > %s (%s/5) \t| FILES > (" + current + '/' + total + ')';
+        final String lstr = "| STAGE > %s (%s/5) \t| FILE " + current + '/' + total + "\t| " + file.getName();
 
         final Logger logger = Logger.getGlobal();
         final String abs    = file.getAbsolutePath();

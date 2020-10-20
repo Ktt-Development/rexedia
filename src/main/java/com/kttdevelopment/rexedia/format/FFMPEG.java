@@ -36,10 +36,14 @@ public final class FFMPEG {
             final String output   = executor.executeFFMPEG(args);
             final Matcher matcher = frames.matcher(output);
 
-            if(!matcher.find())
-                return -1;
+            int frames = -1;
+            while(matcher.find()){
+                int stream = Integer.parseInt(matcher.group(1));
+                if(stream > frames)
+                    frames = stream;
+            }
 
-            return Integer.parseInt(matcher.group(1));
+            return frames;
         }catch(final IOException ignored){
             return -1;
         }
@@ -60,7 +64,7 @@ public final class FFMPEG {
             final String result   = executor.executeFFPROBE(args);
             final Matcher matcher = framerate.matcher(result);
 
-            if(!matcher.matches())
+            if(!matcher.find()) // video stream is typically first, a fix is not needed at the moment
                 return false;
 
             final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));

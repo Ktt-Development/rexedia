@@ -121,7 +121,6 @@ rexedia -i video.mp4 -m "season_number" "\[S0*(\d*) E0*\d*\]" "$1" -m "episode_n
 ```
 
 # Presets
-**yaml syntax may require additional backslashes for escape characters**
 
 ```yml
 cover:  # cover art
