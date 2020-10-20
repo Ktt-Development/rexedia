@@ -40,8 +40,6 @@ final class Option<T> {
         private boolean argsOptional = true;
         private int expectedArgs = 0;
 
-        private boolean required = false;
-
         private T defaultValue;
 
         public Builder(final String flag){
@@ -88,15 +86,6 @@ final class Option<T> {
             return this;
         }
 
-        public final Builder<T> required(){
-            return required(true);
-        }
-
-        public final Builder<T> required(final boolean required){
-            this.required = required;
-            return this;
-        }
-
         public final Builder<T> setDefaultValue(final T defaultValue){
             this.defaultValue = defaultValue;
             return this;
@@ -110,11 +99,8 @@ final class Option<T> {
                 builder.longOpt(longFlag);
             if(desc != null)
                 builder.desc(desc);
-            if(argsOptional)
-                builder.optionalArg(true);
+            builder.optionalArg(argsOptional);
             builder.numberOfArgs(expectedArgs);
-            if(required)
-                builder.required();
 
             return new Option<>(builder.build(), defaultValue);
         }
@@ -124,13 +110,12 @@ final class Option<T> {
         @Override
         public String toString(){
             return new ToStringBuilder(getClass().getSimpleName())
-                .addObject("flag",flag)
-                .addObject("longFlag",longFlag)
-                .addObject("desc",desc)
-                .addObject("argsOptional",argsOptional)
-                .addObject("expectedArgs",expectedArgs)
-                .addObject("required",required)
-                .addObject("defaultValue",defaultValue)
+                .addObject("flag", flag)
+                .addObject("longFlag", longFlag)
+                .addObject("desc", desc)
+                .addObject("argsOptional", argsOptional)
+                .addObject("expectedArgs", expectedArgs)
+                .addObject("defaultValue", defaultValue)
                 .toString();
         }
 

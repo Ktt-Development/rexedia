@@ -37,6 +37,7 @@ public class MainTests {
 
     //
 
+    @SuppressWarnings({"DuplicateExpressions", "RedundantSuppression"})
     @Test
     public void testLogging() throws IOException{
         final File latest   = new File("latest.log");

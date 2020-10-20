@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
+import java.util.regex.PatternSyntaxException;
 
 public class PresetParserTests {
 
@@ -150,6 +151,17 @@ public class PresetParserTests {
             "    regex: '(.+)'";
 
         Assertions.assertEquals("[format]", new PresetParser().parse(yaml).getPresets()[0].format("format"));
+    }
+
+    @Test
+    public void testInvalidPattern(){
+        final String yaml =
+            "metadata:\n" +
+            "  - meta: 'name'\n" +
+            "    format: '[$1]'\n" +
+            "    regex: '(.+'";
+
+        Assertions.assertThrows(PatternSyntaxException.class, () -> new  PresetParser().parse(yaml));
     }
 
     @Test

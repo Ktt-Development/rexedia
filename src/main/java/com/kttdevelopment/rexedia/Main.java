@@ -20,23 +20,31 @@ public abstract class Main {
 
     private static Configuration config = null;
     private static Preset preset = null;
+    private static FFMPEG ffmpeg = null;
 
     public static void main(String[] args){
         try{
-            // config
-            config = new Configuration(args);
-
             // logger
             final Logger logger = Logger.getGlobal();
             {
                 logger.setLevel(Level.ALL);
                 logger.setUseParentHandlers(false);
+            }
+            final Handler consoleHandler = new ConsoleHandler() {{
+                setLevel(Level.INFO);
+                setFormatter(new LoggerFormatter(false, false));
+            }};
+            logger.addHandler(consoleHandler);
 
+            // config
+            config = new Configuration(args);
+
+            // config dependent loggers
+            {
                 final boolean debug = (Boolean) config.getConfiguration().get(Configuration.DEBUG);
-                logger.addHandler(new ConsoleHandler() {{
-                    setLevel(debug ? Level.ALL : Level.INFO);
-                    setFormatter(new LoggerFormatter(debug, debug));
-                }});
+
+                consoleHandler.setLevel(debug ? Level.ALL : Level.INFO);
+                consoleHandler.setFormatter(new LoggerFormatter(debug, debug));
 
                 if((Boolean) config.getConfiguration().get(Configuration.LOGGING)){
                     logger.addHandler(new FileHandler(FileUtility.getFreeFile(new File(System.currentTimeMillis() + ".log")).getName()){{
@@ -78,8 +86,8 @@ public abstract class Main {
                             }
                 logger.fine("Starting file format");
                 logger.fine("Loaded file queue: " + queue);
-                FFMPEG ffmpeg = new FFMPEG();
-                final MetadataFormatter formatter = new MetadataFormatter(config,ffmpeg.isValidInstallation() ? ffmpeg : new FFMPEG("bin/ffmpeg","bin/ffprobe"),preset);
+                ffmpeg = new FFMPEG("bin/ffmpeg","bin/ffprobe");
+                final MetadataFormatter formatter = new MetadataFormatter(config, ffmpeg, preset);
 
                 final int size = queue.size();
                 for(int i = 0; i < size; i++)
@@ -94,6 +102,7 @@ public abstract class Main {
                                     "Args: "            + Arrays.toString(args) + '\n' +
                                     "Config: "          + config + '\n' +
                                     "Preset: "          + preset + '\n' +
+                                    "FFMPEG: "          + ffmpeg + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
                                     ExceptionUtil.getStackTraceAsString(e);
             Logger.getGlobal().log(Level.SEVERE,'\n' + response);

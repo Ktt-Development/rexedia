@@ -45,11 +45,6 @@ public class ffmpegTests {
     public final File dir = new File(String.valueOf(UUID.randomUUID()));
 
     @Test
-    public void testDuration() throws IOException{
-        Assertions.assertEquals(4.97f, ffmpeg.getDuration(new File("src/test/resources/format/video.mp4")), 0);
-    }
-
-    @Test
     public void testVerify(){
         Assertions.assertTrue(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/video.mp4")));
         Assertions.assertFalse(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/corrupt.mp4")));
@@ -61,7 +56,7 @@ public class ffmpegTests {
     private static final File cover2 = new File("src/test/resources/format/apply/cover2.png");
     private static final File cover3 = new File("src/test/resources/format/apply/cover3.png");
     private static final File cover4 = new File("src/test/resources/format/apply/cover4.png");
-    
+
     @Test
     public void missingArgs(){
        Assertions.assertThrows(FileNotFoundException.class, () -> ffmpeg.apply(null, null, false, null, false, null));

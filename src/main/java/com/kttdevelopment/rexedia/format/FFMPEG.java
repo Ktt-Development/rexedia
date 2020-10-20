@@ -14,44 +14,42 @@ public final class FFMPEG {
 
     private final FFMPEGExecutor executor;
 
-    public FFMPEG(){
-        executor = new FFMPEGExecutor("ffmpeg","ffprobe"); // local installation
-    }
-
     public FFMPEG(final String pathToFFMPEG, final String pathToFFPROBE){
         executor = new FFMPEGExecutor(pathToFFMPEG,pathToFFPROBE);
     }
 
-    public final boolean isValidInstallation(){
-        try{
-            return !executor.executeFFMPEG(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.") && !executor.executeFFPROBE(new String[]{"-version"}).contains("is not recognized as an internal or external command,\noperable program or batch file.");
-        }catch(final IOException ignored){
-            return false;
-        }
-    }
-
 // ffprobe
 
-    private final Pattern duration = Pattern.compile("\\Q[FORMAT]\\E\\r?\\n\\Qduration=\\E(\\d+\\.\\d+)\\r?\\n\\Q[/FORMAT]\\E",Pattern.MULTILINE);
-    // duration in seconds
-    public final float getDuration(final File input) throws IOException{
-        if(!input.exists()) throw new FileNotFoundException(input.getAbsolutePath());
+    private final Pattern frames = Pattern.compile("^\\Qframe=\\E *(\\d+)\\Q fps=\\E.+$", Pattern.MULTILINE);
+
+    private int getFrames(final File input){
+        if(input == null) return -1;
 
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
-            "-v", "0",
-            "-show_entries", "format=duration" // get format tag duration
+            "-map", "0:v:0", // copy video track
+            "-c", "copy", // copy codec
+            "-f", "null -" // destroy output
         };
 
-        final String result   = executor.executeFFPROBE(args);
-        final Matcher matcher = duration.matcher(result);
+        try{
+            final String output   = executor.executeFFMPEG(args);
+            final Matcher matcher = frames.matcher(output);
 
-        return result.isBlank() || matcher.matches()
-               ? (float) (Math.ceil(Float.parseFloat(matcher.group(1)) * 100) / 100)
-               : -1f;
+            int frames = -1;
+            while(matcher.find()){
+                int stream = Integer.parseInt(matcher.group(1));
+                if(stream > frames)
+                    frames = stream;
+            }
+
+            return frames;
+        }catch(final IOException ignored){
+            return -1;
+        }
     }
 
-    private final Pattern frames = Pattern.compile("\\Qstream|\\E(\\d+)/(\\d+)\\|(\\d+\\.\\d+)\\|(\\d*)",Pattern.MULTILINE);
+    private final Pattern framerate = Pattern.compile("\\Q[STREAM]\\E\\r?\\n\\Qr_frame_rate=\\E(\\d+)/(\\d+)\\r?\\n\\Qduration=\\E(\\d+\\.\\d+)\\r?\\n\\Q[/STREAM]\\E", Pattern.MULTILINE);
     public final boolean verifyFileIntegrity(final File input){
         if(!input.exists()) return false;
 
@@ -59,24 +57,22 @@ public final class FFMPEG {
             "-i", '"' + input.getAbsolutePath() + '"',
             "-v", "0",
             "-select_streams", "v", // video stream only
-            "-show_entries", "stream=r_frame_rate,nb_read_frames,duration", // get framerate, total frames, and duration
-            "-count_frames", // count frames
-            "-of","compact=p=1:nk=1", // other stuff
+            "-show_entries", "stream=r_frame_rate,duration", // get framerate, and duration
         };
 
         try{
             final String result   = executor.executeFFPROBE(args);
-            final Matcher matcher = frames.matcher(result);
+            final Matcher matcher = framerate.matcher(result);
 
-            if(!matcher.matches())
+            if(!matcher.find()) // video stream is typically first, a fix is not needed at the moment
                 return false;
 
             final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));
             final float duration    = Float.parseFloat(matcher.group(3));
-            final int frames        = Integer.parseInt(matcher.group(4));
+            final int frames        = getFrames(input);
 
             // framerate * duration (calculated frame rate)
-            return framerate * duration == frames;
+            return frames != -1 && Math.abs((framerate * duration) - frames) < 0.0001; // <- approximate to nearest ten thousanth
         }catch(final IOException | NumberFormatException ignored){
             return false;
         }
@@ -228,10 +224,10 @@ public final class FFMPEG {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("executor",executor)
-            .addObject("duration_regexp",duration.pattern())
-            .addObject("frames_regexp",frames.pattern())
-            .addObject("metadata_regexp",metadata.pattern())
+            .addObject("executor", executor)
+            .addObject("frames_regexp", frames.pattern())
+            .addObject("framerate_regexp", framerate.pattern())
+            .addObject("metadata_regexp", metadata.pattern())
             .toString();
     }
 

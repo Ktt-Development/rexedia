@@ -17,4 +17,5 @@
 
 *.log
 *crash-log-*.txt
-/src/test/resources/main/
+/rexedia*/
+/package/
