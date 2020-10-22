@@ -19,8 +19,9 @@
             <div>
                 <h1 class="text-center m-0">Rexedia Preset Editor</h1>
                 <div class="d-flex justify-content-center mt-2">
-                    <button class="btn btn-sm btn-primary mx-1">Import Preset</button>
-                    <button class="btn btn-sm btn-primary mx-1">Export Preset</button>
+                    <button id="import" class="btn btn-sm btn-primary mx-1">Import Preset</button>
+                    <input id="import_file" type="file" accept=".yml,.yaml" class="d-none">
+                    <button id="export" class="btn btn-sm btn-primary mx-1">Export Preset</button>
                     <a class="btn btn-sm btn-dark mx-1" href="https://kttdevelopment.com/repo/rexedia">View Rexedia</a>
                 </div>
                 <hr class="my-2">
@@ -32,7 +33,7 @@
                             <div class="form-group">
                                 <h5 class="border-bottom">Cover</h5>
                                 <input type="text" class="form-control form-control-sm mb-2" id="cover-regex" placeholder="Regex">
-                                <input type="text" class="form-control form-control-sm mb-2" id="cover-replace" placeholder="Replacement String">
+                                <input type="text" class="form-control form-control-sm mb-2" id="cover-format" placeholder="Replacement String">
                             </div>
                             <div class="form-group">
                                 <h5 class="border-bottom">Rows
@@ -48,14 +49,22 @@
                             <div class="form-group">
                                 <h5 class="border-bottom">Output</h5>
                                 <input type="text" class="form-control form-control-sm mb-2" id="output-regex" placeholder="Regex">
-                                <input type="text" class="form-control form-control-sm mb-2" id="output-replace" placeholder="Replacement String">
+                                <input type="text" class="form-control form-control-sm mb-2" id="output-format" placeholder="Replacement String">
                             </div>
                         </form>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="m-1">
-                        regex test area
+                        <form>
+                            <div class="form-group">
+                                <h5 class="border-bottom">Preset Tester</h5>
+                                <input type="text" class="form-control form-control-sm mb-2" id="file-name" placeholder="File Name">
+                                <div id="result">
+                                    
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
