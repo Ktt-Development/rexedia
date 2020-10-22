@@ -1,0 +1,12 @@
+*{
+    outline: none;
+}
+
+html, body{
+    background-color: #F3F2F1;
+}
+
+textarea{
+    font-family: 'Consolas' 'Courier New', Courier, monospace;
+    resize: none;
+}
