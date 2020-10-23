@@ -9,7 +9,8 @@ const outputFormat  = $("#output-format");
 const addRowBtn     = $("#addRow");
 const delRowBtn     = $("#deleteRow");
 
-const results       = $("#results");
+const fileName      = $("#file-name");
+const result       = $("#result");
 
 // regex validation //
 
@@ -17,13 +18,19 @@ const invalid = "is-invalid"
 const valid   = "is-valid"
 
 $(document).ready(function(){
-    importBtn.click(function(){importFile.click()});
+    importBtn.click(function(){importFile.click();});
     importFile.change(importPreset);
     exportBtn.click(exportPreset);
+
     coverRegex.on('input', validateRegex);
+    coverFormat.on('input', test);
     outputRegex.on('input', validateRegex);
+    outputFormat.on('input', test);
+    
     addRowBtn.click(addRow);
     delRowBtn.click(deleteRow);
+
+    fileName.on('input', test);
 
     window.onbeforeunload = function(){
         if(yml)
@@ -35,6 +42,8 @@ $(document).ready(function(){
     $(document).on('click', 'button', function(e) {
         e.preventDefault();
     });
+
+    test();
 })
 
 
@@ -57,6 +66,8 @@ function validateRegex(e) {
     }
 
     target.className = className
+
+    test();
 }
 
 function isValidRegex(string){
@@ -91,14 +102,56 @@ function deleteRow(){
         return;
     $('#' + rows + "-meta")[0].remove();
     rows--;
+
+    test();
 }
 
 // tester //
 
 function test(){
-    // todo: cover
-    // todo: output
-    // todo: metadata
+    var fn = $(fileName)[0].value;
+    var name = fn.includes(".")
+            ? fn.substring(0, fn.lastIndexOf('.'))
+            : fn;;
+    var ext = fn.includes('.') ? fn.substring(fn.lastIndexOf('.') + 1) : "";
+
+    OUT = 
+    `<table class="table table-sm">
+        <thead>
+            <tr>
+                <th scope="col">Tag</th>
+                <th scope="col">Value</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    // cover
+    OUT += "<tr><th scope=\"row\">Cover</th>";
+    try{
+        OUT += "<td>" + name.replace(new RegExp(coverRegex[0].value), coverFormat[0].value) + "</td>";
+    }catch(e){}
+    OUT += "</tr>";
+    
+    // rows
+    var size = rows + 1;
+    for(var i = 1; i < size; i++)
+        if($('#' + i + "-meta-name")[0].value || $('#' + i + "-meta-regex")[0].value || $('#' + i + "-meta-format")[0].value)
+            OUT += "<tr><th scope=\"col\">" + $('#' + i + "-meta-name")[0].value + "</th><td>" + name.replace(new RegExp( $('#' + i + "-meta-regex")[0].value),  $('#' + i + "-meta-format")[0].value) + "</td></tr>";
+
+    // output
+    OUT += "<tr><th scope=\"row\">Output</th>";
+    try{
+        var output = name.replace(new RegExp(outputRegex[0].value), outputFormat[0].value);
+        OUT += "<td>" + output + (ext && !output.includes('.') ? '.' + ext : "") + "</td>";
+    }catch(e){}
+    OUT += "</tr>";
+    
+    // change
+    OUT += 
+    `   </tbody>
+    </table>`
+
+    result[0].innerHTML = OUT;
 }
 
 // import //
@@ -111,20 +164,22 @@ function importPreset(){
         IN.readAsText(file, "UTF-8");
         IN.onload = function(e){
             yml = jsyaml.load(e.target.result)
-
+            // cover
             if(yml.cover){
                 coverRegex[0].value = yml.cover.regex ? yml.cover.regex : "";
                 validateRegex('#' + coverRegex[0].id);
                 coverFormat[0].value = yml.cover.format ? yml.cover.format : "";
             }
+            // output
             if(yml.output){
                 outputRegex[0].value = yml.output.regex ? yml.output.regex : "";
                 validateRegex('#' + outputRegex[0].id);
                 outputFormat[0].value = yml.output.format ? yml.output.format : "";
             }
 
+            // rows
             var size = rows-1;
-            for(var i = 0; i < size; i++) // fixme
+            for(var i = 0; i < size; i++)
                 deleteRow();
 
             var size = yml.metadata.length + 1;
@@ -137,15 +192,34 @@ function importPreset(){
                 validateRegex('#' + i + "-meta-regex");
                 $('#' + i + "-meta-format")[0].value = row.format ? row.format : "";
             }
+
+            // tester
             test();
         }
     }
+    importFile[0].value = "";
 }
 
 // export //
 
 function exportPreset(){
-    // todo: parse
+    var OUT = "";
+    // cover
+    if(coverRegex[0].value || coverFormat[0].value)
+        OUT += "cover:\n  regex: '" + coverRegex[0].value + "'\n  format: '" + coverFormat[0].value + "'\n";
+    // meta
+    var rowstr = "";
+    var size = rows + 1;
+    for(var i = 1; i < size; i++)
+        if($('#' + i + "-meta-name")[0].value || $('#' + i + "-meta-regex")[0].value || $('#' + i + "-meta-format")[0].value)
+            rowstr += "  - meta: '" + $('#' + i + "-meta-name")[0].value + "'\n    regex: '" + $('#' + i + "-meta-regex")[0].value + "'\n    format: '" + $('#' + i + "-meta-format")[0].value + "'\n";
+    if(rowstr)
+        OUT += "metadata:\n" + rowstr;
+    
+    // output
+    if(outputRegex[0].value || outputFormat[0].value)
+        OUT += "output:\n  regex: '" + outputRegex[0].value + "'\n  format: '" + outputFormat[0].value + "'\n";
 
-    // todo: export
+    // download
+    download(OUT, "preset.yml", "text/yaml");
 }

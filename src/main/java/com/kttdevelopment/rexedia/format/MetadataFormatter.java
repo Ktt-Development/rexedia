@@ -50,7 +50,7 @@ public final class MetadataFormatter {
         final String name       = full_name.contains(".")
             ? full_name.substring(0, full_name.lastIndexOf('.'))
             : full_name;
-        final String ext        = full_name.substring(full_name.lastIndexOf('.') + 1); // contains check not needed because if none found the index is 0
+        final String ext        = full_name.contains('.') ? full_name.substring(full_name.lastIndexOf('.') + 1) : ""; // contains check not needed because if none found the index is 0
 
         // create a backup file
         final File backup;
