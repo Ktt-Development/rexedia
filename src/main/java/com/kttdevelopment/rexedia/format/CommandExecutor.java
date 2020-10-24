@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia.format;
 
-import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.rexedia.utility.ToStringBuilder;
 import org.apache.commons.exec.*;
 
 import java.io.*;

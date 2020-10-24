@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia;
 
-import com.kttdevelopment.core.exceptions.ExceptionUtil;
+import com.kttdevelopment.rexedia.utility.ExceptionUtility;
 import com.kttdevelopment.rexedia.config.Configuration;
 import com.kttdevelopment.rexedia.format.FFMPEG;
 import com.kttdevelopment.rexedia.format.MetadataFormatter;
@@ -82,7 +82,7 @@ public abstract class Main {
                             try{
                                 Files.walk(file.toPath()).filter(path -> path.toFile().isFile()).forEach(path -> queue.add(path.toFile()));
                             }catch(final IOException e){
-                                logger.warning("Failed to walk through directory " + file.getAbsolutePath() + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                                logger.warning("Failed to walk through directory " + file.getAbsolutePath() + '\n' + ExceptionUtility.getStackTraceAsString(e));
                             }
                 logger.fine("Starting file format");
                 logger.fine("Loaded file queue: " + queue);
@@ -104,7 +104,7 @@ public abstract class Main {
                                     "Preset: "          + preset + '\n' +
                                     "FFMPEG: "          + ffmpeg + '\n' +
                                     "---- [ Stack Trace ] ----\n" +
-                                    ExceptionUtil.getStackTraceAsString(e);
+                                    ExceptionUtility.getStackTraceAsString(e);
             Logger.getGlobal().log(Level.SEVERE,'\n' + response);
             try{ Files.write(FileUtility.getFreeFile(new File("crash-log-" + time + ".log")).toPath(),response.getBytes(StandardCharsets.UTF_8));
             }catch(final IOException ignored){ }

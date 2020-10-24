@@ -1,9 +1,9 @@
 package com.kttdevelopment.rexedia.format;
 
-import com.kttdevelopment.core.exceptions.ExceptionUtil;
 import com.kttdevelopment.rexedia.config.Configuration;
 import com.kttdevelopment.rexedia.preset.MetadataPreset;
 import com.kttdevelopment.rexedia.preset.Preset;
+import com.kttdevelopment.rexedia.utility.ExceptionUtility;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +65,7 @@ public final class MetadataFormatter {
             try{
                 Files.copy(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }catch(final IOException e){
-                logger.severe("Failed to copy " + abs + " to backup " + babs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                logger.severe("Failed to copy " + abs + " to backup " + babs + '\n' + ExceptionUtility.getStackTraceAsString(e));
                 return false;
             }
 
@@ -110,7 +110,7 @@ public final class MetadataFormatter {
             try{
                 ffmpeg.apply(backup,cover,preserveCover, metadata, preserveMetadata, output);
             }catch(final IOException e){
-                logger.severe("Failed to format file " + abs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                logger.severe("Failed to format file " + abs + '\n' + ExceptionUtility.getStackTraceAsString(e));
                 return false;
             }
 
@@ -133,7 +133,7 @@ public final class MetadataFormatter {
                 try{
                     Files.delete(backup.toPath());
                 }catch(final IOException e){
-                    logger.warning("Failed to delete backup " + babs + '\n' + ExceptionUtil.getStackTraceAsString(e));
+                    logger.warning("Failed to delete backup " + babs + '\n' + ExceptionUtility.getStackTraceAsString(e));
                 }
         }
         return true;

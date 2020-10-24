@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia.preset;
 
-import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.rexedia.utility.ToStringBuilder;
 
 import java.util.*;
 

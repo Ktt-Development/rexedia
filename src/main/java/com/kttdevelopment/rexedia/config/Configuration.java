@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia.config;
 
-import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.rexedia.utility.ToStringBuilder;
 import com.kttdevelopment.rexedia.preset.*;
 import com.kttdevelopment.rexedia.utility.CollectionsUtility;
 import org.apache.commons.cli.*;

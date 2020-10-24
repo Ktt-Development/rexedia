@@ -1,6 +1,6 @@
 package com.kttdevelopment.rexedia.logger;
 
-import com.kttdevelopment.core.classes.ToStringBuilder;
+import com.kttdevelopment.rexedia.utility.ToStringBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.logging.Formatter;
