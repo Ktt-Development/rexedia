@@ -16,6 +16,12 @@ jobs:
           version: '11'
           architecture: x64
 
+      - name: 📚 Install jpackage
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '15'
+          architecture: x64
+
       - name: 📦 Build with Maven
         run: mvn -B package --file pom.xml
 
