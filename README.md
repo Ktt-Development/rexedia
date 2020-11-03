@@ -16,7 +16,7 @@
 
 [![Deploy](https://github.com/Ktt-Development/rexedia/workflows/Deploy/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3ADeploy)
 [![Java CI](https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3A%22Java+CI%22)
-[![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia&include_prereleases)](https://github.com/Ktt-Development/rexedia/releases)
+[![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/releases)
 [![license](https://img.shields.io/github/license/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/blob/main/LICENSE)
 
 ---
