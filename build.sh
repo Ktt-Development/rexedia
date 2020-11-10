@@ -4,8 +4,6 @@ Vendor="Ktt Development"
 Workspace=package
 Dest="rexedia"
 
-cp icon.ico $Workspace/icon.ico
-
 jpackage \
 --name "rexedia" \
 --icon icon.ico \
