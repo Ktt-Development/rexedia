@@ -72,7 +72,7 @@ public final class FFMPEG {
             final int frames        = getFrames(input);
 
             // framerate * duration (calculated frame rate)
-            return frames != -1 && Math.abs((framerate * duration) - frames) < 0.0001; // <- approximate to nearest ten thousanth
+            return frames != -1 && framerate * duration == frames; // calculated frames equals stated frames
         }catch(final IOException | NumberFormatException ignored){
             return false;
         }
