@@ -90,9 +90,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.amihaiemil.web</groupId>
-            <artifactId>eo-yaml</artifactId>
-            <version>5.1.6</version>
+            <groupId>com.esotericsoftware.yamlbeans</groupId>
+            <artifactId>yamlbeans</artifactId>
+            <version>1.15</version>
         </dependency>
 
         <!-- tests -->
