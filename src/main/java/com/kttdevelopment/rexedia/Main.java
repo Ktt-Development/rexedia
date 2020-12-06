@@ -46,16 +46,12 @@ public abstract class Main {
                 consoleHandler.setLevel(debug ? Level.ALL : Level.INFO);
                 consoleHandler.setFormatter(new LoggerFormatter(debug, debug));
 
-                if((Boolean) config.getConfiguration().get(Configuration.LOGGING)){
+                if((Boolean) config.getConfiguration().get(Configuration.LOGGING))
                     logger.addHandler(new FileHandler(FileUtility.getFreeFile(new File(System.currentTimeMillis() + ".log")).getName()){{
                         setLevel(Level.INFO);
                         setFormatter(new LoggerFormatter(true,false));
                     }});
-                    logger.addHandler(new FileHandler("latest.log"){{
-                        setLevel(Level.INFO);
-                        setFormatter(new LoggerFormatter(true,false));
-                    }});
-                }
+
                 if(debug)
                     logger.addHandler(new FileHandler("debug.log"){{
                         setLevel(Level.ALL);

@@ -40,12 +40,10 @@ public class MainTests {
     @SuppressWarnings({"DuplicateExpressions", "RedundantSuppression"})
     @Test
     public void testLogging() throws IOException{
-        final File latest   = new File("latest.log");
         final File debug    = new File("debug.log");
 
         Assertions.assertNull(getFile(new File("."), "\\d+\\Q.log\\E"), "The testing directory was not clear. Please remove log files.");
 
-        latest.deleteOnExit();
         debug.deleteOnExit();
 
         final String unique = String.valueOf(UUID.randomUUID());
@@ -60,7 +58,6 @@ public class MainTests {
         });
 
         Assertions.assertNull(getFile(new File("."),"\\d+\\Q.log\\E"));
-        Assertions.assertFalse(latest.exists());
         Assertions.assertFalse(debug.exists());
 
         // test logging
@@ -73,7 +70,6 @@ public class MainTests {
         });
 
         Assertions.assertNotNull(log = getFile(new File("."),"\\d+\\Q.log\\E"));
-        Assertions.assertTrue(latest.exists());
 
         log.deleteOnExit();
 
