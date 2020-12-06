@@ -25,6 +25,9 @@ public class PresetParserTests {
             "  - meta: \"name\"\n" +
             "    regex: \"(.+)\"\n" +
             "    format: \"$1\"\n" +
+            "  - meta: \"name2\"\n" +
+            "    regex: \"(.+)\"\n" +
+            "    format: \"$1\"\n" +
             "output:\n" +
             "  regex: \"(.+)\"\n" +
             "  format: \"$1\"";
@@ -35,6 +38,7 @@ public class PresetParserTests {
         final Preset preset = new PresetParser().parse(presetFile);
         Assertions.assertEquals(new MetadataPreset(null, "(.+)", "$1"), preset.getCoverPreset());
         Assertions.assertEquals(new MetadataPreset("name","(.+)","$1"), preset.getPresets()[0]);
+        Assertions.assertEquals(new MetadataPreset("name2","(.+)","$1"), preset.getPresets()[1]);
         Assertions.assertEquals(new MetadataPreset(null,"(.+)","$1"), preset.getOutputPreset());
     }
 
