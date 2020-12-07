@@ -6,8 +6,6 @@
     <p align="center">
         Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
         <br />
-        <a href="https://docs.kttdevelopment.com/rexedia/">Docs</a>
-        •
         <a href="https://wiki.kttdevelopment.com/rexedia/">Wiki</a>
         •
         <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
