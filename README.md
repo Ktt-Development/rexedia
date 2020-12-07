@@ -142,7 +142,7 @@ output:  # output file
                         └ show = video
 ```
 ```yml
-// preset.yml
+# preset.yml
 metadata:  
   - meta: 'season_number'
     regex: '\[S0*(\d*) E0*\d*\\]'
