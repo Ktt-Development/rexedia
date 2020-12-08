@@ -51,9 +51,8 @@ jobs:
           files: rexedia
           dest: rexedia.zip
 
-      - name: 💾 Save to Releases
-        uses: JasonEtco/upload-to-release@master
+      - name: 🚀 Deploy to Releases
+        uses: AButler/upload-release-assets@v2.0
         with:
-          args: rexedia.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: 'rexedia.zip'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
