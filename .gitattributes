@@ -1,2 +1,3 @@
-/docs/dependencies/kttdevelopment -linguist-vendored
-/docs/dependencies/kttdevelopment -linguist-documentation
+docs/* -linguist-documentation
+docs/dependencies/kttdevelopment/* -linguist-vendored
+docs/dependencies/kttdevelopment/* -linguist-documentation
