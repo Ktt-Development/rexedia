@@ -1,21 +1,22 @@
 #!/bin/bash
-Version=1.0.0
+Version=1.1.0
+Name="rexedia"
 Vendor="Ktt Development"
 Workspace=package
-Dest="rexedia"
+Dest=$Name
+
+# cp -r bin $Workspace/bin
+cp LICENSE $Workspace/LICENSE
 
 jpackage \
---name "rexedia" \
+--name "$Name" \
 --icon icon.ico \
 --input $Workspace \
 --dest . \
 --type app-image \
---main-jar rexedia-$Version.jar \
+--main-jar $Name-$Version.jar \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
 --copyright "Copyright $Vendor 2020" \
 --win-console
-
-cp -r bin $Dest/bin
-cp LICENSE $Dest/LICENSE

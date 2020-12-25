@@ -2,6 +2,7 @@ package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.rexedia.utility.ToStringBuilder;
 
+import java.io.File;
 import java.io.IOException;
 
 final class FFMPEGExecutor {
@@ -9,8 +10,8 @@ final class FFMPEGExecutor {
     private final String pathToFFMPEG, pathToFFPROBE;
 
     public FFMPEGExecutor(final String pathToFFMPEG, final String pathToFFPROBE){
-        this.pathToFFMPEG  = pathToFFMPEG;
-        this.pathToFFPROBE = pathToFFPROBE;
+        this.pathToFFMPEG  = new File(pathToFFMPEG).getAbsolutePath();
+        this.pathToFFPROBE = new File(pathToFFPROBE).getAbsolutePath();
     }
 
     public final String executeFFMPEG(final String[] args) throws IOException{
