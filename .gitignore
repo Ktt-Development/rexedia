@@ -17,5 +17,9 @@
 
 *.log
 *crash-log-*.txt
-/rexedia*/
+
+# deploy
+
+/rexedia/
 /package/
+/rexedia-*.exe

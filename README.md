@@ -8,6 +8,8 @@
         <br />
         <a href="https://docs.kttdevelopment.com/rexedia/">Documentation</a>
         •
+        <a href="https://rexedia.kttdevelopment.com/">Preset Editor</a>
+        •
         <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
     </p>
 </p>
@@ -58,7 +60,7 @@ metadata:
     format: '$1'
 ```
 
-## ✔️ Safe Video Formatting
+## ✔ Safe Video Formatting
 
 Rexedia preserves the integrity of the video file.
 - Media file integrity is verified at every stage.
@@ -76,17 +78,19 @@ rexedia -i "file.mp4" -c "(.+)" "$1.png" -b
 
 **A cover, metadata, or output; or preset must be specified. If a preset is specified then the cover, metadata, and output flags will be ignored.**
 
-- `-i` `-input` *[file]* - File or directory path to format. Can be used multiple times.
-- `-w` `-walk` *[boolean]* - If true, subdirectories will also be formatted.
-- `-b` `-backup` *[boolean]* - Whether to keep backup files are not.
-- `-l` `-logging` *[boolean]* - Whether to keep log files or not.
-- `-d` `-debug` *[boolean]* - Whether to run debug logging.
-- `-pc` `-preserveCover` *[boolean]* - Whether to preserve existing cover art for files with no new cover art.
-- `-pm` `-preserveMeta` *[boolean]* - Whether to preserve existing metadata.
-- `-p` `-preset` *[boolean]* - The preset file to use. Overrides cover and metadata flags.
-- `-c` `-cover` *[regex]* *[string]* - The regular expression and back reference string to use for cover art.
-- `-m` `-metadata` *[string]* *[regex]* *[string]* - The metadata tag name, the regular expression, and back reference string to use for metadata. Can be used multiple times.
-- `-o` `-output` *[regex]* *[string]* - The regular expression and back reference string to use for output file. If the final string has no extensions then the extension of the input file will be used.
+|Flag|Type|Description|
+|---|---|---|
+|<kbd>-﻿i</kbd> <kbd>-﻿input</kbd>|*`[file]`*|The file or directory path to format. Can be used multiple times.|
+|<kbd>-﻿w</kbd> <kbd>-﻿walk</kbd>|*`[boolean]`*|If true, subdirectories will also be formatted (only for directory input).|
+|<kbd>-﻿b</kbd> <kbd>-﻿backup</kbd>|*`[boolean]`*|If true, input files will be backed up.|
+|<kbd>-﻿l</kbd> <kbd>-﻿logging</kbd>|*`[boolean]`*|If true, log files will be generated.|
+|<kbd>-﻿d</kbd> <kbd>-﻿debug</kbd>|*`[boolean]`*|If true, debug logs will be generated.|
+|<kbd>-﻿pc</kbd> <kbd>-﻿preserveCover</kbd>|*`[boolean]`*|If true, files with existing cover art will not get erased unless a new one is specified.|
+|<kbd>-﻿pm</kbd> <kbd>-﻿preserveMeta</kbd>|*`[boolean]`*|If true, files will preserve any existing metadata in the final output.|
+|<kbd>-﻿p</kbd> <kbd>-﻿preset</kbd>|*`[file]`*|The [presets](#presets) file path. Overrides cover, metadata, and output flags. Can only be used once.|
+|<kbd>-﻿c</kbd> <kbd>-﻿cover</kbd>|*`[regex] [string]`*| The regular expression and back reference to use for the cover art. Can only be used once.|
+|<kbd>-﻿m</kbd> <kbd>-﻿metadata</kbd>|*`[string] [regex] [string]`*|The metadata tag name, regular expression, and back reference string to use for metadata. Can be used multiple times.|
+|<kbd>-﻿o</kbd> <kbd>-﻿output</kbd>|*`[regex] [string]`*| The regular expression and back reference string to use for output file. Uses the extension from the final string or the extension of the input file if none is specified. Can only be used once.|
 
 ## Example Usage
 
