@@ -13,7 +13,7 @@ import java.util.logging.*;
 @SuppressWarnings("SpellCheckingInspection")
 public class ffmpegTests {
 
-    private static final FFMPEG ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
+    private static final FFMPEG ffmpeg = new FFMPEG("app/bin/ffmpeg.exe", "app/bin/ffprobe.exe");
 
     @BeforeAll
     public static void initFFMPEG() throws IOException{

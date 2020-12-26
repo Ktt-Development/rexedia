@@ -82,7 +82,7 @@ public abstract class Main {
                             }
                 logger.fine("Starting file format");
                 logger.fine("Loaded file queue: " + queue);
-                ffmpeg = new FFMPEG("bin/ffmpeg","bin/ffprobe");
+                ffmpeg = new FFMPEG("app/bin/ffmpeg","app/bin/ffprobe");
                 final MetadataFormatter formatter = new MetadataFormatter(config, ffmpeg, preset);
 
                 final int size = queue.size();

@@ -18,7 +18,7 @@ public class MainTests {
     private static final Path sc = Paths.get("src/test/resources/format/corrupt.mp4");
     private static final Path sv = Paths.get("src/test/resources/format/video.mp4");
 
-    private static final FFMPEG ffmpeg = new FFMPEG("bin/ffmpeg.exe", "bin/ffprobe.exe");
+    private static final FFMPEG ffmpeg = new FFMPEG("app/bin/ffmpeg.exe", "app/bin/ffprobe.exe");
 
     @BeforeAll
     public static void setup(){
