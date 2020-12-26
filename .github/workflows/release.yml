@@ -29,6 +29,12 @@ jobs:
       - name: 📦 Compile to exe
         run: sh ./build.sh
 
+      - name: 🚀 Deploy Installer to Releases
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'rexedia-*.exe'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 📦 Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -52,7 +58,7 @@ jobs:
           files: rexedia
           dest: rexedia.zip
 
-      - name: 🚀 Deploy to Releases
+      - name: 🚀 Deploy Binaries to Releases
         uses: AButler/upload-release-assets@v2.0
         with:
           files: 'rexedia.zip'

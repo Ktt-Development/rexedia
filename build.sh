@@ -20,22 +20,22 @@ jpackage \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "Copyright $Vendor 2020" \
+--copyright "$Vendor 2020" \
 --win-console
 
 # installer
 
-jpackage
+jpackage \
 --name "$Name" \
 --license-file "LICENSE" \
 --win-dir-chooser \
 --icon icon.ico \
 --input $Workspace \
 --dest . \
---type app-image \
+--type exe \
 --main-jar $Name-$Version.jar \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "Copyright $Vendor 2020" \
+--copyright "$Vendor 2020" \
 --win-console

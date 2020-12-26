@@ -87,7 +87,7 @@ rexedia -i "file.mp4" -c "(.+)" "$1.png" -b
 |<kbd>-﻿d</kbd> <kbd>-﻿debug</kbd>|*`[boolean]`*|If true, debug logs will be generated.|
 |<kbd>-﻿pc</kbd> <kbd>-﻿preserveCover</kbd>|*`[boolean]`*|If true, files with existing cover art will not get erased unless a new one is specified.|
 |<kbd>-﻿pm</kbd> <kbd>-﻿preserveMeta</kbd>|*`[boolean]`*|If true, files will preserve any existing metadata in the final output.|
-|<kbd>-﻿p</kbd> <kbd>-﻿preset</kbd>|*`[file]`*|The [presets](/rexedia/presets) file path. Overrides cover, metadata, and output flags. Can only be used once.|
+|<kbd>-﻿p</kbd> <kbd>-﻿preset</kbd>|*`[file]`*|The [presets](#presets) file path. Overrides cover, metadata, and output flags. Can only be used once.|
 |<kbd>-﻿c</kbd> <kbd>-﻿cover</kbd>|*`[regex] [string]`*| The regular expression and back reference to use for the cover art. Can only be used once.|
 |<kbd>-﻿m</kbd> <kbd>-﻿metadata</kbd>|*`[string] [regex] [string]`*|The metadata tag name, regular expression, and back reference string to use for metadata. Can be used multiple times.|
 |<kbd>-﻿o</kbd> <kbd>-﻿output</kbd>|*`[regex] [string]`*| The regular expression and back reference string to use for output file. Uses the extension from the final string or the extension of the input file if none is specified. Can only be used once.|
