@@ -18,6 +18,8 @@ public final class Configuration {
         BACKUP  = "b",
         DEBUG   = "d",
         LOGGING = "l",
+        VERIFY  = "v",
+        VERDIFF = "vd",
         PRECOV  = "pc",
         PREMETA = "pm",
         PRESET  = "p",
@@ -49,6 +51,13 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
+        new Option.Builder<>(DEBUG)
+            .setLongFlag("debug")
+            .setDesc("Run logging in debug mode and create a debug file")
+            .setExpectedArgs(1)
+            .argsOptional()
+            .setDefaultValue(false)
+            .build(),
         new Option.Builder<>(LOGGING)
             .setLongFlag("log")
             .setDesc("Log process to a file")
@@ -56,12 +65,19 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(DEBUG)
-            .setLongFlag("debug")
-            .setDesc("Run logging in debug mode and create a debug file")
+        new Option.Builder<>(VERIFY)
+            .setLongFlag("verify")
+            .setDesc("Set file validation level, 0 = none, 1 = similar, 2 = exact or greater, 3 = exact")
             .setExpectedArgs(1)
-            .argsOptional()
-            .setDefaultValue(false)
+            .argsRequired()
+            .setDefaultValue(0)
+            .build(),
+        new Option.Builder<>(VERDIFF)
+            .setLongFlag("verifyDiscrepancy")
+            .setDesc("Set the maximum frame difference discrepancy")
+            .setExpectedArgs(1)
+            .argsRequired()
+            .setDefaultValue(100)
             .build(),
         new Option.Builder<>(PRECOV)
             .setLongFlag("preserveCover")
@@ -106,6 +122,7 @@ public final class Configuration {
     private final Preset preset;
     private final Map<String,Object> configuration = new HashMap<>();
 
+    @SuppressWarnings("SpellCheckingInspection")
     public Configuration(final String... args) throws ParseException, IOException{
         final Options options = new Options();
         for(final Option<?> option : defaultOptions){
@@ -156,6 +173,14 @@ public final class Configuration {
             preset = p.build();
         }else{
             throw new MissingOptionException(META);
+        }
+        if(cmd.hasOption(VERIFY)){
+            int v = Integer.parseInt(cmd.getOptionValue(VERIFY));
+            if(v < 0 || v > 3)
+                throw new IllegalArgumentException("Verify mode can only be 0-3");
+            if(cmd.hasOption(VERDIFF))
+                if(Integer.parseInt(cmd.getOptionValue(VERDIFF)) < 0)
+                    throw new IllegalArgumentException("Verify discrepancy must be a positive integer");
         }
         if(cmd.hasOption(WALK))
             configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));

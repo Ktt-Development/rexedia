@@ -46,8 +46,8 @@ public class ffmpegTests {
 
     @Test
     public void testVerify(){
-        Assertions.assertTrue(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/video.mp4")));
-        Assertions.assertFalse(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/corrupt.mp4")));
+        Assertions.assertTrue(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/video.mp4"), 3, 0));
+        Assertions.assertFalse(ffmpeg.verifyFileIntegrity(new File("src/test/resources/format/corrupt.mp4"), 3, 0));
     }
 
     private static final File input = new File("src/test/resources/format/apply/clean.mp4");

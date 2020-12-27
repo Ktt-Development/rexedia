@@ -14,14 +14,18 @@ import java.util.logging.Logger;
 
 public final class MetadataFormatter {
 
+    private final int verify, verifyDiscrepancy;
     private final boolean preserveCover, preserveMetadata, preserveBackup;
     private final FFMPEG ffmpeg;
     private final Preset preset;
 
     public MetadataFormatter(final Configuration configuration, final FFMPEG ffmpeg, final Preset preset){
-        this.preserveCover    = (boolean) configuration.getConfiguration().get(Configuration.PRECOV);
-        this.preserveMetadata = (boolean) configuration.getConfiguration().get(Configuration.PREMETA);
-        this.preserveBackup   = (boolean) configuration.getConfiguration().get(Configuration.BACKUP);
+        final Map<String,?> config = configuration.getConfiguration();
+        this.verify             = (int) config.get(Configuration.VERIFY);
+        this.verifyDiscrepancy  = (int) config.get(Configuration.VERDIFF);
+        this.preserveCover      = (boolean) config.get(Configuration.PRECOV);
+        this.preserveMetadata   = (boolean) config.get(Configuration.PREMETA);
+        this.preserveBackup     = (boolean) config.get(Configuration.BACKUP);
 
         this.ffmpeg = ffmpeg;
         this.preset = preset;
@@ -37,7 +41,7 @@ public final class MetadataFormatter {
         {
             logger.info(String.format(lstr, "VERIFY / MEDIA ", 1));
             logger.fine("Verifying " + abs);
-            if(!ffmpeg.verifyFileIntegrity(file)){
+            if(!ffmpeg.verifyFileIntegrity(file, verify, verifyDiscrepancy)){
                 logger.severe("Failed to verify " + abs + " (file was " + (file.exists() ? "corrupt" : "missing") + ")");
                 return false;
             }else
@@ -72,7 +76,7 @@ public final class MetadataFormatter {
             // verify backup integrity
             logger.info(String.format(lstr, "VERIFY / BACKUP", 3));
             logger.fine("Verifying backup " + babs);
-            if(!ffmpeg.verifyFileIntegrity(backup)){
+            if(!ffmpeg.verifyFileIntegrity(backup, verify, verifyDiscrepancy)){
                 logger.severe("Failed to verify " + babs + " (file was " + (backup.exists() ? "corrupt" : "missing") + ")");
                 return false;
             }else
@@ -120,7 +124,7 @@ public final class MetadataFormatter {
         {
             logger.fine("Verifying output " + abs);
             logger.info(String.format(lstr, "VERIFY / FINAL ", 5));
-            if(!ffmpeg.verifyFileIntegrity(output)){
+            if(!ffmpeg.verifyFileIntegrity(output, verify, verifyDiscrepancy)){
                 logger.severe("Failed to verify output " + abs + " (file was corrupt)");
                 return false;
             }else
