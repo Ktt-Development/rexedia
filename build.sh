@@ -20,7 +20,7 @@ jpackage \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "$Vendor 2020" \
+--copyright "$Vendor 2021" \
 --win-console
 
 # installer
@@ -37,5 +37,5 @@ jpackage \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "$Vendor 2020" \
+--copyright "$Vendor 2021" \
 --win-console
