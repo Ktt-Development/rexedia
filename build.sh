@@ -3,6 +3,8 @@ Version=1.2.0
 Name="rexedia"
 Vendor="Ktt Development"
 Workspace=package
+Year=2021
+
 Dest=$Name
 
 cp -r app/bin $Workspace/bin
@@ -20,7 +22,7 @@ jpackage \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "$Vendor 2021" \
+--copyright "$Vendor $Year" \
 --win-console
 
 # installer
@@ -37,5 +39,5 @@ jpackage \
 --main-class com.kttdevelopment.rexedia.Main \
 --app-version $Version \
 --vendor "$Vendor" \
---copyright "$Vendor 2021" \
+--copyright "$Vendor $Year" \
 --win-console
