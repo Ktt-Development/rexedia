@@ -85,8 +85,8 @@ rexedia -i "file.mp4" -c "(.+)" "$1.png" -b -v 3
 |<kbd>-﻿b</kbd> <kbd>-﻿backup</kbd>|*`[boolean]`*|If true, input files will be backed up.|
 |<kbd>-﻿l</kbd> <kbd>-﻿logging</kbd>|*`[boolean]`*|If true, log files will be generated.|
 |<kbd>-﻿d</kbd> <kbd>-﻿debug</kbd>|*`[boolean]`*|If true, debug logs will be generated.|
-|<kbd>-﻿v</kbd> <kbd>-verify</kbd>|*`[int]`*|File validation level. 0 = off (default), 1 = frames within range, 2 = frames equal to or exceeding, 3 = exact frame count.|
-|<kbd>-﻿vd</kbd> <kbd>-﻿verifyDiscrepancy</kbd>|*`[int]`*|Frame difference range (only for verify 1).|
+|<kbd>-﻿v</kbd> <kbd>-verify</kbd>|*`[int]`*|File validation level. 0 = off, 1 = frames within range (default), 2 = frames equal to or exceeding within range, 3 = exact frame count.|
+|<kbd>-﻿vd</kbd> <kbd>-﻿verifyDiscrepancy</kbd>|*`[int]`*|Frame difference range (only for verify 1 or 2).|
 |<kbd>-﻿pc</kbd> <kbd>-﻿preserveCover</kbd>|*`[boolean]`*|If true, files with existing cover art will not get erased unless a new one is specified.|
 |<kbd>-﻿pm</kbd> <kbd>-﻿preserveMeta</kbd>|*`[boolean]`*|If true, files will preserve any existing metadata in the final output.|
 |<kbd>-﻿p</kbd> <kbd>-﻿preset</kbd>|*`[file]`*|The [presets](#presets) file path. Overrides cover, metadata, and output flags. Can only be used once.|

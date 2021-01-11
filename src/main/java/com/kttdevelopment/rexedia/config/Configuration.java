@@ -85,10 +85,10 @@ public final class Configuration {
             .build(),
         new Option.Builder<>(VERIFY)
             .setLongFlag("verify")
-            .setDesc("Set file validation level, 0 = none, 1 = similar, 2 = exact or greater, 3 = exact")
+            .setDesc("Set file validation level, 0 = none, 1 = frames within range (default), 2 = exact frames or exceeding within range, 3 = exact frame count")
             .setExpectedArgs(1)
             .argsRequired()
-            .setDefaultValue(0)
+            .setDefaultValue(1)
             .build(),
         new Option.Builder<>(VERDIFF)
             .setLongFlag("verifyDiscrepancy")
