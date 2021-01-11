@@ -166,7 +166,9 @@ public final class Configuration {
             throw new MissingOptionException(INPUT);
         }
         if(cmd.hasOption(PRESET)){
-            preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));
+            String path = cmd.getOptionValue(PRESET);
+            preset = new PresetParser().parse(new File(path));
+            configuration.put(PRESET, path);
         }else if(cmd.hasOption(COVER) || cmd.hasOption(META) || cmd.hasOption(OUTPUT)){
             final Preset.Builder p = new Preset.Builder();
             if(cmd.hasOption(COVER)){
@@ -193,12 +195,15 @@ public final class Configuration {
             throw new MissingOptionException(META);
         }
         if(cmd.hasOption(VERIFY)){
+            configuration.put(VERIFY, Integer.parseInt(cmd.getOptionValue(VERIFY)));
             int v = Integer.parseInt(cmd.getOptionValue(VERIFY));
             if(v < 0 || v > 3)
                 throw new IllegalArgumentException("Verify mode can only be 0-3");
-            if(cmd.hasOption(VERDIFF))
+            if(cmd.hasOption(VERDIFF)){
+                configuration.put(VERDIFF, cmd.getOptionValue(VERDIFF));
                 if(Integer.parseInt(cmd.getOptionValue(VERDIFF)) < 0)
                     throw new IllegalArgumentException("Verify discrepancy must be a positive integer");
+            }
         }
         if(cmd.hasOption(WALK))
             configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));
@@ -227,7 +232,6 @@ public final class Configuration {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("defaultOptions", defaultOptions)
             .addObject("preset",preset)
             .addObject("configuration", configuration)
             .toString();

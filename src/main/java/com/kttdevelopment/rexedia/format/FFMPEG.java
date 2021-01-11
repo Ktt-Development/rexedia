@@ -108,8 +108,8 @@ public final class FFMPEG {
                         return false;
                     case 1: // if file frames within range
                         return Math.abs(diff) <= verifyDiscrepancy;
-                    case 2: // if file frames exceed calculated
-                        return diff >= 0;
+                    case 2: // if file frames exceed calculated within range
+                        return diff >= 0 && diff <= verifyDiscrepancy;
                     case 3: // if frames exact
                         return diff == 0;
                 }

@@ -70,11 +70,20 @@ public abstract class Main {
                         setFormatter(new LoggerFormatter(true,false));
                     }});
 
-                if(debug)
+                if(debug){
+                    Logger.getGlobal().config(
+                        "OS: "              + System.getProperty("os.name").toLowerCase() + '\n' +
+                        "Java Version: "    + System.getProperty("java.version") + '\n' +
+                        "Args: "            + Arrays.toString(args) + '\n' +
+                        "Config: "          + config + '\n' +
+                        "Preset: "          + preset + '\n' +
+                        "FFMPEG: "          + ffmpeg + '\n'
+                    );
                     logger.addHandler(new FileHandler("debug.log"){{
                         setLevel(Level.ALL);
                         setFormatter(new LoggerFormatter(true,true));
                     }});
+                }
             }
 
             // format
