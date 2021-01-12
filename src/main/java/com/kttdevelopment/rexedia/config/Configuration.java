@@ -200,7 +200,7 @@ public final class Configuration {
             if(v < 0 || v > 3)
                 throw new IllegalArgumentException("Verify mode can only be 0-3");
             if(cmd.hasOption(VERDIFF)){
-                configuration.put(VERDIFF, cmd.getOptionValue(VERDIFF));
+                configuration.put(VERDIFF, Integer.parseInt(cmd.getOptionValue(VERDIFF)));
                 if(Integer.parseInt(cmd.getOptionValue(VERDIFF)) < 0)
                     throw new IllegalArgumentException("Verify discrepancy must be a positive integer");
             }
