@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2021 Ktt Development
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package com.kttdevelopment.rexedia.config;
 
 import com.kttdevelopment.rexedia.utility.ToStringBuilder;
@@ -18,6 +36,8 @@ public final class Configuration {
         BACKUP  = "b",
         DEBUG   = "d",
         LOGGING = "l",
+        VERIFY  = "v",
+        VERDIFF = "vd",
         PRECOV  = "pc",
         PREMETA = "pm",
         PRESET  = "p",
@@ -49,6 +69,13 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
+        new Option.Builder<>(DEBUG)
+            .setLongFlag("debug")
+            .setDesc("Run logging in debug mode and create a debug file")
+            .setExpectedArgs(1)
+            .argsOptional()
+            .setDefaultValue(false)
+            .build(),
         new Option.Builder<>(LOGGING)
             .setLongFlag("log")
             .setDesc("Log process to a file")
@@ -56,12 +83,19 @@ public final class Configuration {
             .argsOptional()
             .setDefaultValue(false)
             .build(),
-        new Option.Builder<>(DEBUG)
-            .setLongFlag("debug")
-            .setDesc("Run logging in debug mode and create a debug file")
+        new Option.Builder<>(VERIFY)
+            .setLongFlag("verify")
+            .setDesc("Set file validation level, 0 = none, 1 = frames within range (default), 2 = exact frames or exceeding within range, 3 = exact frame count")
             .setExpectedArgs(1)
-            .argsOptional()
-            .setDefaultValue(false)
+            .argsRequired()
+            .setDefaultValue(1)
+            .build(),
+        new Option.Builder<>(VERDIFF)
+            .setLongFlag("verifyDiscrepancy")
+            .setDesc("Set the maximum frame difference discrepancy")
+            .setExpectedArgs(1)
+            .argsRequired()
+            .setDefaultValue(100)
             .build(),
         new Option.Builder<>(PRECOV)
             .setLongFlag("preserveCover")
@@ -106,6 +140,7 @@ public final class Configuration {
     private final Preset preset;
     private final Map<String,Object> configuration = new HashMap<>();
 
+    @SuppressWarnings("SpellCheckingInspection")
     public Configuration(final String... args) throws ParseException, IOException{
         final Options options = new Options();
         for(final Option<?> option : defaultOptions){
@@ -131,7 +166,9 @@ public final class Configuration {
             throw new MissingOptionException(INPUT);
         }
         if(cmd.hasOption(PRESET)){
-            preset = new PresetParser().parse(new File(cmd.getOptionValue(PRESET)));
+            String path = cmd.getOptionValue(PRESET);
+            preset = new PresetParser().parse(new File(path));
+            configuration.put(PRESET, path);
         }else if(cmd.hasOption(COVER) || cmd.hasOption(META) || cmd.hasOption(OUTPUT)){
             final Preset.Builder p = new Preset.Builder();
             if(cmd.hasOption(COVER)){
@@ -156,6 +193,17 @@ public final class Configuration {
             preset = p.build();
         }else{
             throw new MissingOptionException(META);
+        }
+        if(cmd.hasOption(VERIFY)){
+            configuration.put(VERIFY, Integer.parseInt(cmd.getOptionValue(VERIFY)));
+            int v = Integer.parseInt(cmd.getOptionValue(VERIFY));
+            if(v < 0 || v > 3)
+                throw new IllegalArgumentException("Verify mode can only be 0-3");
+            if(cmd.hasOption(VERDIFF)){
+                configuration.put(VERDIFF, cmd.getOptionValue(VERDIFF));
+                if(Integer.parseInt(cmd.getOptionValue(VERDIFF)) < 0)
+                    throw new IllegalArgumentException("Verify discrepancy must be a positive integer");
+            }
         }
         if(cmd.hasOption(WALK))
             configuration.put(WALK, cmd.getOptionValue(WALK) == null || Boolean.parseBoolean(cmd.getOptionValue(WALK)));
@@ -184,7 +232,6 @@ public final class Configuration {
     @Override
     public String toString(){
         return new ToStringBuilder(getClass().getSimpleName())
-            .addObject("defaultOptions", defaultOptions)
             .addObject("preset",preset)
             .addObject("configuration", configuration)
             .toString();

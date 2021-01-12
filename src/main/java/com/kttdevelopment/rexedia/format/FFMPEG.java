@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2021 Ktt Development
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package com.kttdevelopment.rexedia.format;
 
 import com.kttdevelopment.rexedia.utility.ToStringBuilder;
@@ -6,6 +24,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,8 +69,9 @@ public final class FFMPEG {
     }
 
     private final Pattern framerate = Pattern.compile("\\Q[STREAM]\\E\\r?\\n\\Qr_frame_rate=\\E(\\d+)/(\\d+)\\r?\\n\\Qduration=\\E(\\d+\\.\\d+)\\r?\\n\\Q[/STREAM]\\E", Pattern.MULTILINE);
-    public final boolean verifyFileIntegrity(final File input){
+    public final boolean verifyFileIntegrity(final File input, final int verify, final int verifyDiscrepancy){
         if(!input.exists()) return false;
+        if(verify == 0) return true;
 
         final String[] args = new String[]{
             "-i", '"' + input.getAbsolutePath() + '"',
@@ -61,6 +81,7 @@ public final class FFMPEG {
         };
 
         try{
+            final Logger logger   = Logger.getGlobal();
             final String result   = executor.executeFFPROBE(args);
             final Matcher matcher = framerate.matcher(result);
 
@@ -69,10 +90,29 @@ public final class FFMPEG {
 
             final int framerate     = Integer.parseInt(matcher.group(1)) / Integer.parseInt(matcher.group(2));
             final float duration    = Float.parseFloat(matcher.group(3));
-            final int frames        = getFrames(input);
 
-            // framerate * duration (calculated frame rate)
-            return frames != -1 && framerate * duration == frames; // calculated frames equals stated frames
+            final int calculated = (int) Math.ceil(framerate * duration);
+            final int actual     = getFrames(input);
+
+            final int diff = actual - calculated;
+
+            logger.finest("Expected: " + calculated);
+            logger.finest("Actual: " + actual);
+            logger.finest("Diff: " + diff);
+
+            if(actual == -1)
+                return false;
+            else
+                switch(verify){
+                    default: // should never occur
+                        return false;
+                    case 1: // if file frames within range
+                        return Math.abs(diff) <= verifyDiscrepancy;
+                    case 2: // if file frames exceed calculated within range
+                        return diff >= 0 && diff <= verifyDiscrepancy;
+                    case 3: // if frames exact
+                        return diff == 0;
+                }
         }catch(final IOException | NumberFormatException ignored){
             return false;
         }
