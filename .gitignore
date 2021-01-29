@@ -23,3 +23,8 @@
 /rexedia/
 /package/
 /rexedia-*.exe
+
+# site
+
+/docs/_site
+/docs/.jekyll-cache

@@ -10,12 +10,12 @@ const addRowBtn     = $("#addRow");
 const delRowBtn     = $("#deleteRow");
 
 const fileName      = $("#file-name");
-const result       = $("#result");
+const result        = $("#result");
 
-// regex validation //
+/* regex validation // */
 
-const invalid = "is-invalid"
-const valid   = "is-valid"
+const invalid = "is-invalid";
+const valid   = "is-valid";
 
 $(document).ready(function(){
     importBtn.click(function(){importFile.click();});
@@ -26,7 +26,7 @@ $(document).ready(function(){
     coverFormat.on('input', test);
     outputRegex.on('input', validateRegex);
     outputFormat.on('input', test);
-    
+
     addRowBtn.click(addRow);
     delRowBtn.click(deleteRow);
 
@@ -34,8 +34,8 @@ $(document).ready(function(){
 
     window.onbeforeunload = function(){
         if(yml)
-            return true
-    }
+            return true;
+    };
 
     addRow();
 
@@ -44,13 +44,13 @@ $(document).ready(function(){
     });
 
     test();
-})
+});
 
 
 function validateRegex(e) {
     const target = e.target ? e.target : $(e)[0];
-    const regex = target.value
-    className = target.className
+    const regex = target.value;
+    let className = target.className;
 
     if(!regex){
         className = className.replace(' ' + valid, "");
@@ -65,7 +65,7 @@ function validateRegex(e) {
             className += ' ' + invalid;
     }
 
-    target.className = className
+    target.className = className;
 
     test();
 }
@@ -79,16 +79,16 @@ function isValidRegex(string){
     }
 }
 
-// row handle //
+/* row handle // */
 
-// replace = '#'
+/* replace = '#' */
 const row = `
 <div id="#-meta" class="border-bottom mt-2">
     <input type="text" class="form-control form-control-sm mb-2" id="#-meta-name" placeholder="Name">
     <input type="text" class="form-control form-control-sm mb-2" id="#-meta-regex" placeholder="Regex">
     <input type="text" class="form-control form-control-sm mb-2" id="#-meta-format" placeholder="Replacement String">
 </div>
-`
+`;
 
 var rows = 0;
 
@@ -106,16 +106,16 @@ function deleteRow(){
     test();
 }
 
-// tester //
+/* tester // */
 
 function test(){
-    var fn = $(fileName)[0].value;
-    var name = fn.includes(".")
+    let fn = $(fileName)[0].value;
+    let name = fn.includes(".")
             ? fn.substring(0, fn.lastIndexOf('.'))
             : fn;;
-    var ext = fn.includes('.') ? fn.substring(fn.lastIndexOf('.') + 1) : "";
+    let ext = fn.includes('.') ? fn.substring(fn.lastIndexOf('.') + 1) : "";
 
-    OUT = 
+    let OUT =
     `<table class="table table-sm">
         <thead>
             <tr>
@@ -125,36 +125,36 @@ function test(){
         </thead>
         <tbody>`;
 
-    // cover
+    /* cover */
     OUT += "<tr><th scope=\"row\">Cover</th>";
     try{
         OUT += "<td>" + name.replace(new RegExp(coverRegex[0].value), coverFormat[0].value) + "</td>";
     }catch(e){}
     OUT += "</tr>";
-    
-    // rows
-    var size = rows + 1;
-    for(var i = 1; i < size; i++)
+
+    /* rows */
+    let size = rows + 1;
+    for(let i = 1; i < size; i++)
         if($('#' + i + "-meta-name")[0].value || $('#' + i + "-meta-regex")[0].value || $('#' + i + "-meta-format")[0].value)
             OUT += "<tr><th scope=\"col\">" + $('#' + i + "-meta-name")[0].value + "</th><td>" + name.replace(new RegExp( $('#' + i + "-meta-regex")[0].value),  $('#' + i + "-meta-format")[0].value) + "</td></tr>";
 
-    // output
+    /* output */
     OUT += "<tr><th scope=\"row\">Output</th>";
     try{
-        var output = name.replace(new RegExp(outputRegex[0].value), outputFormat[0].value);
+        let output = name.replace(new RegExp(outputRegex[0].value), outputFormat[0].value);
         OUT += "<td>" + output + (ext && !output.includes('.') ? '.' + ext : "") + "</td>";
     }catch(e){}
     OUT += "</tr>";
-    
-    // change
-    OUT += 
+
+    /* change */
+    OUT +=
     `   </tbody>
-    </table>`
+    </table>`;
 
     result[0].innerHTML = OUT;
 }
 
-// import //
+/* import */
 var yml;
 
 function importPreset(){
@@ -163,26 +163,26 @@ function importPreset(){
         const IN = new FileReader();
         IN.readAsText(file, "UTF-8");
         IN.onload = function(e){
-            yml = jsyaml.load(e.target.result)
-            // cover
+            yml = jsyaml.load(e.target.result);
+            /* cover */
             if(yml.cover){
                 coverRegex[0].value = yml.cover.regex ? yml.cover.regex : "";
                 validateRegex('#' + coverRegex[0].id);
                 coverFormat[0].value = yml.cover.format ? yml.cover.format : "";
             }
-            // output
+            /* output */
             if(yml.output){
                 outputRegex[0].value = yml.output.regex ? yml.output.regex : "";
                 validateRegex('#' + outputRegex[0].id);
                 outputFormat[0].value = yml.output.format ? yml.output.format : "";
             }
 
-            // rows
-            var size = rows-1;
+            /* rows */
+            let size = rows-1;
             for(var i = 0; i < size; i++)
                 deleteRow();
 
-            var size = yml.metadata.length + 1;
+            size = yml.metadata.length + 1;
             for(var i = 1; i < size; i++){
                 if(i != 1)
                     addRow();
@@ -193,33 +193,33 @@ function importPreset(){
                 $('#' + i + "-meta-format")[0].value = row.format ? row.format : "";
             }
 
-            // tester
+            /* tester */
             test();
         }
     }
     importFile[0].value = "";
 }
 
-// export //
+/* export // */
 
 function exportPreset(){
-    var OUT = "";
-    // cover
+    let OUT = "";
+    /* cover */
     if(coverRegex[0].value || coverFormat[0].value)
         OUT += "cover:\n  regex: '" + coverRegex[0].value + "'\n  format: '" + coverFormat[0].value + "'\n";
-    // meta
-    var rowstr = "";
-    var size = rows + 1;
-    for(var i = 1; i < size; i++)
+    /* meta */
+    let rowstr = "";
+    let size = rows + 1;
+    for(let i = 1; i < size; i++)
         if($('#' + i + "-meta-name")[0].value || $('#' + i + "-meta-regex")[0].value || $('#' + i + "-meta-format")[0].value)
             rowstr += "  - meta: '" + $('#' + i + "-meta-name")[0].value + "'\n    regex: '" + $('#' + i + "-meta-regex")[0].value + "'\n    format: '" + $('#' + i + "-meta-format")[0].value + "'\n";
     if(rowstr)
         OUT += "metadata:\n" + rowstr;
-    
-    // output
+
+    /* output */
     if(outputRegex[0].value || outputFormat[0].value)
         OUT += "output:\n  regex: '" + outputRegex[0].value + "'\n  format: '" + outputFormat[0].value + "'\n";
 
-    // download
+    /* download */
     download(OUT, "preset.yml", "text/yaml");
 }
