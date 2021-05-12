@@ -1,5 +1,5 @@
 #!/bin/bash
-Version=1.2.0
+Version=1.3.0
 Name="rexedia"
 Vendor="Ktt Development"
 Workspace=package
