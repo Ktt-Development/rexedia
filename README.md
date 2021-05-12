@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
     <a href="https://github.com/Ktt-Development/rexedia">
         <img src="https://raw.githubusercontent.com/Ktt-Development/rexedia/main/icon.png" alt="Logo" width="100" height="100">
     </a>
@@ -12,12 +12,11 @@
         •
         <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
     </p>
-</p>
-
-[![Deploy](https://github.com/Ktt-Development/rexedia/workflows/Deploy/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3ADeploy)
-[![Java CI](https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg)](https://github.com/Ktt-Development/rexedia/actions?query=workflow%3A%22Java+CI%22)
-[![version](https://img.shields.io/github/v/release/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/releases)
-[![license](https://img.shields.io/github/license/Ktt-Development/rexedia)](https://github.com/Ktt-Development/rexedia/blob/main/LICENSE)
+    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/release.yml"><img src="https://github.com/Ktt-Development/rexedia/workflows/Deploy/badge.svg" alt="deploy"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/java_ci.yml"><img src="https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg" alt="java ci"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/releases"><img src="https://img.shields.io/github/v/release/Ktt-Development/rexedia" alt="version"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Ktt-Development/rexedia" alt="license"></a>
+</div>
 
 ---
 **Contents:**
