@@ -18,13 +18,12 @@
     <a href="https://github.com/Ktt-Development/rexedia/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Ktt-Development/rexedia" alt="license"></a>
 </div>
 
----
 **Contents:**
 - [Setup](#setup)
 - [Features](#features)
 - [Arguments](#arguments)
 - [Presets](#presets)
----
+
 # Setup
 
 Compiled binaries can be found in releases.
@@ -32,7 +31,7 @@ Compiled binaries can be found in releases.
 
 # Features
 
-## 🎬 Wide Media Support
+### 🎬 Wide Media Support
 
 Rexedia supports all file extensions supported by [FFMPEG](https://ffmpeg.org/).
 
@@ -40,7 +39,7 @@ Rexedia supports all file extensions supported by [FFMPEG](https://ffmpeg.org/).
 rexedia -i "file.mp4" -c "(.+)" "$1.png" -o "(.+)" "$1.avi"
 ```
 
-## ⭐ Features
+### ⭐ Features
 
 Complicated tasks simplified:
 - Apply cover art and metadata.
@@ -53,13 +52,13 @@ rexedia -i video.mp4 -p preset.yml
 ```
 ```yml
 # preset.yml
-metadata:  
-  - meta: 'title' 
+metadata:
+  - meta: 'title'
     regex: '(.+)'
     format: '$1'
 ```
 
-## ✔ Safe Video Formatting
+### ✔ Safe Video Formatting
 
 Rexedia preserves the integrity of the video file.
 - Verify file integrity using the `-v` flag.
@@ -148,7 +147,7 @@ output:  # output file
 ```
 ```yml
 # preset.yml
-metadata:  
+metadata:
   - meta: 'season_number'
     regex: '\[S0*(\d*) E0*\d*\\]'
     format: '$1'
@@ -162,3 +161,8 @@ metadata:
 ```sh
 rexedia -i video.mp4 -p preset.yml
 ```
+
+## Contributing
+
+- Found a bug? Open a new [issue](https://github.com/Ktt-Development/rexedia/issues).
+- Want to contribute? Create a [fork](https://github.com/Ktt-Development/rexedia/fork) and open a [pull request](https://github.com/Ktt-Development/rexedia/pulls).
