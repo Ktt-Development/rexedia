@@ -6,14 +6,15 @@
     <p align="center">
         Metadata editing (including cover art) for bulk files using regular expressions (regex) and back references.
         <br />
-        <a href="https://docs.kttdevelopment.com/rexedia/">Documentation</a>
+        <a href="https://docs.katsute.dev/rexedia/">Documentation</a>
         •
         <a href="https://rexedia.kttdevelopment.com/">Preset Editor</a>
         •
         <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
     </p>
-    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/release.yml"><img src="https://github.com/Ktt-Development/rexedia/workflows/Deploy/badge.svg" alt="deploy"></a>
-    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/java_ci.yml"><img src="https://github.com/Ktt-Development/rexedia/workflows/Java%20CI/badge.svg" alt="java ci"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/java_ci.yml"><img src="https://github.com/Ktt-Development/rexedia/actions/workflows/java_ci.yml/badge.svg" alt="Java CI"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/codeql.yml"><img src="https://github.com/Ktt-Development/rexedia/actions/workflows/codeql.yml/badge.svg" alt="CodeQL"></a>
+    <a href="https://github.com/Ktt-Development/rexedia/actions/workflows/release.yml"><img src="https://github.com/Ktt-Development/rexedia/actions/workflows/release.yml/badge.svg" alt="Deploy"></a>
     <a href="https://github.com/Ktt-Development/rexedia/releases"><img src="https://img.shields.io/github/v/release/Ktt-Development/rexedia" alt="version"></a>
     <a href="https://github.com/Ktt-Development/rexedia/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Ktt-Development/rexedia" alt="license"></a>
 </div>
