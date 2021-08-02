@@ -8,7 +8,7 @@
         <br />
         <a href="https://docs.katsute.dev/rexedia/">Documentation</a>
         •
-        <a href="https://rexedia.kttdevelopment.com/">Preset Editor</a>
+        <a href="https://katsute.dev/r/rexedia/editor">Preset Editor</a>
         •
         <a href="https://github.com/Ktt-Development/rexedia/issues">Issues</a>
     </p>
