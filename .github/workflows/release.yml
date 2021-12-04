@@ -9,7 +9,7 @@ jobs:
     environment: Compile
     steps:
       - name: 📦 Prepate Git Repo
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.4.0
 
       - name: ☕ Install OpenJDK
         uses: AdoptOpenJDK/install-jdk@v1.1.1
